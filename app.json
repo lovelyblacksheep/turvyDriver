@@ -1,0 +1,11 @@
+{
+  "expo": {
+    "name": "turvyDriver",
+    "slug": "turvyDriver",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  },
+  "name": "turvyDriver"
+}
