@@ -1,0 +1,203 @@
+{
+  "project_info": {
+    "project_number": "645200450479",
+    "firebase_url": "https://turvy-1501496198977.firebaseio.com",
+    "project_id": "turvy-1501496198977",
+    "storage_bucket": "turvy-1501496198977.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645200450479:android:eba3909c0a917b31",
+        "android_client_info": {
+          "package_name": "com.turvy.driver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645200450479-jkmnee3ea77huegnddiel5802uonvlub.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgublzEPUg6N24rujl6yi8CE2YfxsWG_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645200450479-jkmnee3ea77huegnddiel5802uonvlub.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "645200450479-5p4q8jje0rbofek7800oc4r013ns52qh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.turvy.passanger"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645200450479:android:668585276c731d58d9155a",
+        "android_client_info": {
+          "package_name": "com.turvy.rider"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645200450479-qcndv5n2evt0mgehrfttjkjrpebq6ko9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.turvy.rider",
+            "certificate_hash": "7d4883c82a73decdf3e9e1d29350d43f11bf8e30"
+          }
+        },
+        {
+          "client_id": "645200450479-jkmnee3ea77huegnddiel5802uonvlub.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgublzEPUg6N24rujl6yi8CE2YfxsWG_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645200450479-jkmnee3ea77huegnddiel5802uonvlub.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "645200450479-5p4q8jje0rbofek7800oc4r013ns52qh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.turvy.passanger"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645200450479:android:8ae00c6bfc3fdd0dd9155a",
+        "android_client_info": {
+          "package_name": "com.turvy.turvydriver"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645200450479-mq4j1nem3r3oftr8mqq8jqrress3cq4v.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.turvy.turvydriver",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "645200450479-jkmnee3ea77huegnddiel5802uonvlub.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgublzEPUg6N24rujl6yi8CE2YfxsWG_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645200450479-jkmnee3ea77huegnddiel5802uonvlub.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "645200450479-5p4q8jje0rbofek7800oc4r013ns52qh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.turvy.passanger"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645200450479:android:623169d77f731e66",
+        "android_client_info": {
+          "package_name": "com.turvy.user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645200450479-2su0bqrhmluk50ocsofnlgoirhpu5j3b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.turvy.user",
+            "certificate_hash": "fe5224d071d12418b533bcf2199f1ca101df53ab"
+          }
+        },
+        {
+          "client_id": "645200450479-4c2e8b2u6m60ssrdt94bkbb9c5sh9j9k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.turvy.user",
+            "certificate_hash": "cc4c40a0ae5571589054c49b9862173b677e6f9b"
+          }
+        },
+        {
+          "client_id": "645200450479-i2igifblkr08mqad89hc979timto1pb5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.turvy.user",
+            "certificate_hash": "1c971d7d4bbe183966ee198a6044424a67a7e48d"
+          }
+        },
+        {
+          "client_id": "645200450479-uhhqtuf5pv63f3obhsvvtala1ofn92vu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.turvy.user",
+            "certificate_hash": "9617ad2abfa30245c16f6acee8e0ad5d977ffedf"
+          }
+        },
+        {
+          "client_id": "645200450479-jkmnee3ea77huegnddiel5802uonvlub.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAgublzEPUg6N24rujl6yi8CE2YfxsWG_Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645200450479-jkmnee3ea77huegnddiel5802uonvlub.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "645200450479-5p4q8jje0rbofek7800oc4r013ns52qh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.turvy.passanger"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
