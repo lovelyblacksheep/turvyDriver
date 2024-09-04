@@ -17,7 +17,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>1.0.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -44,12 +44,64 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-  <key>UIStatusBarStyle</key>
-  <string>UIStatusBarStyleDefault</string>
+	<key>UIStatusBarStyle</key>
+	<string>UIStatusBarStyleDefault</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Metropolis-Black.ttf</string>
+		<string>Metropolis-BlackItalic.ttf</string>
+		<string>Metropolis-Bold.ttf</string>
+		<string>Metropolis-BoldItalic.ttf</string>
+		<string>Metropolis-ExtraBold.ttf</string>
+		<string>Metropolis-ExtraBoldItalic.ttf</string>
+		<string>Metropolis-ExtraLight.ttf</string>
+		<string>Metropolis-ExtraLightItalic.ttf</string>
+		<string>Metropolis-Light.ttf</string>
+		<string>Metropolis-LightItalic.ttf</string>
+		<string>Metropolis-Medium.ttf</string>
+		<string>Metropolis-MediumItalic.ttf</string>
+		<string>Metropolis-Regular.ttf</string>
+		<string>Metropolis-RegularItalic.ttf</string>
+		<string>Metropolis-SemiBold.ttf</string>
+		<string>Metropolis-SemiBoldItalic.ttf</string>
+		<string>Metropolis-Thin.ttf</string>
+		<string>Metropolis-ThinItalic.ttf</string>
+		<string>UBERMOVE-BOLD.OTF</string>
+		<string>UBERMOVETEXT-BOLD.OTF</string>
+		<string>UBERMOVETEXT-LIGHT.OTF</string>
+		<string>ubermovetext-medium.ttf</string>
+		<string>UBERMOVETEXT-REGULAR.OTF</string>
+	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your location</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your photos</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your camera</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your microphone</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your location</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Allow $(PRODUCT_NAME) to access your location</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.turvy.rider</string>
+			</array>
+		</dict>
+	</array>
+	<key>UIRequiresFullScreen</key>
+	<true/>
+	<key>CFBundleDisplayName</key>
+	<string>tyrvyRider</string>
 </dict>
 </plist>

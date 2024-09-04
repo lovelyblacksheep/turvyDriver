@@ -1,0 +1,15 @@
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Button, TextInput } from 'react-native';
+import { StripeProvider } from '@stripe/stripe-react-native';
+import StripePayment from './StripePayment';
+
+
+export default function StripScreen(){
+    return (
+        <>
+            <StripeProvider publishableKey="pk_test_s5qgjaD4IZOC12dB98h0Hh86007pmEiXyz">
+              <StripePayment />
+            </StripeProvider>        
+        </>
+    );
+}

@@ -1,0 +1,738 @@
+import { StatusBar } from 'expo-status-bar';
+import React from "react";
+import { StyleSheet, Text, View,Dimensions,Image,ScrollView ,TouchableOpacity,ActivityIndicator,BackHandler} from 'react-native';
+//import * as Permissions from 'expo-permissions';
+import MapView , { Marker , Polyline ,Callout }from 'react-native-maps';
+import * as Location from 'expo-location';
+import MapViewDirections from 'react-native-maps-directions';
+import GooglePlacesInput from './GooglePlacesInput';
+import { EvilIcons,Ionicons,MaterialCommunityIcons,FontAwesome5,Entypo,FontAwesome } from '@expo/vector-icons'; 
+const imagemarker = require('../assets/location-pin-2965.png');
+import Animated from 'react-native-reanimated';
+import BottomSheet from 'reanimated-bottom-sheet';
+import { Button,Divider } from 'react-native-paper';
+import { Col, Row, Grid } from "react-native-easy-grid";
+import SmartLoader from './SmartLoader';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Spinner from 'react-native-loading-spinner-overlay';
+const { width, height } = Dimensions.get('window');
+const imageveh = require('../assets/images/driver-veh-images_60.png');
+
+import SwipeButton from 'rn-swipe-button';
+import TopBar from "./TopBar";
+
+const ASPECT_RATIO = width / height;
+const LATITUDE_DELTA = 0.0043;
+const SCREENHEIGHT = height*.65;
+
+import * as firebase from "firebase";
+import "firebase/firestore";
+import * as geofirestore from 'geofirestore';
+import apiKeys from '../config/keys';
+
+
+if (!firebase.apps.length) {
+    console.log('Connected with Firebase');
+    firebase.initializeApp(apiKeys.firebaseConfig);
+}
+
+const db = firebase.firestore();
+const firestore = firebase.firestore();
+
+const GeoFirestore = geofirestore.initializeApp(firestore);
+const geocollection = GeoFirestore.collection('driver_locations');
+
+//console.log("height");
+//console.log(SCREENHEIGHT);
+
+const stylesArray = [
+  {
+    "featureType": "road.highway",
+    "stylers": [
+      { "color": "#7E96BC" }
+    ]
+  },{
+    "featureType": "road.arterial",
+    "elementType": "geometry",
+    "stylers": [
+      { "color": "#FEFEFE" }
+    ]
+  },
+	{
+	"featureType": "water",
+    "stylers": [
+      { "color": "#8ABFE5"  }
+    ]
+	},
+	{
+	"featureType": "landscape.natural",
+    "stylers": [
+      { "color": "#EBECEF"  }
+    ]
+	},
+	{
+	"featureType": "landscape.natural.landcover",
+    "stylers": [
+      { "color": "#C9E7D2"  }
+    ]
+	},
+	{
+	"featureType": "all",
+	  "elementType": "labels.icon",
+    "stylers": [
+      { "visibility": "off" }
+    ]
+	}
+]
+
+
+export default class BookDetails extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+        	step:1,
+        	locationcur:{},
+        	sourceLocation:{},
+        	latitudecur:-33.8688,
+        	longitudecur:151.2195,
+        	waypointslnglat:[],
+         latitudedest:'',
+        	longitudedest:'',
+        	destlocatdesc:'',
+         latitudeDelta: 0.0043,
+         longitudeDelta: 0.0034,
+         origin:{},
+         destination:{},
+         duration:'',
+         servicetypes:[],
+         selectedvehicle:{},
+         inprocessing:0,
+         isLoading:false,
+         display:false,
+         distance:'',
+         bookingresponse:{},
+         selectedvehicle:{},
+         selectedvehiclefare:0,
+         selectedprcperunit:0,
+         selectedminprc:0,
+         drivernear:{},
+         tocancel:false,
+         selectedcancelchr:0,
+    };
+    this.mapView = null;
+    
+   }
+   
+    componentDidMount(){
+   	const {navigation,state} = this.props;
+        	this.getNearBydriver();
+   	if(this.props.route.params.selectedvehicle){
+   		   		console.log("SELECTED VEHCILE REsponse");
+   		console.log(this.props.route.params.selectedvehicle);
+      	this.setState({ 
+             selectedvehicle:this.props.route.params.selectedvehicle,
+             origin:this.props.route.params.origin,
+             destination:this.props.route.params.destination,
+             latitudedest:this.props.route.params.latitudedest,
+             longitudedest:this.props.route.params.longitudedest,
+             latitudecur:this.props.route.params.latitudecur, 
+             longitudecur:this.props.route.params.longitudecur,
+             bookingresponse:this.props.route.params.bookingresponse,
+             selectedvehiclefare:this.props.route.params.selectedvehiclefare,
+             selectedprcperunit:this.props.route.params.selectedprcperunit,
+             selectedminprc:this.props.route.params.selectedminprc,
+              waypointslnglat:this.props.route.params.waypointslnglat,
+              selectedcancelchr:this.props.route.params.selectedcancelchr
+        });
+        //console.log(this.props.route.params.selectedvehiclefare);
+      }
+      
+   	this.intialLoad();
+  		this.unsubscribe =  navigation.addListener("focus",() => {
+  			this.setState({ 
+             selectedvehicle:this.props.route.params.selectedvehicle,
+             inprocessing:0,
+         });
+  			this.intialLoad();
+  		});			
+  } // end of function
+   
+   async getNearBydriver(){
+  		//await AsyncStorage.getItem('accesstoken').then((value) => {
+  			
+  			const query = geocollection.near({ center: new firebase.firestore.GeoPoint(-33.8688,151.2195 ), radius: 100 });
+	 		//.where('isBusy','==','no')
+	 		const accesstoken = await AsyncStorage.getItem('accesstoken');
+				// Get query (as Promise)
+			query.get().then((value) => {
+			  // All GeoDocument returned by GeoQuery, like the GeoDocument added above
+			  console.log("IN QUERY");
+			  console.log(value.docs);
+			  const drivernear = [];
+			   value.docs.map((item, index) => {
+			   		  console.log(item.data().coordinates);
+			   	if(item.exists == true){
+			   			
+			   			drivernear.push({['coordinates']:item.data().coordinates,});
+					      this.setState({
+		      			drivernear:drivernear,
+		      		});
+			   	}
+			   });
+			 });
+	 
+      	/*fetch('https://turvy.net/api/rider/nearByDrivers',{
+     	  	method: 'GET', 
+		   headers: new Headers({
+		     'Authorization': 'Bearer '+value, 
+		     'Content-Type': 'application/json'
+		   }),
+		   })
+      .then((response) => response.json())
+      .then((json) =>{ 
+      	console.log("NEAR BY DRIVER");
+      	console.log(json.data);
+      	if(json.status == 1){
+      		const drivernear = [];
+      		Object.keys(json.data).length > 0 && json.data.map((marker, index) => {
+      			//console.log(marker.lat);
+      			//console.log(marker.lng);
+      			const coordinates = {
+      					latitude:Number(marker.lat), 
+				      	longitude:Number(marker.lng) };
+				  
+				      	
+			      drivernear.push({['coordinates']:coordinates,
+			      	['driverId']:marker.driverId,	});
+      		});
+      		console.log(drivernear);
+      		this.setState({
+      			drivernear:drivernear,
+      		});
+      	}
+     	 }
+      )
+      .catch((error) => console.error(error));
+      */
+     //});
+    }
+   componentWillUnmount() {
+    this.unsubscribe();
+  }
+  
+  async _retry(){
+  			
+  			await AsyncStorage.getItem('accesstoken').then((value) => {
+      	fetch('https://www.turvy.net/api/rider/book/retry/'+this.state.bookingresponse.id,{
+     	  	method: 'POST', 
+		   headers: new Headers({
+		     'Authorization': 'Bearer '+value, 
+		     'Content-Type': 'application/json'
+		   }),
+		   body:JSON.stringify({
+	 				'fee' : this.props.route.params.selectedcancelchr,
+	 			}) 
+		   })
+      .then((response) => response.json())
+      .then((json) =>{ 			
+      	//console.log("No RESponse CAncellled");
+      	console.log("DELTE ",json);
+      	if(json.status == 1){
+      		this.props.navigation.replace('BookProcess',this.state);
+      	}
+     	 }	
+      )
+      .catch((error) =>{
+      	console.error(error);	
+      });
+     }); 	
+     
+  
+  }
+    
+  async _onPressDone(){
+  //	alert(this.state.bookingresponse.id);
+  	//alert(this.props.route.params.selectedcancelchr);
+  	await AsyncStorage.getItem('accesstoken').then((value) => {
+      	fetch('https://www.turvy.net/api/rider/book/cancel/'+this.state.bookingresponse.id,{
+     	  	method: 'POST', 
+		   headers: new Headers({
+		     'Authorization': 'Bearer '+value, 
+		     'Content-Type': 'application/json'
+		   }),
+		   body:JSON.stringify({
+	 				'fee' : 0,
+	 			}) 
+		   })
+      .then((response) => response.json())
+      .then((json) =>{ 			
+      	//console.log("No RESponse CAncellled");
+      	console.log("BOOK CANCEL DELTE ",json);
+      	if(json.status == 1){
+      		this.props.navigation.replace('BookMain',this.state);
+      	}
+     	 }	
+      )
+      .catch((error) =>{
+      	console.error(error);	
+      });
+     }); 	
+     
+  		/*this.setState({
+  			isLoading:false,
+  		},()=>{
+    		this.props.navigation.navigate('BookMain',this.state);
+    	});
+    	*/	
+    	
+  }
+
+	swipicon =() =>{
+		return(<Ionicons name="ios-close-outline" size={40} color="black" />)
+	} 
+	
+    renderContent = () => (
+    <>	
+    <View
+      style={{
+        backgroundColor: 'white',
+        padding: 16,
+        height: '100%',
+        margin:10,
+        shadowColor: "#000",
+		  shadowOffset: {
+				width: 0,
+				height: 2,
+			},
+			shadowOpacity: 0.23,
+			shadowRadius: 2.62,
+			elevation: 4,
+			borderRadius:10,
+      }}
+    >
+    {this.state.inprocessing == 0 ? 
+   	( <Grid >           
+   			<Row size={3}>
+   			<Col >
+   			 	<View style={{backgroundColor:'#cccccc',borderRadius:10,borderColor:'#cccccc',padding:10}}>
+				  <Text  style={{color:'#fff',fontWeight:'bold',textAlign:'center',fontSize:20}}>Cab not available on your location or driver not responding.</Text>
+				  <Text style={{color:'#fff',fontWeight:'bold',textAlign:'center',fontSize:20}}>Please try again after sometime.</Text>
+				 	</View>
+   			</Col>
+   			</Row>
+   			 <Row size={1}>
+   			<Col size={12} style={{paddingTop:10}}>
+   				<Button  mode="contained" color={'#135AA8'} onPress={() => this._retry() }>
+				    Try again
+				 	</Button>
+   			</Col>
+   			
+   			</Row>
+   			<Row size={1}>
+   			<Col size={12} style={{paddingTop:10}}>
+   				<Button  mode="contained" color={'#135AA8'} onPress={() => this._onPressDone() }>
+				    Cancel
+				 	</Button>
+   			</Col>
+   			</Row>
+   			 <Row size={4}>
+   			<Col size={12}>
+   			</Col>
+   			</Row>
+       </Grid>)
+       :
+       (
+       	<Grid >
+   			<Row style={{height:120,justifyContent:'center',alignContent:'center'}}>
+   			<Col size={12}>
+   			    <ActivityIndicator size="large" color="#0000ff" />
+   			</Col>
+   			</Row>
+   			<Row style={{height:50,}}>
+   			<Col size={12} >
+   			    <View style={{ alignItems: 'center' }}><Text style={{fontWeight:'bold',fontSize:20,textAlign:'center'}}>We are processing your Booking ......</Text></View>
+   			</Col>
+   			</Row>
+   			<Row style={{height:50,}}>
+   			<Col size={12}>
+   			    <View style={{ alignItems: 'center' }}><Text style={{textAlign:'center'}}>Your ride will start soon!</Text></View>
+   			</Col>
+   			</Row>
+   			<Row style={{height:100,}}>
+   			<Col>
+   			<SwipeButton
+                        containerStyles={{borderWidth:1,borderColor:'silver',color:'grey',padding:2}}
+            height={50}
+            onSwipeFail={() => console.log('Incomplete swipe!')}
+            onSwipeStart={() => console.log('Swipe started!')}
+            onSwipeSuccess={() =>
+              console.log('Submitted successfully!')
+            }
+            railBackgroundColor="silver"  
+            railBorderColor="silver"
+            railStyles={{
+              backgroundColor: '#44000088',
+              borderWidth:1,
+              borderColor: 'silver',
+              color:'grey',
+            }}
+
+            thumbIconBackgroundColor="#FFFFFF"
+            titleColor='grey'
+            title="Slide to Cancel"
+            thumbIconComponent={this.swipicon}
+            thumbIconStyles={{
+            	borderWidth:0,
+            }}
+            railFillBackgroundColor="#FFFFFF"
+          />
+   			</Col>
+   			</Row>
+   		</Grid>
+       )
+      } 
+    </View>
+   </>
+  );   
+  
+  
+  async intialLoad() {
+  	
+  	  
+     let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        setErrorMsg('Permission to access location was denied');
+        return;
+      }
+    
+    }
+    
+   getdriverList(){
+		 if(Object.keys(this.state.drivernear).length > 0){
+		 	this.state.drivernear.map((marker, index) =>{
+		 	if(marker.coordinates.latitude && marker.coordinates.longitude ){
+		 		return(<MapView.Marker 
+	    key={index}
+	      coordinate={marker.coordinates}
+	      title={'vehcile'}
+	    > 
+	    <Image
+        style={styles.vehimage}
+        source={imageveh} />
+	  </MapView.Marker>);
+		 	}
+		 }); 
+		}  
+   }
+  render() {
+  
+  	 return (
+	    <View style={styles.container}>
+	    <StatusBar backgroundColor="#fff" barStyle="light-content"/>
+	    <Spinner
+          visible={this.state.isLoading}
+          color='#FFF'
+          overlayColor='rgba(0, 0, 0, 0.5)'
+        />
+       
+	    	  <TopBar {...this.props} />
+      <MapView style={styles.map}
+       region={{
+         latitude: this.state.latitudecur,
+         longitude: this.state.longitudecur,
+         latitudeDelta: this.state.latitudeDelta,
+         longitudeDelta: this.state.longitudeDelta,
+       }}
+        customMapStyle={stylesArray}  
+               ref={c => this.mapView = c}
+        onRegionChangeComplete ={ (e) => {	
+  }} >	
+ 	{this.getdriverList()}
+	  
+    <>
+     { this.state.latitudecur  && this.state.longitudecur  ?
+       (
+     <Marker
+       key={'sourcekey'}
+      coordinate={{latitude:this.state.latitudecur, longitude:this.state.longitudecur}} 
+     
+      style={{ alignItems: "center"}} >
+    <View  style={{
+          alignItems: "center",
+          borderColor:'#135AA8',
+          borderWidth:1,
+          width:150,
+          backgroundColor:'#fff',
+          height: 40,
+          alignContent:'center',
+          flex:1,
+          flexDirection:'row'
+        }}>
+        <View style={{alignItems: 'center',
+    justifyContent: 'center',width:'30%',height:'100%',backgroundColor:'#135AA8'}}>
+         <Text style={{color:'#fff',textAlign:'center'}}>{this.state.duration} min</Text>
+        </View>
+         <View  style={{alignItems: 'center',
+    justifyContent:'center',width:'70%'}}>
+         <Text
+   	    numberOfLines={1}
+          style={{
+            position: "absolute",
+            color: "#000705",
+            fontWeight: "bold",
+            textAlign: "center",
+            fontSize: 12,
+          }}
+        >{this.state.bookingresponse.origin}</Text>
+        </View>
+   	  
+    </View>
+  	 <FontAwesome5 name="map-pin" size={30} color={"#D23C2F"} />
+    </Marker>)
+    :(<></>)
+ }
+   
+    
+    { this.state.latitudedest  && this.state.longitudedest  ?
+       (
+       	<Marker
+      key={'destinationkey'}
+      coordinate={{latitude:this.state.latitudedest, longitude:this.state.longitudedest}} 
+      
+      style={{ alignItems: "center"}} >
+    
+       <View  style={{
+          alignItems: "center",
+          borderColor:'#135AA8',
+          borderWidth:1,
+          width:150,
+          backgroundColor:'#fff',
+          height: 40,
+          alignContent:'center',
+          flex:1,
+          flexDirection:'row'
+        }}>
+       
+         <View  style={{alignItems: 'center',
+    justifyContent:'center',width:'100%',padding:10}}>
+    
+         <Text
+   	    numberOfLines={1}
+          style={{
+            position: "absolute",
+            color: "#000705",
+            fontWeight: "bold",
+            textAlign: "center",
+            fontSize: 12,
+           
+          }}
+        >{this.state.bookingresponse.destination}</Text>
+        </View>
+    </View>
+   <FontAwesome5 name="map-marker-alt" size={30} color={"#D23C2F"} />
+   
+    </Marker>
+       ) :
+       (
+       <></>
+       )
+     
+     }
+     
+    { Object.keys(this.state.origin).length > 0 && Object.keys(this.state.destination).length > 0 ?
+    (
+    <>
+    	<MapViewDirections
+    	region={'AU'}
+    origin={this.state.origin}
+    destination={this.state.destination}
+    strokeWidth={5}
+    lineDashPattern={[1]}
+      strokeColor="#5588D9"
+      apikey="AIzaSyAr2ESV30J7hFsOJ5Qjaa96u9ADSRX6_Sk"
+      lineCap={'butt'}
+      lineJoin={'miter'}
+      onStart={(params) => {
+              console.log(`Started routing between "${params.origin}" and "${params.destination}"`);
+             
+            }}
+      onReady={result => {
+      			//console.log(result);
+              //console.log(`Distance: ${result.distance} km`)
+              
+              console.log(`Duration: ${result.duration} min.`)
+              let duration = result.duration.toFixed();
+              let distance = result.distance;
+              // find amount to display 
+
+             const  distancecal = distance/2;
+		       const circumference = 40075;
+		        //const oneDegreeOfLatitudeInMeters = 111.32 * 1000;
+		        const oneDegreeOfLatitudeInMeters = distancecal*4;
+		        const angularDistance = distancecal/circumference;
+
+        		  const latitudeDelta = distancecal / oneDegreeOfLatitudeInMeters;
+        		  const longitudeDelta = Math.abs(Math.atan2(
+                Math.sin(angularDistance)*Math.cos(this.state.latitudedest),
+                Math.cos(angularDistance) - Math.sin(this.state.latitudedest) * Math.sin(this.state.latitudedest)))
+
+              console.log(duration);
+              this.setState({
+              	duration:duration,
+              	distance:distance,
+              	isLoading:false,
+              	display:true
+              },()=>{
+    				this.mapView.fitToCoordinates(result.coordinates, {
+                edgePadding: {
+                  right: (width / 20),
+                  bottom: (height / 2.5),
+                  left: (width / 20),
+                  top: (height / 12),
+                },
+                   animated: true,
+              });
+    	     });
+              
+            }}
+  			/>
+  		</>
+    )
+    	:
+    	(
+    	<>
+    	</>
+    	)
+    }
+   </>
+  </MapView>
+  { this.state.display ? (
+  <BottomSheet
+        snapPoints={[SCREENHEIGHT]}
+        borderRadius={20}
+        renderContent={this.renderContent}
+        overdragResistanceFactor={0}
+        enabledManualSnapping={false}
+         enabledContentTapInteraction={false}
+        enabledContentGestureInteraction={false}
+      />)
+      :(
+      	<Text></Text>
+      )
+    }
+  </View>	
+	  );
+   }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  map: {
+    width: Dimensions.get('window').width,
+    height: '100%',
+  },
+  tinyLogo:{
+  	alignContent:'center',
+  	height:50,
+  	flex:1,
+  	flexDirection:'row'
+  },
+  servicesbox:{
+  	flexDirection:'column',
+ 	flex:1,
+ 	width:150,
+ 	height:150,
+ 	backgroundColor:'#e5e5e5',
+ 	borderWidth:1,
+ 	borderColor:'#e5e5e5',
+ 	padding:10,
+ 	margin:10,
+ 	alignItems:'center',
+ 	borderRadius:10,
+ 	justifyContent:'center'
+  },
+  servicebocimage:{
+    width: '100%',
+    height: '100%',
+    aspectRatio: 1 * 1.4,
+	 resizeMode: 'contain'
+	},
+	divider:{
+    borderBottomColor: 'black',
+    borderBottomWidth: 1,
+  },
+     menubox:{
+	       borderWidth:1,
+	       borderColor:'rgba(0,0,0,0.2)',
+			position: 'absolute',
+		    width: 45,
+		    height: 45,
+		    top: 0,
+		    left: 10,
+		    zIndex: 10,
+	       alignItems:'center',
+	       justifyContent:'center',
+	       backgroundColor:'#fff',
+	       shadowColor: "#000",
+			shadowOffset: {
+				width: 0,
+				height: 3,
+			},
+			shadowOpacity: 0.27,
+			shadowRadius: 4.65,
+			
+			elevation: 6,
+	     },
+	serachbox:{
+		   borderWidth:0,
+	       borderColor:'#135aa8',
+		    width: 50,
+		    height: 50,
+	       alignItems:'center',
+	       justifyContent:'center',
+	       backgroundColor:'#fff',
+	       borderRadius:25,
+	        shadowColor: "#000",
+			shadowOffset: {
+				width: 0,
+				height: 3,
+			},
+			shadowOpacity: 0.27,
+			shadowRadius: 4.65,
+			elevation: 6,
+	},
+yellow:{color:'#fec557'},
+btnSmall:{
+		backgroundColor:'#3f78ba',
+		borderWidth:5,
+		borderColor:'#FFF',
+		fontSize:50,
+		shadowColor: '#000',
+	},
+	vehmarkerimage:{
+    width: 25,
+    aspectRatio: 1 * 1.4,
+	 resizeMode: 'contain',
+	 alignSelf:'center'
+	},
+	searchSection:{
+	 height:80,justifyContent:'center',alignContent:'center',backgroundColor:'#fff', shadowColor: "#000",
+			shadowOffset: {
+				width: 0,
+				height: 3,
+			},
+			shadowOpacity: 0.27,
+			shadowRadius: 4.65,
+			elevation: 7,
+	},vehimage:{
+    width: 25,
+    aspectRatio: 1 * 1.4,
+	 resizeMode: 'contain',
+	 alignSelf:'center'
+	},
+});

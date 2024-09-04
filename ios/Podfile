@@ -1,10 +1,44 @@
+require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-platform :ios, '11.0'
+platform :ios, '14.0'
 
 target 'tyrvyRider' do
+  use_expo_modules!
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
   use_unimodules!
   config = use_native_modules!
 
@@ -18,4 +52,20 @@ target 'tyrvyRider' do
   #     flipper_post_install(installer)
   #   end
   # end
+  pod 'RNDateTimePicker', :path => '../node_modules/@react-native-community/datetimepicker'
+
+  pod 'react-native-randombytes', :path => '../node_modules/react-native-randombytes'
+
+  pod 'react-native-background-timer', :path => '../node_modules/react-native-background-timer'
+
+  pod 'RNFastImage', :path => '../node_modules/react-native-fast-image'
+
+  # pod 'RNReactNativeOtp', :path => '../node_modules/react-native-autodetect-otp'
+
+  # pod 'react-native-date-picker', :path => '../node_modules/react-native-date-picker'
+
+  # pod 'react-native-viewpager', :path => '../node_modules/react-native-pager-view'
+
+  # pod 'RNTwilioVoice', :path => '../node_modules/react-native-twilio-programmable-voice'
+
 end

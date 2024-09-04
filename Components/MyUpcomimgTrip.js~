@@ -1,0 +1,102 @@
+import React from 'react';
+import {  Provider as PaperProvider, Button, Avatar, Caption, Surface, IconButton, Colors} from 'react-native-paper';
+import {View, ScrollView, Picker, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import {styles, theme, DOMAIN} from '../Riders/Constant';
+import { Input, Divider } from 'react-native-elements';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Col, Row, Grid } from "react-native-easy-grid";
+import { MaterialCommunityIcons,Ionicons } from '@expo/vector-icons';
+
+export default class MyUpcomimgTrip extends React.Component{    
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            trips:{},
+            accessTokan:'',
+            tripTime:{
+                arrivalTime:'',
+                pickupTime:'',
+            },
+        }
+    }
+
+    async componentDidMount() {
+        /*await AsyncStorage.getItem('accesstoken').then((value) => {  
+            if(value != '' && value !== null){
+                this.setState({
+                    accessTokan:value
+                },() => {
+                    this.getMyRider()
+                })
+            }
+        })
+        */
+    }
+
+    getMyRider = () => {
+        console.log('gghhghgh')
+
+        fetch('https://turvy.net/api/driver/upcoming-trip',{
+            method: 'GET', 
+            headers: new Headers({
+                'Authorization': 'Bearer '+this.state.accessTokan, 
+                'Content-Type': 'application/json'
+            })
+        }).then(function (response) {
+            return response.json();
+        }).then( (result)=> {
+            console.log('result:',result)
+                //setMyTrips(result);
+                this.setState({
+                    trips:result.data,
+                    
+                })
+
+        });
+    }
+    formatAMPM(date) {
+        
+        var t = date.split(/[- :]/);
+        var d = new Date(t[0], t[1] - 1, t[2], t[3], t[4], t[5]);
+        var actiondate = new Date(d);
+        var hours = actiondate.getHours();
+        var minutes = actiondate.getMinutes();
+        var ampm = hours >= 12 ? 'PM' : 'AM';
+        hours = hours % 12;
+        hours = hours ? hours : 12; // the hour '0' should be '12'
+        minutes = minutes < 10 ? '0' + minutes : minutes;
+        var time = hours + ':' + minutes + ' ' + ampm;
+        return time;
+    }   
+    render(){
+    //'First name is required'
+        return (
+            <PaperProvider theme={theme}>
+                <ScrollView style={{ backgroundColor: "aliceblue"}}>
+                
+                </ScrollView>
+            </PaperProvider>
+        );
+    }
+}
+
+const localStyle = StyleSheet.create({ 
+    MainTablabel: {
+        color: 'silver',
+        fontWeight:'bold',
+        textAlign: "center",
+        marginBottom: 10,
+        fontSize: 18,
+    },
+    surface: {
+        padding: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 5,
+        marginBottom:15,
+        marginHorizontal:15,
+        borderRadius:5
+    }
+});
+

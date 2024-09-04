@@ -1,11 +1,44 @@
 {
   "expo": {
-    "name": "tyrvyRider",
-    "slug": "tyrvyRider",
+    "name": "TurvyRider",
+    "slug": "TurvyRider",
     "version": "1.0.0",
     "assetBundlePatterns": [
       "**/*"
-    ]
+    ],
+    "splash": {
+      "image": "./assets/splashscreen_image.png",
+      "backgroundColor": "#fff",
+      "resizeMode": "cover"
+    },
+    "icon": "./assets/icon.png",
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#ffffff",
+          "sounds": [
+            "./assets/rider_driver_arriving.mp3",
+            "./assets/rider_driver_arriving.mp3"
+          ],
+          "mode": "production"
+        }
+      ]
+    ],
+    "android": {
+      "package": "com.turvy.rider",
+      "googleServicesFile": "./google-services.json",
+       "useNextNotificationsApi": true,
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "ACCESS_FINE_LOCATION"
+      ]
+    },
+    "ios": {
+      "bundleIdentifier": "com.turvy.rider"
+    }
   },
-  "name": "tyrvyRider"
+  "name": "TurvyRider"
 }

@@ -1,0 +1,1061 @@
+import { StatusBar } from 'expo-status-bar';
+import debounce from 'lodash.debounce';
+import React from "react";
+import { StyleSheet, Text, View,Dimensions,Image ,FlatList,ScrollView, TouchableOpacity,TouchableHighlight,Keyboard,KeyboardAvoidingView, Alert,Linking,BackHandler,Animated} from 'react-native';
+import { TextInput, Appbar, Title, Paragraph, Button,Badge } from 'react-native-paper';
+//import * as Permissions from 'expo-permissions';
+import MapView , { Marker, Circle ,AnimatedRegion }from 'react-native-maps';
+// install using npm --legacy-peer-deps  install react-native-maps-directions
+import MapViewDirections from 'react-native-maps-directions';
+import * as Location from 'expo-location';
+
+import { EvilIcons } from '@expo/vector-icons'; 
+//import Animated from 'react-native-reanimated';
+
+import { Col, Row, Grid } from "react-native-easy-grid";
+import { FontAwesome ,FontAwesome5,Entypo,Feather,AntDesign,Ionicons } from '@expo/vector-icons'; 
+
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {theme, DOMAIN} from '../Riders/Constant';
+import BottomSheet from 'reanimated-bottom-sheet';
+const imageveh = require('../assets/images/driver-veh-images_60.png');
+import Pusher from 'pusher-js/react-native';
+import TopBar from "./TopBar";
+import * as geolib from 'geolib';
+const { width, height } = Dimensions.get('window');
+import * as firebase from "firebase";
+import firestore from '@react-native-firebase/firestore';
+import apiKeys from '../config/keys';
+
+
+if (!firebase.apps.length) {
+    console.log('Connected with Firebase')
+    firebase.initializeApp(apiKeys.firebaseConfig);
+}
+
+const db = firestore();
+
+const ASPECT_RATIO = width / height;
+const LATITUDE_DELTA = 0.0043;
+const SCREENHEIGHT = height*.50;
+const DEVICE_WIDTH = width;
+const DEVICE_HEIGHT = height;		
+const faresmap = [];
+
+const stylesArray = [
+  {
+    "featureType": "road.highway",
+    "stylers": [
+      { "color": "#7E96BC" }
+    ]
+  },{
+    "featureType": "road.arterial",
+    "elementType": "geometry",
+    "stylers": [
+      { "color": "#FEFEFE" }
+    ]
+  },
+	{
+	"featureType": "water",
+    "stylers": [
+      { "color": "#8ABFE5"  }
+    ]
+	},
+	{
+	"featureType": "landscape.natural",
+    "stylers": [
+      { "color": "#EBECEF"  }
+    ]
+	},
+	{
+	"featureType": "landscape.natural.landcover",
+    "stylers": [
+      { "color": "#C9E7D2"  }
+    ]
+	},
+	{
+	"featureType": "all",
+	  "elementType": "labels.icon",
+    "stylers": [
+      { "visibility": "on" }
+    ]
+	}
+]
+
+
+
+export default class BookingMap extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            step:1,
+            locationcur:{},
+            radius:40,
+            sourceLocation:{},
+            latitudecur:-33.8688,
+            longitudecur:151.2195,
+            latitudedest:'',
+            longitudedest:'',
+            curlocatdesc:'',
+            fares:{},
+            latitudeDelta: 0.007683038072176629,
+            longitudeDelta: 0.004163794219493866,
+             driverCoordinate: new AnimatedRegion({
+                latitude: -34.07465730,
+                longitude: 151.01108000,
+                latitudeDelta: 0.007683038072176629,
+                longitudeDelta: 0.004163794219493866,
+            }),
+            origin:{},
+            destination:{},
+            pickup:'',
+            destinationto:'',
+            stateText:'',
+            results:{},
+            forsourdest:'source',
+            accessTokan:'',
+            avatar:'',
+            name:'',
+             distance:0,
+             duration:0,
+             bookrequest:{},
+             display:true,
+             departed:false,
+             waypointslnglat:[],
+             mapfitdone:false,
+             endcomplete:false,
+             rewardpoints:0,
+             selectsurcharge:0,
+             selectedvehiclefare:0,
+             heading: 0,
+         	 rotateValue: new Animated.Value(0),
+         	   pathHeading:0,
+            pathCenter:{},
+            messagecount:0
+        };
+        this.myRefbt = React.createRef();
+        this.mapView = null;    
+        this.myinterval = React.createRef();
+        this.myinterval2 = React.createRef();
+        this.onGoBackCallback = this.onGoBackCallback.bind(this);
+        this.pusher = new Pusher('389d667a3d4a50dc91a6', { cluster: 'ap2' }); 
+        this.listenForChanges();  
+    }
+    
+    listenForChanges = () => {
+		const channel = this.pusher.subscribe('turvy-channel'); 
+		 channel.bind('end_trip_event', data => {
+		 	this.getrideEnd();
+		  //alert(JSON.stringify(data));
+		  }); 
+		 
+		  /*channel.bind('driver_offline_event', data => {
+		 	this.getNearBydriver();
+		 //alert(JSON.stringify(data));
+		  });
+		  */ 
+	};
+	
+	
+	 getfares(){
+    		 fetch('https://www.turvy.net/api/farecardall/2',{
+	       method: 'GET',
+	      }).then(function (response) {
+	      return response.json();
+	      }).then( (result)=> {
+	      	
+	        console.log(result);
+	        if(result.status == 1){
+	        	console.log("INSIDE IF DATA");
+	        	let fareoff =0;
+	        	let distance = 10;
+	        	let basechrg = 0;
+	        	let surchnageslist =0;
+	        	let totalchangre = 0;
+	        		console.log("INSIDE IF DATA 1");
+	        	if(Object.keys(result.data).length){
+	        		 result.data.map((item, key) => {
+	        		 	console.log("ITEM SERVICES New "+key+'  '+item.base_ride_distance_charge,item.servicetype_id);
+	        		 	console.log("ITEM Selcted  New ",this.state.selectedvehicle.id);
+	        		 	console.log("ITEM Selcted  item 1 ",item);
+	        		 	//const sid = item.servicetype_id;
+	        		 	if( item.servicetype_id == this.state.selectedvehicle.id){
+	        		 			console.log("ITEM Selcted IF item 1",item);
+	        		 		//faresmap[item.servicetype_id]= item.base_ride_distance_charge;
+	        		 		if(distance > item.base_ride_distance){
+	        		 			fareoff = parseFloat(distance*item.price_per_unit);
+	        		 		}else{
+	        		 		  fareoff = parseFloat(distance*item.price_per_unit);
+	        		 		}
+	        		 		basechrg = item.base_ride_distance_charge;
+	        		 		 let minimumfaren = parseFloat(item.price_per_unit)*parseFloat(distance);
+				        	 let  gstper =  item.gst_charge;
+				        	 gstper = gstper.replace("%", "");
+				        	 
+				        	  if(item.servicetype_id == 1){
+				        	 	 surchnageslist = (parseFloat(item.fuel_surge_charge))+parseFloat(item.nsw_gtl_charge)+parseFloat(item.nsw_ctp_charge)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
+				        	 }else{
+				        	 	 surchnageslist = (parseFloat(item.fuel_surge_charge))+parseFloat(item.nsw_gtl_charge)+parseFloat(item.nsw_ctp_charge)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
+				        	 }
+				        	 
+		        	      totalchangre = parseFloat(fareoff) + parseFloat(surchnageslist);
+	        		 	}
+	        		 });
+	        	}
+	        	   //console.log("ITEM SERVICES New FAREMAP TOTAL Charge",totalchangre);
+		        	this.setState({
+		        	fares:faresmap,
+		        });
+	        }
+	    });
+    }
+	
+   
+    async intialLoad() {
+    	let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== 'granted') {
+            setErrorMsg('Permission to access location was denied');
+            return;
+        }
+        this.getrideEnd();
+/*
+        let location = await Location.getCurrentPositionAsync();
+        //console.log(location.coords.latitude);
+        //console.log(location.coords.longitude);
+        const latitudeDelta = location.coords.latitude-location.coords.longitude;
+        const longitudeDelta = latitudeDelta * ASPECT_RATIO;
+
+        //  console.log(latitudeDelta);
+        // console.log(longitudeDelta);
+
+        const origin = {
+        	latitude: location.coords.latitude, 
+        	longitude: location.coords.longitude
+        } 
+      
+        this.setState({
+        	locationcur:location,
+        	latitudecur:location.coords.latitude,
+        	longitudecur:location.coords.longitude,
+        	latitudeDelta:0.00176,
+        	longitudeDelta:0.00176,
+        	origin:origin,
+        });
+        //console.log(origin);
+
+        if (location.coords) {
+            const { latitude, longitude } = location.coords;
+            let response = await Location.reverseGeocodeAsync({
+                latitude,
+                longitude,
+            });
+            //console.log(response);
+
+            let address = '';
+            for (let item of response) {
+                //${item.street}, 
+                let address = `${item.name}, ${item.postalCode}, ${item.city}`;
+                // console.log(address);
+                this.setState({
+                	curlocatdesc:address,
+                	pickup:address,
+                });
+            }
+        }
+        */
+        AsyncStorage.getItem('accesstoken').then((value) => {           
+            if(value != '' && value !== null){
+                this.setState({
+                    accessTokan:value
+                });
+            }
+        })
+        //alert(this.state.isOnline)
+    } 
+    
+    async componentDidMount() {
+    	const {navigation,state} = this.props;
+    	 
+    	  this.getRewards();
+    	   BackHandler.addEventListener('hardwareBackPress', this.onGoBackCallback);
+        navigation.addListener('gestureEnd', this.onGoBackCallback);
+        
+		// this.getrewards();
+		this.unsubscribe =  navigation.addListener("focus",() => {
+			BackHandler.addEventListener('hardwareBackPress', this.onGoBackCallback);
+       	navigation.addListener('gestureEnd', this.onGoBackCallback);
+      });
+      this.unsubscribeblur =  navigation.addListener("blur",() => {
+      	//clearInterval(this.myinterval);
+          //clearInterval(this.myintervalaccp);
+      	BackHandler.removeEventListener('hardwareBackPress', this.onGoBackCallback);
+      });
+      
+      console.log("Booking driver",this.props.route.params.bookingdriver);
+      if(this.props.route.params.selectedvehicle){
+      	
+      	this.setState({ 
+             selectedvehicle:this.props.route.params.selectedvehicle,
+             origin:this.props.route.params.origin,
+             destination:this.props.route.params.destination,
+             latitudedest:this.props.route.params.latitudedest,
+             longitudedest:this.props.route.params.longitudedest,
+             latitudecur:this.props.route.params.latitudecur, 
+             longitudecur:this.props.route.params.longitudecur,
+             bookingresponse:this.props.route.params.bookingresponse,
+             rideinfoinprocess:this.props.route.params.rideinfoinprocess,
+             bookingdriver:this.props.route.params.bookingdriver,
+             waypointslnglat:this.props.route.params.waypointslnglat,
+             selectsurcharge:this.props.route.params.selectsurcharge,
+             selectedvehiclefare:this.props.route.params.selectedvehiclefare,
+              driverCoordinate: new AnimatedRegion({
+					                latitude: this.props.route.params.origin.latitude,
+					                longitude: this.props.route.params.origin.longitude,
+					                latitudeDelta: 0.007683038072176629,
+					                longitudeDelta: 0.004163794219493866,
+					            }),
+        },
+        ()=>{
+        	
+        	const center = {
+                latitude: (this.state.origin.latitude + this.state.destination.latitude) / 2,
+                longitude: (this.state.origin.longitude + this.state.destination.longitude) / 2,
+              };
+              const destheading = this.getHeading(this.state.origin, this.state.destination)
+              //console.log('dest heading',destheading)
+              this.setState({
+                  pathHeading:destheading,
+                  pathCenter:center
+              });
+        	        /* const origin = {
+		            	latitude: 21.11922760, 
+		            	longitude:79.10470160
+		            } 
+      
+		            this.setState({
+		            	origin:origin
+		            });
+        	      */
+        });
+        
+        	
+         //console.log("RESPONSE AFTER FARE",faresmap);
+       // alert("BEFORE LOOP");
+         this.loopfuntions();
+         
+       
+       
+         	
+         /*	
+        let locations = await Location.watchPositionAsync({ accuracy: Location.Accuracy.BestForNavigation, timeInterval: 10000, distanceInterval: 1 }, (pos) => {
+	            console.log('cords:',pos.coords);
+	             const { latitude, longitude } = pos.coords;
+	             const origin = {
+		            	latitude: latitude, 
+		            	longitude:longitude	
+		            } 	
+		            this.setState({
+		            	latitudecur:latitude,
+		            	longitudecur:longitude,
+		            	origin:origin
+		            });
+	            //console.log(driverId);
+	        }); 
+			*/
+        //this.intialLoad()
+        //alert("here before load "+this.props.route.params.bookingdriver.id);
+    }else if(this.props.route.params.bookingdriver.id > 0){
+      	//alert(this.props.route.params.bookingdriver.id);
+      	 alert("here IN ELSE");
+       console.log("RESPONSE AFTER FARE");
+      	this.getVehcileDetails(this.props.route.params.bookingdriver.id);
+      	this.setState({
+      		origin:this.props.route.params.origin,
+             destination:this.props.route.params.destination,
+             latitudedest:this.props.route.params.latitudedest,
+             longitudedest:this.props.route.params.longitudedest,
+             latitudecur:this.props.route.params.latitudecur, 
+             longitudecur:this.props.route.params.longitudecur,
+             bookingdriver:this.props.route.params.bookingdriver,
+             bookingresponse:this.props.route.params.bookingresponse,
+             waypointslnglat:this.props.route.params.waypointslnglat,
+              driverCoordinate: new AnimatedRegion({
+	                latitude: this.props.route.params.origin.latitude,
+	                longitude: this.props.route.params.origin.longitude,
+	                latitudeDelta: 0.007683038072176629,
+	                longitudeDelta: 0.004163794219493866,
+	            }),
+      	},()=>{
+				const center = {
+	                latitude: (this.state.origin.latitude + this.state.destination.latitude) / 2,
+	                longitude: (this.state.origin.longitude + this.state.destination.longitude) / 2,
+	              };
+	              const destheading = this.getHeading(this.state.origin, this.state.destination)
+	              //console.log('dest heading',destheading)
+	              this.setState({
+	                  pathHeading:destheading,
+	                  pathCenter:center
+	              })      		
+      		
+      		//this.getrideStart();
+      	});
+      
+      }
+     
+     AsyncStorage.getItem('messagecount').then((value) => {           
+            if(value != '' && value !== null){
+                this.setState({messagecount:value})
+                //alert(value)
+            }
+        });	 
+       
+   }
+    
+	 onRegionChangeComplete = (region) => {
+	     //console.log('onRegionChangeComplete', region);
+	     /*this.setState({
+	         latitudeDelta: region.latitudeDelta,
+	         longitudeDelta: region.longitudeDelta,
+	     });
+	     */
+	     
+	     this.setState({
+	         latitudeDelta: 0.008765219166956939,
+	         longitudeDelta: 0.005394257605075836,
+	     });
+	 };
+	 
+	 
+	 // Converts from degrees to radians.
+    toRadians = (degrees) => {
+      return (degrees * Math.PI) / 180;
+    }
+
+    // Converts from radians to degrees.
+    toDegrees = (radians) => {
+      return (radians * 180) / Math.PI;
+    }
+	
+   
+    getHeading = (origin, destination) => {
+        const originLat = this.toRadians(origin.latitude);
+        const originLng = this.toRadians(origin.longitude);
+        const destLat = this.toRadians(destination.latitude);
+        const destLng = this.toRadians(destination.longitude);
+
+        const y = Math.sin(destLng - originLng) * Math.cos(destLat);
+        const x =
+        Math.cos(originLat) * Math.sin(destLat) -
+        Math.sin(originLat) * Math.cos(destLat) * Math.cos(destLng - originLng);
+        const heading = this.toDegrees(Math.atan2(y, x));
+        return (heading + 360) % 360;
+    }
+    
+   onGoBackCallback(){
+      console.log('Android hardware back button pressed and iOS back gesture ended');
+      this.setState({
+      	modalvisible:true
+      });
+      this.props.navigation.replace('BookMain',this.state);
+     return true;
+   }
+   
+    async getRewards(){
+		 await AsyncStorage.getItem('rewardpoints').then((value) => {
+			this.setState({
+				rewardpoints:value,
+			});
+		});	    
+  }
+  
+    loopfuntions =() =>{
+    	//alert(" LOOP START");
+    		//alert(this.props.route.params.bookingdriver.id);
+			/*this.myinterval = setInterval(() => {
+        	//alert("")
+        	if(this.state.endcomplete == false){
+          	this.getrideEnd();
+          }
+        }, 10000);
+        */
+        
+	   
+         this.myinterval2 = setInterval(() => {
+          	this.getDriverCoordinate();
+        }, 4000);
+
+         this.getrideEnd();   
+    }
+    
+  getDriverCoordinate = () =>{
+  
+  		 var docRef = firestore().collection("driver_locations").doc(JSON.stringify(this.props.route.params.bookingdriver.id));
+                docRef.get().then((doc) => {
+                		
+                    if (doc.exists) {
+                    	//alert("IN QUERY DOC");
+                        console.log("Document data INITAL 1 :", doc.data());
+                        
+                         let latitude = doc.data().coordinates.latitude;
+                         let longitude= doc.data().coordinates.longitude;
+				             let origin = {
+					            	latitude: latitude, 
+					            	longitude:longitude	
+					            } 	
+					            this.setState({
+					            	latitudecur:latitude,
+					            	longitudecur:longitude,
+					            	origin:origin
+					            });
+					            
+					            
+					             let rotateAngl = 0;
+                   
+			                    rotateAngl = (doc.data().heading/360);
+			                    Animated.timing(this.state.rotateValue, {
+						                toValue: rotateAngl,
+						                duration: 2000,
+						                useNativeDriver: true,
+						            }).start();
+						            
+		            
+					            const newCoordinate = {
+					                latitude: latitude,
+					                longitude: longitude,
+					                latitudeDelta:this.state.latitudeDelta,
+					                longitudeDelta: this.state.longitudeDelta,
+					            };
+					
+					
+					            if (this.marker) {
+					                //console.log('newCoordinate',newCoordinate)                
+					                this.state.driverCoordinate.timing({ ...newCoordinate, useNativeDriver: true,duration: 4000 }).start();
+					            }
+					            
+					            
+					            
+					           if(this.mapView) {
+						            this.mapView.animateCamera({
+						                center:{
+						                    latitude: doc.data().coordinates.latitude,
+						                    longitude: doc.data().coordinates.longitude,
+						                }
+						            });
+						        }
+						        
+
+                       /* this.setState({driverLocation:doc.data().coordinates,
+                        displaydriveloc:true},()=>{
+					       	 console.log(" ORGIN SET INITAL "+JSON.stringify(this.state.driverLocation));      	
+					         });
+					         */
+					         
+                    } else {
+                        // doc.data() will be undefined in this case
+                        console.log("No such document!");
+                    }
+                }).catch((error) => {
+                    console.log("Error getting document:", error);
+                });
+                
+               
+     
+  }
+  getrideEnd =()=>{
+  	console.log('fares --- ',this.state.fares);
+   	let bookId = this.props.route.params.bookingresponse.id;
+   	if(this.state.bookingresponse && this.state.bookingresponse.id > 0){
+   		bookId = this.state.bookingresponse.id;
+   	}
+   	firestore().collection('trip_path').where('bookingId','==',bookId).where('status','==','close')
+			  .get()
+			  .then(querySnapshot => {
+			    console.log('Total bOOKING STATUS: ', querySnapshot.size);
+			    
+			    if(querySnapshot.size > 0){
+			    	
+			     this.getfares();
+				   
+			    	clearInterval(this.myinterval);
+			    	clearInterval(this.myinterval2);
+			    		this.setState({
+				    		endcomplete:true,
+				    	},()=>{
+				    		this.setDriverPayment();
+			       		this.props.navigation.replace('RideArriveDest',this.state);
+				    	})
+			    }																																																																																																																																															
+			  });
+  }
+ 
+   
+   UNSAFE_componentWillUnmount() {
+    
+    if(this.myinterval){
+      clearInterval(this.myinterval);
+    }
+   
+    if(this.myinterval2){
+    	clearInterval(this.myinterval2);
+    }
+  }
+  
+    openDialScreen (){
+    let number = '';
+    if (Platform.OS === 'ios') {
+      number = 'telprompt:${091123456789}';
+    } else {
+      number = 'tel:${091123456789}';
+    }
+    Linking.openURL(number);
+  }
+    
+    
+
+    
+    
+      renderContent = () => (
+    <>
+    <View
+      style={{
+        backgroundColor: 'white',
+        padding: 16,
+        height: '100%',
+        margin:10,
+        shadowColor: "#000",
+		  shadowOffset: {
+				width: 0,
+				height: 2,
+			},
+			shadowOpacity: 0.23,
+			shadowRadius: 2.62,
+			elevation: 4,
+			borderRadius:10,
+      }}
+    >
+  
+    <Grid >   	
+   			
+   			<Row style={{height:100}}>
+   				<Col size={5} style={{padding:10}}>
+   				<View style={{borderWidth:1,borderColor:'silver',height:60,padding:10,borderRadius:8,backgroundColor:'#ccc'}}>
+						{this.state.avatar && this.state.avatar != null ? 
+							(<Image
+				        source={{uri:"https://www.turvy.net/"+this.state.avatar}}
+				        style={styles.servicebocimage}
+				        Resizemode={'contain'}
+				         />)
+							:
+							(<Image
+				        source={{uri:"https://www.turvy.net/images/no-person.png"}}
+				        style={styles.servicebocimage}
+				        Resizemode={'contain'}
+				         />)
+						}
+   					
+   				</View>	
+   				</Col>
+   				<Col size={7} style={{padding:10}}>
+   					
+   					<Text style={{fontSize:20,fontWeight:'bold'}}>{this.state.name}</Text>
+   				</Col>
+   				
+   			</Row>
+   			<Row style={{height:80}}>
+   				<Col size={4} style={{padding:6}}>
+   					<View style={{flex:1,backgroundColor:'#7FFF00',alignItems:'center',justifyContent:'center'}} >
+   					<TouchableOpacity onPress={() => this.openDialScreen()}>
+   					<Feather name="phone-call" size={24} color="white" />
+   					<Text style={{color:'#fff'}}>
+   						Call
+   					</Text>
+   					</TouchableOpacity>
+   					</View>
+   				</Col>
+   					<Col size={4} style={{padding:6}}>
+   				<View style={{flex:1,backgroundColor:'#135AA8',alignItems:'center',justifyContent:'center'}}>
+						<AntDesign name="message1" size={24} color="white" />
+   					<Text style={{color:'#fff'}}>
+   						Message
+   					</Text>
+   					</View>
+   				</Col>
+   				<Col size={4} style={{padding:6}}>
+   				<View style={{flex:1,backgroundColor:'#ccc',alignItems:'center',justifyContent:'center'}}>
+   					<AntDesign name="closecircleo" size={24} color="white" />
+   					<Text style={{color:'#fff'}}>
+   						Cancel
+   					</Text>
+   					</View>
+   				</Col>
+   			</Row>
+   			<Row style={{height:60,paddingTop:15,paddingBottom:15,}}>
+   			<Col size={12} style={{justifyContent:'center',alignContent:'center'}}>
+   				 <Button  mode="contained" color={'#155aa8'} style={{fontWeight:'normal'}} onPress={() => this._onPressDepart()}>
+				    Tap when departed
+				  </Button>
+				 </Col>
+   			</Row>
+   			<Row style={{height:30,padding:6}}>
+   				<Col size={1}>
+   					<View style={styles.inforound}>
+   						<MaterialCommunityIcons name="information-variant" size={20} color="black" />
+   					</View>
+   				</Col>
+   				<Col size={11}>
+   				<Text>  Long press on image to zoom in</Text>
+   				</Col>
+   			</Row>
+   		</Grid>
+      
+    </View>
+   </>
+  );
+
+ setDriverPayment = async() =>{
+     //console.log("DRIVER PAYMENT");
+ 	await AsyncStorage.getItem('accesstoken').then((value) => {
+							//console.log(this.state.bookingdriver.id);
+							//console.log('https://turvy.net/api/rider/driverrequestPayment/'+this.state.bookingresponse.id);
+							//this.props.route.params
+							fetch('https://www.turvy.net/api/rider/driverrequestPayment/'+this.state.bookingresponse.id,{
+				     	  	method: 'POST', 
+						   headers: new Headers({
+						     'Authorization': 'Bearer '+value, 
+						     'Content-Type': 'application/json'
+						   }), 
+						   body:JSON.stringify({
+					 				'driver_id' : this.state.bookingdriver.id
+					 			}) 
+						   })
+				      .then((response) => response.json())
+				      .then((json) =>{ 
+				      	console.log(json);
+				      
+				      	/*if(json.status == 1){
+				      		 this.setState({                                        
+					         	isLoading:false,
+				    				vehborder:'red',
+				    				bookingresponse:json.data
+					         });
+				      		this.props.navigation.navigate('PromoCode',this.state)
+				      	}
+				      	*/
+				     	 }
+				      )
+				      .catch((error) => console.error(error));
+				      })
+ }
+  
+    render() {  	
+    	let rotateAngl = 0;
+	   rotateAngl = (this.state.heading/360);
+	  	const spin = this.state.rotateValue.interpolate({
+	          inputRange: [0, 1],
+	          outputRange: ['0deg', '360deg']
+	        });
+        
+        return (
+            <>	 
+                <View style={styles.container}  >
+                    <View >
+                        <View>
+                            <View
+                                style={{
+                                  alignItems: 'center',
+                                  flexDirection:'row',                    
+                                }}
+                            >
+                            <View style={{flexDirection:'row',width: '96%'}}>
+                            </View>
+                            </View>        
+                        </View>
+                        <View style={{flex:6}}>
+                            <MapView style={styles.map}
+                              ref={c => this.mapView = c}
+                                initialRegion={{
+                                  latitude: this.state.latitudecur,
+                                  longitude: this.state.longitudecur,
+                                  latitudeDelta:this.state.latitudeDelta,
+                                  longitudeDelta:this.state.longitudeDelta,
+                                }}
+                               onRegionChangeComplete={this.onRegionChangeComplete}
+                               customMapStyle={stylesArray}  
+                                
+                            >
+                             
+      { this.state.latitudecur != '' && this.state.longitudecur != '' && Object.keys(this.state.origin).length > 0 ?
+                                 ( 	<Marker.Animated
+                                  ref={marker => {this.marker = marker;}}
+            coordinate={this.state.driverCoordinate} 
+      style={{ alignItems: "center"}}
+      anchor={{ x: 0.5, y: 0.5 }}
+      flat >
+    
+			 <Animated.Image
+        style={{
+                 width: 40,
+					    height:40,
+						 alignSelf:'center',
+                 transform: [{rotate: spin}]
+             }}
+        source={imageveh} />
+    </Marker.Animated>)
+    :
+    (<></>)
+   }
+    { this.state.latitudedest != '' && this.state.longitudedest != '' ?
+       (
+       	<Marker
+       	tracksViewChanges={false}
+      key={'destinationkey'}
+      coordinate={{latitude:this.state.latitudedest, longitude:this.state.longitudedest}} 
+      style={{ alignItems: "center"}} >
+       <View  style={{
+          alignItems: "center",
+          borderColor:'#135AA8',
+          borderWidth:1,
+          width:150,
+          backgroundColor:'#fff',
+          height: 40,
+          alignContent:'center',
+          flex:1,
+          flexDirection:'row'
+        }}>
+         <View  style={{alignItems: 'center',
+    justifyContent:'center',width:'100%',padding:10}}>
+    
+         <Text
+   	    numberOfLines={3}
+          style={{
+            position: "absolute",
+            color: "#000705",
+            fontWeight: "bold",
+            textAlign: "center",
+            fontSize: 12,
+           
+          }}
+        >{this.state.bookingresponse.destination}</Text>
+        </View>
+   	  
+    </View>
+   	 <Entypo name="location-pin" size={40} color={"#910101"} />
+    </Marker>
+       ) :
+       (
+       <></>
+       )
+     }
+    
+    {Object.keys(this.state.waypointslnglat).length > 0 ?
+    this.state.waypointslnglat.map((item, key) => {
+    	return(
+    			<MapView.Marker.Animated
+			    key={key}
+			    coordinate={{latitude: item.latitude,longitude: item.longitude}}  >
+    		<Entypo name="location-pin" size={30} color="green" />
+    	 </MapView.Marker.Animated>
+    	)
+	 }) 
+	 :null
+   }    
+                                { Object.keys(this.state.origin).length > 0 && Object.keys(this.state.destination).length > 0 ?
+    										(	
+										    <>
+										    	<MapViewDirections
+										    	region={'AU'}
+										    	 waypoints={this.state.waypointslnglat}
+										    origin={this.state.origin}
+										    destination={this.state.destination}
+										    strokeWidth={5}
+										    lineDashPattern={[1]}
+										      strokeColor="#5588D9"
+										      apikey="AIzaSyAr2ESV30J7hFsOJ5Qjaa96u9ADSRX6_Sk"
+										      lineCap={'butt'}
+										      lineJoin={'miter'}
+										      onStart={(params) => {
+										              console.log(`Started routing between "${params.origin}" and "${params.destination}"`);
+										            }}
+										      onReady={result => {
+										      			//console.log(result);
+										              //console.log(`Distance: ${result.distance} km`)
+										              
+										              console.log(`Duration: ${result.duration} min.`)
+										              let duration = result.duration.toFixed();
+										              let distance = result.distance;
+										              if(duration == 0){
+										              	
+										              	 //this.state.bookingdriver.id
+										                //this.props.navigation.navigate('RideArriveDest',this.state);
+										              }	
+										              
+										              console.log(duration);
+										              this.setState({
+										              	duration:duration,
+										              	distance:distance,
+										              },()=>{
+										              	if(this.state.mapfitdone == false){
+										              		this.setState({
+										              			mapfitdone:true,
+										              		},()=>{
+										              		
+										              			 /*this.mapView.fitToCoordinates(result.coordinates, {
+												                edgePadding: {
+													                  right: DEVICE_WIDTH*0.20,
+															            left:  DEVICE_WIDTH*0.20,
+															            top: DEVICE_HEIGHT*0.20,
+															            bottom: DEVICE_HEIGHT*0.05	,
+													                },
+													                   animated: false,
+													              });
+													              */
+													              
+													              	this.mapView.animateCamera({
+													                   heading: this.state.pathHeading,
+													               });
+													              
+										              		})
+										              		
+										              	}
+										    				
+										    	     });
+										              
+										            }}
+										  			/>
+										  		</>
+										    )
+										    	:
+										    	(
+										    	<>
+										    	</>
+										    	)
+										    }
+    
+                            </MapView>
+                        </View>
+                    </View>
+                </View>	
+              <TopBar {...this.props} />
+	
+            </>
+        );
+    }
+}
+
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+    },
+    map: {
+        flex: 1,
+    },
+    tinyLogo:{
+        alignContent:'center',
+        height:50,
+        flex:1,
+        flexDirection:'row'
+    },
+    circle:{
+        alignItems:'center',justifyContent:'center',
+        width: 10,
+        height: 10,
+        borderRadius: 10/2,
+        backgroundColor:'#135AA8'
+    },
+    square:{
+        width: 10,
+        height: 10,
+        backgroundColor:'#135AA8'
+    },
+    White: {color:'#FFFFFF'},
+    labelStyle:{padding:2,color:'#FFF',fontSize:22},
+    contentStyle:{paddingTop:5,paddingBottom:5,},
+    btnGo:{backgroundColor:'#3f78ba',borderWidth:3,borderColor:'#FFF',borderRadius:100,fontSize:50, shadowColor: '#000',shadowOffset: { width: 40, height: 40 },shadowOpacity: 8.8,shadowRadius: 30,elevation: 50,
+    },
+    yellow:{color:'#fec557'},
+    btnSmall:{backgroundColor:'#3f78ba',borderWidth:5,borderColor:'#FFF',fontSize:50,shadowColor: '#000',
+    shadowOffset: { width: 40, height: 40 },shadowOpacity: 2.8,shadowRadius: 30,elevation: 50,},
+    offIcon:{
+        borderWidth:1,
+        borderColor:'#ddd',
+        padding:5,
+        borderRadius:45,
+        backgroundColor:'#FFF',
+        color:'#FFF',
+        elevation: 10,
+    },
+    offlineBtn:{      
+        backgroundColor:"#ccc",
+        justifyContent:'center',
+        alignItems:'center',
+        flexDirection:'row',    
+        borderRadius:45,
+    },
+  menubox:{
+	       borderWidth:1,
+	       borderColor:'rgba(0,0,0,0.2)',
+			position: 'absolute',
+		    width: 45,
+		    height: 45,
+		    top: 0,
+		    left: 10,
+		    zIndex: 10,
+	       alignItems:'center',
+	       justifyContent:'center',
+	       backgroundColor:'#fff',
+	       shadowColor: "#000",
+			shadowOffset: {
+				width: 0,
+				height: 3,
+			},
+			shadowOpacity: 0.27,
+			shadowRadius: 4.65,
+			
+			elevation: 6,
+	     },
+	serachbox:{
+		   borderWidth:0,
+	       borderColor:'#135aa8',
+		    width: 50,
+		    height: 50,
+	       alignItems:'center',
+	       justifyContent:'center',
+	       backgroundColor:'#fff',
+	       borderRadius:25,
+	        shadowColor: "#000",
+			shadowOffset: {
+				width: 0,
+				height: 3,
+			},
+			shadowOpacity: 0.27,
+			shadowRadius: 4.65,
+			elevation: 6,
+	},
+yellow:{color:'#fec557'},
+btnSmall:{
+		backgroundColor:'#3f78ba',
+		borderWidth:5,
+		borderColor:'#FFF',
+		fontSize:50,
+		shadowColor: '#000',
+	},
+	searchSection:{
+	 height:80,justifyContent:'center',alignContent:'center',backgroundColor:'#fff', shadowColor: "#000",
+			shadowOffset: {
+				width: 0,
+				height: 3,
+			},
+			shadowOpacity: 0.27,
+			shadowRadius: 4.65,
+			elevation: 7,
+	},vehimage:{
+     width: 20,
+    height:35,
+	 alignSelf:'center'
+	},
+});

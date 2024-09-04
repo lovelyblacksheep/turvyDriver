@@ -14,6 +14,31 @@
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		96905EF65AED1B983A6B3ABC /* libPods-tyrvyRider.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 58EEBF8E8E6FB1BC6CAF49B5 /* libPods-tyrvyRider.a */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		E193C945128C411F892E0B62 /* Metropolis-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 57484E99D86442A8B577E95D /* Metropolis-Black.ttf */; };
+		72419EDE5D344C8489FB589C /* Metropolis-BlackItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 012090431BC74150BD13815D /* Metropolis-BlackItalic.ttf */; };
+		1DCDD46BE81C42BEBACE3D0B /* Metropolis-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2BF9548F0DD344CCBF652BDF /* Metropolis-Bold.ttf */; };
+		4DBA6275CFD64345BF597687 /* Metropolis-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5D05BFEE4FA84AAFA996B535 /* Metropolis-BoldItalic.ttf */; };
+		B083ADBAB37942AA9E29D752 /* Metropolis-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4CB9BDFE43F0460CA1E40B22 /* Metropolis-ExtraBold.ttf */; };
+		B23DB190F0DD4ABCB42EA968 /* Metropolis-ExtraBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 46BC3ADEBD384D8F831112CF /* Metropolis-ExtraBoldItalic.ttf */; };
+		4CA63A32804C41C68B2556B9 /* Metropolis-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8B729AFFFDFB4E14A51B0E25 /* Metropolis-ExtraLight.ttf */; };
+		529015C08BE84D65B7FE4B9A /* Metropolis-ExtraLightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 51DEDBDE6DEC46DB8F024A96 /* Metropolis-ExtraLightItalic.ttf */; };
+		FCA7D0CCE6B141FA810C6268 /* Metropolis-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 45883A15813741C3A9BD0389 /* Metropolis-Light.ttf */; };
+		968085FA0E8042CCA60CDEF6 /* Metropolis-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 163D926068F64400A0D9211F /* Metropolis-LightItalic.ttf */; };
+		6C43B98526F04704BFCF81EC /* Metropolis-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A55161FA49A848508A124E44 /* Metropolis-Medium.ttf */; };
+		46C407D0B2B7432D86AB493F /* Metropolis-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3AE3306604CF4E6981519E41 /* Metropolis-MediumItalic.ttf */; };
+		700D7CE7294143F99CB92D84 /* Metropolis-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9D7B98B1552C4071AACF31D8 /* Metropolis-Regular.ttf */; };
+		6C67513989034281A8C34FB7 /* Metropolis-RegularItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C1974C9469A048C8B480088C /* Metropolis-RegularItalic.ttf */; };
+		A6D20F7F55C247258A0147D1 /* Metropolis-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 48DE23CCE0F140AFBBDBA8D1 /* Metropolis-SemiBold.ttf */; };
+		D4167661F76944FCB1792089 /* Metropolis-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F65F6C9350F94B40B6A7E52A /* Metropolis-SemiBoldItalic.ttf */; };
+		CB331708535E45ED8830A429 /* Metropolis-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1F7E3A62225A4AE9A13532A6 /* Metropolis-Thin.ttf */; };
+		C3F0280C06134C75A9AD96A6 /* Metropolis-ThinItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 71474DEF6C9D43B494C1FF8E /* Metropolis-ThinItalic.ttf */; };
+		A13F4247AEEA496788B52EE2 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = D02380AF9E5449B8A02F6608 /* noop-file.swift */; };
+		5D1E2CC067B74EC5B8FD8893 /* Rider_driver_arriving.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 670142D7CE0149DB9D8529AC /* Rider_driver_arriving.mp3 */; };
+		D8A1798DB0934F23A65DF8BC /* UBERMOVE-BOLD.OTF in Resources */ = {isa = PBXBuildFile; fileRef = C1C78CE05D4B492093DFC5CA /* UBERMOVE-BOLD.OTF */; };
+		EF42F808D91A4741B021C82E /* UBERMOVETEXT-BOLD.OTF in Resources */ = {isa = PBXBuildFile; fileRef = EC31BA1B573645F9954E92CD /* UBERMOVETEXT-BOLD.OTF */; };
+		D5E62C8729F44655B60EDC1B /* UBERMOVETEXT-LIGHT.OTF in Resources */ = {isa = PBXBuildFile; fileRef = BE2706B7643F41498634BFE4 /* UBERMOVETEXT-LIGHT.OTF */; };
+		EABA42EB0D084621B7DCC791 /* ubermovetext-medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 23A358BDB24044F2A5352C8F /* ubermovetext-medium.ttf */; };
+		7CAD44A1C2AD452D86DB1BED /* UBERMOVETEXT-REGULAR.OTF in Resources */ = {isa = PBXBuildFile; fileRef = C22DD9B52ED4446985FF40A9 /* UBERMOVETEXT-REGULAR.OTF */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +57,32 @@
 		BB2F792C24A3F905000567C9 /* Expo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Expo.plist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
+		57484E99D86442A8B577E95D /* Metropolis-Black.ttf */ = {isa = PBXFileReference; name = "Metropolis-Black.ttf"; path = "../assets/fonts/Metropolis-Black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		012090431BC74150BD13815D /* Metropolis-BlackItalic.ttf */ = {isa = PBXFileReference; name = "Metropolis-BlackItalic.ttf"; path = "../assets/fonts/Metropolis-BlackItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		2BF9548F0DD344CCBF652BDF /* Metropolis-Bold.ttf */ = {isa = PBXFileReference; name = "Metropolis-Bold.ttf"; path = "../assets/fonts/Metropolis-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		5D05BFEE4FA84AAFA996B535 /* Metropolis-BoldItalic.ttf */ = {isa = PBXFileReference; name = "Metropolis-BoldItalic.ttf"; path = "../assets/fonts/Metropolis-BoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4CB9BDFE43F0460CA1E40B22 /* Metropolis-ExtraBold.ttf */ = {isa = PBXFileReference; name = "Metropolis-ExtraBold.ttf"; path = "../assets/fonts/Metropolis-ExtraBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		46BC3ADEBD384D8F831112CF /* Metropolis-ExtraBoldItalic.ttf */ = {isa = PBXFileReference; name = "Metropolis-ExtraBoldItalic.ttf"; path = "../assets/fonts/Metropolis-ExtraBoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		8B729AFFFDFB4E14A51B0E25 /* Metropolis-ExtraLight.ttf */ = {isa = PBXFileReference; name = "Metropolis-ExtraLight.ttf"; path = "../assets/fonts/Metropolis-ExtraLight.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		51DEDBDE6DEC46DB8F024A96 /* Metropolis-ExtraLightItalic.ttf */ = {isa = PBXFileReference; name = "Metropolis-ExtraLightItalic.ttf"; path = "../assets/fonts/Metropolis-ExtraLightItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		45883A15813741C3A9BD0389 /* Metropolis-Light.ttf */ = {isa = PBXFileReference; name = "Metropolis-Light.ttf"; path = "../assets/fonts/Metropolis-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		163D926068F64400A0D9211F /* Metropolis-LightItalic.ttf */ = {isa = PBXFileReference; name = "Metropolis-LightItalic.ttf"; path = "../assets/fonts/Metropolis-LightItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		A55161FA49A848508A124E44 /* Metropolis-Medium.ttf */ = {isa = PBXFileReference; name = "Metropolis-Medium.ttf"; path = "../assets/fonts/Metropolis-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		3AE3306604CF4E6981519E41 /* Metropolis-MediumItalic.ttf */ = {isa = PBXFileReference; name = "Metropolis-MediumItalic.ttf"; path = "../assets/fonts/Metropolis-MediumItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9D7B98B1552C4071AACF31D8 /* Metropolis-Regular.ttf */ = {isa = PBXFileReference; name = "Metropolis-Regular.ttf"; path = "../assets/fonts/Metropolis-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C1974C9469A048C8B480088C /* Metropolis-RegularItalic.ttf */ = {isa = PBXFileReference; name = "Metropolis-RegularItalic.ttf"; path = "../assets/fonts/Metropolis-RegularItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		48DE23CCE0F140AFBBDBA8D1 /* Metropolis-SemiBold.ttf */ = {isa = PBXFileReference; name = "Metropolis-SemiBold.ttf"; path = "../assets/fonts/Metropolis-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F65F6C9350F94B40B6A7E52A /* Metropolis-SemiBoldItalic.ttf */ = {isa = PBXFileReference; name = "Metropolis-SemiBoldItalic.ttf"; path = "../assets/fonts/Metropolis-SemiBoldItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		1F7E3A62225A4AE9A13532A6 /* Metropolis-Thin.ttf */ = {isa = PBXFileReference; name = "Metropolis-Thin.ttf"; path = "../assets/fonts/Metropolis-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		71474DEF6C9D43B494C1FF8E /* Metropolis-ThinItalic.ttf */ = {isa = PBXFileReference; name = "Metropolis-ThinItalic.ttf"; path = "../assets/fonts/Metropolis-ThinItalic.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		D02380AF9E5449B8A02F6608 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "tyrvyRider/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		DE5E63C759ED4F728FCC64EE /* tyrvyRider-Bridging-Header.h */ = {isa = PBXFileReference; name = "tyrvyRider-Bridging-Header.h"; path = "tyrvyRider/tyrvyRider-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
+		670142D7CE0149DB9D8529AC /* Rider_driver_arriving.mp3 */ = {isa = PBXFileReference; name = "Rider_driver_arriving.mp3"; path = "tyrvyRider/Rider_driver_arriving.mp3"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C1C78CE05D4B492093DFC5CA /* UBERMOVE-BOLD.OTF */ = {isa = PBXFileReference; name = "UBERMOVE-BOLD.OTF"; path = "../assets/fonts/UBERMOVE-BOLD.OTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		EC31BA1B573645F9954E92CD /* UBERMOVETEXT-BOLD.OTF */ = {isa = PBXFileReference; name = "UBERMOVETEXT-BOLD.OTF"; path = "../assets/fonts/UBERMOVETEXT-BOLD.OTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		BE2706B7643F41498634BFE4 /* UBERMOVETEXT-LIGHT.OTF */ = {isa = PBXFileReference; name = "UBERMOVETEXT-LIGHT.OTF"; path = "../assets/fonts/UBERMOVETEXT-LIGHT.OTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		23A358BDB24044F2A5352C8F /* ubermovetext-medium.ttf */ = {isa = PBXFileReference; name = "ubermovetext-medium.ttf"; path = "../assets/fonts/ubermovetext-medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		C22DD9B52ED4446985FF40A9 /* UBERMOVETEXT-REGULAR.OTF */ = {isa = PBXFileReference; name = "UBERMOVETEXT-REGULAR.OTF"; path = "../assets/fonts/UBERMOVETEXT-REGULAR.OTF"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +109,9 @@
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
+				D02380AF9E5449B8A02F6608 /* noop-file.swift */,
+				DE5E63C759ED4F728FCC64EE /* tyrvyRider-Bridging-Header.h */,
+				670142D7CE0149DB9D8529AC /* Rider_driver_arriving.mp3 */,
 			);
 			name = tyrvyRider;
 			sourceTree = "<group>";
@@ -87,6 +141,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				D65327D7A22EEC0BE12398D9 /* Pods */,
+				36988AEE2B8E4CABA056E187 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -118,6 +173,37 @@
 			);
 			path = Pods;
 			sourceTree = "<group>";
+		};
+		36988AEE2B8E4CABA056E187 /* Resources */ = {
+			isa = "PBXGroup";
+			children = (
+				57484E99D86442A8B577E95D /* Metropolis-Black.ttf */,
+				012090431BC74150BD13815D /* Metropolis-BlackItalic.ttf */,
+				2BF9548F0DD344CCBF652BDF /* Metropolis-Bold.ttf */,
+				5D05BFEE4FA84AAFA996B535 /* Metropolis-BoldItalic.ttf */,
+				4CB9BDFE43F0460CA1E40B22 /* Metropolis-ExtraBold.ttf */,
+				46BC3ADEBD384D8F831112CF /* Metropolis-ExtraBoldItalic.ttf */,
+				8B729AFFFDFB4E14A51B0E25 /* Metropolis-ExtraLight.ttf */,
+				51DEDBDE6DEC46DB8F024A96 /* Metropolis-ExtraLightItalic.ttf */,
+				45883A15813741C3A9BD0389 /* Metropolis-Light.ttf */,
+				163D926068F64400A0D9211F /* Metropolis-LightItalic.ttf */,
+				A55161FA49A848508A124E44 /* Metropolis-Medium.ttf */,
+				3AE3306604CF4E6981519E41 /* Metropolis-MediumItalic.ttf */,
+				9D7B98B1552C4071AACF31D8 /* Metropolis-Regular.ttf */,
+				C1974C9469A048C8B480088C /* Metropolis-RegularItalic.ttf */,
+				48DE23CCE0F140AFBBDBA8D1 /* Metropolis-SemiBold.ttf */,
+				F65F6C9350F94B40B6A7E52A /* Metropolis-SemiBoldItalic.ttf */,
+				1F7E3A62225A4AE9A13532A6 /* Metropolis-Thin.ttf */,
+				71474DEF6C9D43B494C1FF8E /* Metropolis-ThinItalic.ttf */,
+				C1C78CE05D4B492093DFC5CA /* UBERMOVE-BOLD.OTF */,
+				EC31BA1B573645F9954E92CD /* UBERMOVETEXT-BOLD.OTF */,
+				BE2706B7643F41498634BFE4 /* UBERMOVETEXT-LIGHT.OTF */,
+				23A358BDB24044F2A5352C8F /* ubermovetext-medium.ttf */,
+				C22DD9B52ED4446985FF40A9 /* UBERMOVETEXT-REGULAR.OTF */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+			path = "";
 		};
 /* End PBXGroup section */
 
@@ -183,6 +269,31 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
+				E193C945128C411F892E0B62 /* Metropolis-Black.ttf in Resources */,
+				72419EDE5D344C8489FB589C /* Metropolis-BlackItalic.ttf in Resources */,
+				1DCDD46BE81C42BEBACE3D0B /* Metropolis-Bold.ttf in Resources */,
+				4DBA6275CFD64345BF597687 /* Metropolis-BoldItalic.ttf in Resources */,
+				B083ADBAB37942AA9E29D752 /* Metropolis-ExtraBold.ttf in Resources */,
+				B23DB190F0DD4ABCB42EA968 /* Metropolis-ExtraBoldItalic.ttf in Resources */,
+				4CA63A32804C41C68B2556B9 /* Metropolis-ExtraLight.ttf in Resources */,
+				529015C08BE84D65B7FE4B9A /* Metropolis-ExtraLightItalic.ttf in Resources */,
+				FCA7D0CCE6B141FA810C6268 /* Metropolis-Light.ttf in Resources */,
+				968085FA0E8042CCA60CDEF6 /* Metropolis-LightItalic.ttf in Resources */,
+				6C43B98526F04704BFCF81EC /* Metropolis-Medium.ttf in Resources */,
+				46C407D0B2B7432D86AB493F /* Metropolis-MediumItalic.ttf in Resources */,
+				700D7CE7294143F99CB92D84 /* Metropolis-Regular.ttf in Resources */,
+				6C67513989034281A8C34FB7 /* Metropolis-RegularItalic.ttf in Resources */,
+				A6D20F7F55C247258A0147D1 /* Metropolis-SemiBold.ttf in Resources */,
+				D4167661F76944FCB1792089 /* Metropolis-SemiBoldItalic.ttf in Resources */,
+				CB331708535E45ED8830A429 /* Metropolis-Thin.ttf in Resources */,
+				C3F0280C06134C75A9AD96A6 /* Metropolis-ThinItalic.ttf in Resources */,
+				61DBAC4318FA430AA981984A /* tyrvyRider-Bridging-Header.h in Resources */,
+				5D1E2CC067B74EC5B8FD8893 /* Rider_driver_arriving.mp3 in Resources */,
+				D8A1798DB0934F23A65DF8BC /* UBERMOVE-BOLD.OTF in Resources */,
+				EF42F808D91A4741B021C82E /* UBERMOVETEXT-BOLD.OTF in Resources */,
+				D5E62C8729F44655B60EDC1B /* UBERMOVETEXT-LIGHT.OTF in Resources */,
+				EABA42EB0D084621B7DCC791 /* ubermovetext-medium.ttf in Resources */,
+				7CAD44A1C2AD452D86DB1BED /* UBERMOVETEXT-REGULAR.OTF in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -271,6 +382,7 @@
 			files = (
 				13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
+				A13F4247AEEA496788B52EE2 /* noop-file.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -309,11 +421,14 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.name.tyrvyRider;
-				PRODUCT_NAME = tyrvyRider;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.turvy.rider";
+				PRODUCT_NAME = rider;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				TARGETED_DEVICE_FAMILY = "1";
+				SWIFT_OBJC_BRIDGING_HEADER = tyrvyRider/tyrvyRider-Bridging-Header.h;
+				CODE_SIGN_ENTITLEMENTS = tyrvyRider/rider.entitlements;
 			};
 			name = Debug;
 		};
@@ -332,10 +447,13 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = org.name.tyrvyRider;
-				PRODUCT_NAME = tyrvyRider;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.turvy.rider";
+				PRODUCT_NAME = rider;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				TARGETED_DEVICE_FAMILY = "1";
+				SWIFT_OBJC_BRIDGING_HEADER = tyrvyRider/tyrvyRider-Bridging-Header.h;
+				CODE_SIGN_ENTITLEMENTS = tyrvyRider/rider.entitlements;
 			};
 			name = Release;
 		};
@@ -394,6 +512,7 @@
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				CODE_SIGN_ENTITLEMENTS = tyrvyRider/rider.entitlements;
 			};
 			name = Debug;
 		};
@@ -445,6 +564,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+				CODE_SIGN_ENTITLEMENTS = tyrvyRider/rider.entitlements;
 			};
 			name = Release;
 		};

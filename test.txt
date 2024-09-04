@@ -1,0 +1,1 @@
+a:2:{s:8:"prevUrls";a:2:{i:0;s:42:"http://localhost/sisno-wordpress/wordpress";i:1;s:32:"localhost/1kunal/sisno_wordpress";}s:10:"currentUrl";s:39:"http://localhost/1kunal/sisno_wordpress";}
