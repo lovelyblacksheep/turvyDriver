@@ -1,4 +1,5 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
   <uses-permission android:name="android.permission.CAMERA"/>
@@ -13,7 +14,7 @@
     <meta-data android:name="MAPBOX_ACCESS_TOKEN" android:value="pk.eyJ1IjoiamttaWxsYSIsImEiOiJjbDFuYzZqNXowN2ZqM2Rudm1pcHFvMWg3In0.Dn07wvXuaLZTxhBY_fiPFg"/>
     <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyAr2ESV30J7hFsOJ5Qjaa96u9ADSRX6_Sk"/>
     <meta-data android:name="com.google.android.gms.wallet.api.enabled" android:value="true"/>
-    <meta-data android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/notification_icon_color"/>
+    <meta-data tools:replace="android:resource" android:name="com.google.firebase.messaging.default_notification_color" android:resource="@color/notification_icon_color"/>
     <meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="@drawable/notification_icon"/>
     <meta-data android:name="expo.modules.notifications.default_notification_color" android:resource="@color/notification_icon_color"/>
     <meta-data android:name="expo.modules.notifications.default_notification_icon" android:resource="@drawable/notification_icon"/>
