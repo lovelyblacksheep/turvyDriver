@@ -4,14 +4,14 @@ import {  Provider as PaperProvider, Button, Avatar, Caption, Surface, IconButto
 import {View, ScrollView, Picker, Text, StyleSheet, TouchableOpacity, Image , FlatList ,ActivityIndicator } from 'react-native';
 import {styles, theme, DOMAIN} from '../Riders/Constant';
 import { Input } from 'react-native-elements';
-import { AntDesign } from '@expo/vector-icons'; 
+import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Divider } from 'react-native-elements';
 import { Col, Row, Grid } from "react-native-easy-grid";
 import Spinner from 'react-native-loading-spinner-overlay';
 import {Collapse, CollapseHeader, CollapseBody} from "accordion-collapse-react-native";
 
-import * as firebase from "firebase";
+import firebase from 'firebase/compat/app';
 import "firebase/firestore";
 import apiKeys from '../config/keys';
 
@@ -22,7 +22,7 @@ if (!firebase.apps.length) {
 
 const db = firebase.firestore();
 
-export default class MyUpcomingRides extends React.Component{    
+export default class MyUpcomingRides extends React.Component{
 
     constructor(props) {
         super(props);
@@ -42,21 +42,21 @@ export default class MyUpcomingRides extends React.Component{
             runningdata:{},
             tripstart:false,
         }
-        
-        
+
+
         this.onRefListView = React.createRef();
     }
-	
+
 	 componentDidMount() {
 	 	this.setState({
 	 		spinner:true,
 	 	});
-	 	
+
 	 	this.getMyRider();
 	 	this.getLatestTrip();
 	 }
-	 
-	 
+
+
 	 getLatestTrip = async (accessTokan) => {
 		let last_booking_id = await AsyncStorage.getItem('last_booking_id');
 		//alert(last_booking_id);
@@ -80,19 +80,19 @@ export default class MyUpcomingRides extends React.Component{
         				let origin = {
         					latitude:result.data.booking.origin_lat,
         					longitude:result.data.booking.origin_lng,
-        					
+
         				};
         				let destination = {
         					latitude:result.data.booking.destination_lat,
         					longitude:result.data.booking.destination_lng,
-        					
+
         				}
         				let newdata = {
         					origin:origin,
         					destination:destination,
         					latitudedest:result.data.booking.destination_lat,
 			             longitudedest:result.data.booking.destination_lng,
-			             latitudecur:result.data.booking.origin_lat, 
+			             latitudecur:result.data.booking.origin_lat,
 			             longitudecur:result.data.booking.origin_lng,
 			             bookingresponse:result.data.booking,
 			             bookingdriver:result.data.driverinfo,
@@ -102,20 +102,20 @@ export default class MyUpcomingRides extends React.Component{
 			             selectsurcharge:result.data.PaymentRequest.surge,
 			             selectedcancelchr:result.data.Fare.cancel_charge
         				}
-        				
-        				this.setState({	
+
+        				this.setState({
         					runningdata:newdata
         				});
         				//
         			});
         	    }
-        			
+
         	 	console.log("LASTTRIP New MY RIDE",result.data.id);
         });
        });
 	}
-	 
-	 
+
+
 	  async getrideStart(bookinid){
 	  	//alert(bookinid);
   	  //console.log("BOOKING ID "+this.state.bookingresponse.id);
@@ -136,19 +136,19 @@ export default class MyUpcomingRides extends React.Component{
 			    //	alert("IN NCONFIRM");
 			    }else{
 			    	this.props.route.navigation.navigate('RideConfirm1',this.state.runningdata);
-			    }																																																																																																																																															
+			    }
 		});
-		
+
   }
-  
+
 	 getMyRider = async() => {
 		await AsyncStorage.getItem('accesstoken').then((value) => {
 		console.log(value);
 			  fetch('https://www.turvy.net/api/rider/myrides/1/'+this.state.pageno,{
 				headers : {
-				 'Authorization': 'Bearer '+value, 
+				 'Authorization': 'Bearer '+value,
 				 'Content-Type': 'application/json'
-				
+
 				},}).then(function (response) {
 			  return response.json();
 			  }).then( (result)=> {
@@ -166,13 +166,13 @@ export default class MyUpcomingRides extends React.Component{
 			  		loading:false,
 				  	})
 			  	}
-			  
+
 			  //setMyTrips(result.data);
 			 // setSpinneron(false); {/* to stop the loading img */}
 			});
 		});
 	}
-	
+
 	gotodetails = (item) =>{
 		this.setState({
 			selectedTrip: item,
@@ -184,9 +184,9 @@ export default class MyUpcomingRides extends React.Component{
 
 	renderItem = (item) =>{
 		//console.log("ITEMS",item.item);
-		return(<> 
+		return(<>
 		<View>
-			
+
     <Collapse style={{paddingBottom:10,paddingTop:10}} isExpanded={this.state.selectedkeyid == item.item.id ? true : false } onToggle={(isExpanded)=>{ if(isExpanded) { this.setState({selectedkeyid:item.item.id}); }else{ this.setState({selectedkeyid:''});  } }}>
       <CollapseHeader style={{flexDirection:'row',alignItems:'center',padding:10}}>
       	<Grid style={{width:'100%'}}>
@@ -195,9 +195,9 @@ export default class MyUpcomingRides extends React.Component{
       		{this.state.selectedkeyid == item.item.id ?
       			(<AntDesign name="minus" size={24} color="black" />)
       			:
-      			(<AntDesign name="plus" size={24} color="black" />)      			
+      			(<AntDesign name="plus" size={24} color="black" />)
       		}
-      		 
+
       		</Col>
       		<Col size={5}><Text style={{fontSize:14}}>{item.item.booking_date}, {item.item.booking_time}</Text></Col>
       		<Col size={5}><Text style={{fontSize:14}} numberOfLines={1}>{item.item.origin}</Text></Col>
@@ -208,7 +208,7 @@ export default class MyUpcomingRides extends React.Component{
       		<Col size={5} ><Text style={{fontSize:15,fontWeight:'bold'}}>{item.item.paymenthod}</Text></Col>
       	</Row>
       	</Grid>
-        
+
       </CollapseHeader>
       <CollapseBody style={{alignItems:'center',justifyContent:'center',backgroundColor:'#EDEDED'}}  >
       	 <Row style={{width:'100%',flex:1, flexDirection:'row'}}>
@@ -235,7 +235,7 @@ export default class MyUpcomingRides extends React.Component{
 			</Col>
 			</Row>
 			<Row style={{flex:1, flexDirection:'row'}}>
-			<Col size={2} ><View style={{borderWidth:1,borderColor:'#3f78ba',height:'50%',width:1,alignSelf:'center'}}></View> 
+			<Col size={2} ><View style={{borderWidth:1,borderColor:'#3f78ba',height:'50%',width:1,alignSelf:'center'}}></View>
 			       <View style={{borderWidth:1,borderColor:'#3f78ba',height:12,width:12,alignSelf:'center',backgroundColor:'#3f78ba'}}></View>
 				  </Col>
 			<Col size={10}>
@@ -260,7 +260,7 @@ export default class MyUpcomingRides extends React.Component{
     </Collapse>
   </View></>);
 	}
-    
+
     handlerArr = () =>{
 		//alert("Scroll end reach");
 		    this.setState({
@@ -270,12 +270,12 @@ export default class MyUpcomingRides extends React.Component{
 		    	this.getMyRider();
 		    });
     }
-    
+
     renderFooter = () =>{
 			return(
 			<View><ActivityIndicator size="large" color="#04b1fd" animating={this.state.loading}  /></View>
-			)    	
-    	
+			)
+
     }
     render(){
     	console.log("PROPS UPCAOMING RENDER",this.props);
@@ -289,11 +289,11 @@ export default class MyUpcomingRides extends React.Component{
 			<View>
 			{this.state.runningtripId && this.state.runningtripId > 0 ?
 			(
-				<View style={{width:'40%',marginTop:20,marginLeft:10}}><Button  mode="contained" color={'#135AA8'} onPress={() => { 
+				<View style={{width:'40%',marginTop:20,marginLeft:10}}><Button  mode="contained" color={'#135AA8'} onPress={() => {
 				this.getrideStart(this.state.runningtripId);
-				
+
 				 }}>
-				Running Trip 
+				Running Trip
 				</Button></View>)
 			:
 			(<></>)
@@ -313,12 +313,12 @@ export default class MyUpcomingRides extends React.Component{
       null
      	}
         </View>
-        </PaperProvider>);    
+        </PaperProvider>);
     }
 }
 
 const localStyle = StyleSheet.create({
- 
+
   MainTablabel: {
   color: 'silver',
   fontWeight:'bold',

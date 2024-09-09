@@ -1,16 +1,17 @@
 import React, {useEffect, useState} from 'react';
 import {  Provider as PaperProvider, Button,  Appbar } from 'react-native-paper';
-import {View, ScrollView, Picker, Text , StatusBar} from 'react-native'
+import {View, ScrollView, Text , StatusBar} from 'react-native'
 import {styles, theme, DOMAIN} from './Constant'
 import { Input } from 'react-native-elements';
-import { AntDesign } from '@expo/vector-icons'; 
+import { AntDesign } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import FlashMessage , { showMessage, hideMessage }  from "react-native-flash-message";
+import { Picker } from '@react-native-picker/picker';
 const StatusBarheight = StatusBar.currentHeight+30;
-//console.log("height"+StatusBarheight);
+
 export default class Createaccount extends React.Component  {
-	
+
 	 constructor(props) {
     super(props);
     this.state = {
@@ -18,7 +19,7 @@ export default class Createaccount extends React.Component  {
         	lastName:'',
         	password:'',
         	confpassword:'',
-        	email:'',  	
+        	email:'',
         	firstNameError:'',
         	lastNameError:'',
         	statepassword:'',
@@ -41,10 +42,10 @@ export default class Createaccount extends React.Component  {
   		this.unsubscribe =  navigation.addListener("focus",() => {
   	   this.getState();
   			//this.intialLoad();
-  		});		
+  		});
   } // end of function
-  
-    
+
+
    async getState(){
 		 fetch(DOMAIN+'api/partners',{
 			method: 'GET',
@@ -55,98 +56,98 @@ export default class Createaccount extends React.Component  {
   			this.setState({
   				partners:result.data
   			});
-  			
+
 		});
     }
-    
+
     renderMessages = () =>{
     	return (<View >
-    	{this.state.firstNameError ? 
+    	{this.state.firstNameError ?
     		(<Text style={{color:'#fff',padding:3,fontFamily: "Metropolis-Regular"}}><AntDesign name="closecircle" size={15} color="white" /> {this.state.firstNameError}</Text>)
     	:
 	    	(<></>)
       }
-     {this.state.lastNameError ? 
+     {this.state.lastNameError ?
     	( <Text style={{color:'#fff',padding:3,fontFamily: "Metropolis-Regular"}}><AntDesign name="closecircle" size={15} color="white" /> {this.state.lastNameError}</Text>)
     	:
     	(<></>)
      }
-     {this.state.statepassword ? 
+     {this.state.statepassword ?
     	(<Text style={{color:'#fff',padding:3,fontFamily: "Metropolis-Regular"}}><AntDesign name="closecircle" size={15} color="white" /> {this.state.statepassword}</Text>)
     	:
       (<></>)
-    }	
-    {this.state.errorConfPassword ? 
+    }
+    {this.state.errorConfPassword ?
     	(<Text style={{color:'#fff',padding:3,fontFamily: "Metropolis-Regular"}}><AntDesign name="closecircle" size={15} color="white" /> {this.state.errorConfPassword}</Text>)
     	:
     	(<></>)
     }
-    {this.state.errorEmail ? 
+    {this.state.errorEmail ?
     	(<Text style={{color:'#fff',padding:3,fontFamily: "Metropolis-Regular"}}><AntDesign name="closecircle" size={15} color="white" /> {this.state.errorEmail}</Text>)
     	:
     	(<></>)
     }
-    {this.state.errorPartner ? 
+    {this.state.errorPartner ?
     	(<Text style={{color:'#fff',padding:3,fontFamily: "Metropolis-Regular"}}><AntDesign name="closecircle" size={15} color="white" /> {this.state.errorPartner}</Text>)
     	:
     	(<></>)
     }
-    {this.state.errorrvaild ? 
+    {this.state.errorrvaild ?
     	(<Text style={{color:'#fff',padding:3,fontFamily: "Metropolis-Regular"}}><AntDesign name="closecircle" size={15} color="white" /> {this.state.errorrvaild}</Text>)
     	:
     	(<></>)
-    }																																																																																								
+    }
     	</View>);
     }
 
-    
+
     async submit (){
-    
-      let iserror = 0;      
-    	if(this.state.firstName.trim() == '') { 
+
+      let iserror = 0;
+    	if(this.state.firstName.trim() == '') {
     	this.setState({
     		firstNameError:'Please input your first name.'
     	});
-	    	iserror =1;  
+	    	iserror =1;
     	}
-    	if(this.state.lastName.trim() == '') { 
+    	if(this.state.lastName.trim() == '') {
     		this.setState({
     		lastNameError:'Please input your last name.'
     	});
-    		iserror =1;  
+    		iserror =1;
     	}
-    	if(this.state.password.length < 8) { 
+    	if(this.state.password.length < 8) {
     		//setPasswordError('Password should be 8 digits.');
     	this.setState({
     		statepassword:'Password should be 8 digits.'
     	});
-    	
+
     	iserror =1; }
-    	if(this.state.password.trim() == '') { 
+    	if(this.state.password.trim() == '') {
     	//	setPasswordError('Please input the password.')
     			this.setState({
     		    statepassword:'Please input the password.'
     	     });
-    		iserror =1;  
+    		iserror =1;
    	}
-   	
-    	if(this.state.confpassword.trim() == '') { 
+
+    	if(this.state.confpassword.trim() == '') {
     		//setConfirmPasswordError('Please input the confirm password.')
     		this.setState({
     		    errorConfPassword:'Please input the confirm password.'
     	     });
-    		iserror =1; 
+    		iserror =1;
     	 }
-    	if(this.state.password.trim() != this.state.confpassword.trim()) { 
+    	if(this.state.password.trim() != this.state.confpassword.trim()) {
     		//setConfirmPasswordError('Password Match failed.')
     		this.setState({
     		    errorConfPassword:'Password Match failed.'
     	     });
-    	     
+
     		iserror = 1;  }
-    	if(this.state.email.trim() == '') { 
+    	if(this.state.email.trim() == '') {
     	//setEmailErro('Please input the email.')
-    		iserror =1; 
+    		iserror =1;
     		this.setState({
     		    errorEmail:'Please input the email.'
     	     });
@@ -157,31 +158,31 @@ export default class Createaccount extends React.Component  {
             //return false;
         }
     	}
-   
+
     	if(this.state.planner == '') {
     		this.setState({
     		    errorPartner:'Please choose your partner.'
-    	     }); 
+    	     });
     	 //setPartnerError('Please choose your partner.')
-    	 iserror =1;  
+    	 iserror =1;
     	}
-    	
+
 
     	if(this.state.firstName.trim() != '' && this.state.lastName.trim() != '' &&  this.state.password.trim() != '' &&  iserror == 0){
     			const phone = await AsyncStorage.getItem('phone');
     		const countrycode = await AsyncStorage.getItem('countrycode');
     		const deviceToken = await AsyncStorage.getItem('deviceToken');
-    		
+
     	//await AsyncStorage.getItem('accesstoken').then((value) => {
-    	
+
     		console.log(deviceToken);
     		//console.log(countrycode);
     		//console.log(value);
     	fetch('https://www.turvy.net/api/rider/register',{
-     	  	method: 'POST', 
+     	  	method: 'POST',
 		   headers: new Headers({
 		     'Content-Type': 'application/json',
-		   }), 
+		   }),
 		   body:JSON.stringify({
 	 				'device_token' :deviceToken,
 	 				 'device_type' : 'A',
@@ -191,13 +192,13 @@ export default class Createaccount extends React.Component  {
 	 				 'phone':"+"+countrycode+phone,
 	 				 'last_name':this.state.firstName,
 	 				 'first_name':this.state.lastName,
-	 			}) 
+	 			})
 		   })
       .then((response) => response.json())
-      .then((json) =>{ 
+      .then((json) =>{
       	console.log("CREATE ACCOUNT RESPONSE ",json);
       	if(json.status == 1){
-      		
+
       		fetch(DOMAIN+'api/rider/login',{
 				method: 'POST',
 				headers : {
@@ -208,7 +209,7 @@ export default class Createaccount extends React.Component  {
 	 				"phone" : '+'+countrycode+''+phone,
 	 				"password":this.state.password,
 	 			})
-	 		}).then(function (response) {	
+	 		}).then(function (response) {
 	 			return response.json();
 	  		}).then( (result)=> {
 	  				console.log(result);
@@ -217,8 +218,8 @@ export default class Createaccount extends React.Component  {
 	  					AsyncStorage.setItem('accesstoken', result.access_token);
 	  						AsyncStorage.setItem('expires_at', result.expires_at);
 	  						AsyncStorage.setItem('countrycode', countrycode);
-	  						AsyncStorage.setItem('phone', phone).then(res => { 
-        						this.props.navigation.navigate('Thankyou');	
+	  						AsyncStorage.setItem('phone', phone).then(res => {
+        						this.props.navigation.navigate('Thankyou');
    					   });
 	  				}
 			});
@@ -240,8 +241,8 @@ export default class Createaccount extends React.Component  {
 			    	});
       	}
      	 })
-     	 
-      
+
+
 	  //	})
     		//return navigation.navigate('Signupasdriver',{"first_name" : firstName, "last_name" : lastName, "city_id" : city, "make_id" : vehicleMake, "model_id" : vehicleModel,"plate" : carNumber,"state":state});
     	}else{
@@ -258,14 +259,14 @@ export default class Createaccount extends React.Component  {
            },
         	 });
     	});
-    		
+
 		}
-    	}// end of if 
-    	
+    	}// end of if
+
    // }
    }
-    
-    render(){ 
+
+    render(){
     return (<PaperProvider theme={theme}>
 	<Appbar.Header>
       <Appbar.BackAction onPress={() => this.props.navigation.goBack()} />
@@ -274,13 +275,13 @@ export default class Createaccount extends React.Component  {
     <FlashMessage  ref="fmLocalIntstancecr" position="top" style={{marginTop:StatusBarheight,borderRadius:2}}  />
           <ScrollView  keyboardShouldPersistTaps='handled'>
           <View style={styles.content}>
-				<View style={{flexDirection:'row',}}>	
+				<View style={{flexDirection:'row',}}>
 					<View style={{width:'100%'}}>
 		        		<Input placeholder='First Name'
-		        			  ref={this.input} 
-		        			inputStyle={[styles.inputStyle,{ borderColor : this.state.firstNameError ? 'red' : '#ddd' }]} 
-		        			inputContainerStyle={styles.inputContainerStyle} 
-		        			value={this.firstName} 
+		        			  ref={this.input}
+		        			inputStyle={[styles.inputStyle,{ borderColor : this.state.firstNameError ? 'red' : '#ddd' }]}
+		        			inputContainerStyle={styles.inputContainerStyle}
+		        			value={this.firstName}
 		        			onChangeText={(value) =>{
 		        				this.setState({firstName:value},()=>{
 		        					if(value == ''){
@@ -295,14 +296,14 @@ export default class Createaccount extends React.Component  {
 		        				});
 		        			}} />
 		          </View>
-					
+
         		</View>
         		<View style={{flexDirection:'row',}}>
         		<View style={{width:'100%'}}>
-		           <Input placeholder='Last Name' 
-		           	inputStyle={[styles.inputStyle,{ borderColor : this.state.lastNameError ? 'red' : '#ddd' }]} 
-		           	inputContainerStyle={styles.inputContainerStyle} 
-		           	value={this.lastName} 
+		           <Input placeholder='Last Name'
+		           	inputStyle={[styles.inputStyle,{ borderColor : this.state.lastNameError ? 'red' : '#ddd' }]}
+		           	inputContainerStyle={styles.inputContainerStyle}
+		           	value={this.lastName}
 		           	onChangeText={(value) =>{
 		           		this.setState({lastName:value},()=>{
 		        					if(value == ''){
@@ -320,11 +321,11 @@ export default class Createaccount extends React.Component  {
 		       </View>
 		       <View style={{flexDirection:'row',}}>
         		<View style={{width:'100%'}}>
-		           <Input placeholder='Password' 
-		           	inputStyle={[styles.inputStyle,{ borderColor : this.state.statepassword ? 'red' : '#ddd' }]} 
-		           	inputContainerStyle={styles.inputContainerStyle} 
-		           	
-		           	value={this.state.password} 
+		           <Input placeholder='Password'
+		           	inputStyle={[styles.inputStyle,{ borderColor : this.state.statepassword ? 'red' : '#ddd' }]}
+		           	inputContainerStyle={styles.inputContainerStyle}
+
+		           	value={this.state.password}
 		           	 secureTextEntry={true}
 		           	onChangeText={(value) => {
 		           		this.setState({password:value},()=>{
@@ -348,11 +349,11 @@ export default class Createaccount extends React.Component  {
 		       <View style={{flexDirection:'row',}}>
         		<View style={{width:'100%'}}>
 		           <Input placeholder='Confirm Password'
-		            inputStyle={[styles.inputStyle,{ borderColor : this.state.errorConfPassword ? 'red' : '#ddd' }]} 
-		            inputContainerStyle={styles.inputContainerStyle} 
-		            
+		            inputStyle={[styles.inputStyle,{ borderColor : this.state.errorConfPassword ? 'red' : '#ddd' }]}
+		            inputContainerStyle={styles.inputContainerStyle}
+
 		             secureTextEntry={true}
-		            value={this.confpassword} 
+		            value={this.confpassword}
 		            onChangeText={(value) => {
 		            	this.setState({confpassword:value},()=>{
 		        					if(value == ''){
@@ -365,20 +366,20 @@ export default class Createaccount extends React.Component  {
 		        						});
 		        					}
 		        				});
-		        				
+
 		            }} />
 		        </View>
 		       </View>
 		       <View style={{flexDirection:'row',}}>
         		<View style={{width:'100%'}}>
-		           <Input placeholder='Email Address' 
-		           inputStyle={[styles.inputStyle,{ borderColor : this.state.errorEmail ? 'red' : '#ddd' }]} 
-		           inputContainerStyle={styles.inputContainerStyle} 
-		          
-		           value={this.email} 
+		           <Input placeholder='Email Address'
+		           inputStyle={[styles.inputStyle,{ borderColor : this.state.errorEmail ? 'red' : '#ddd' }]}
+		           inputContainerStyle={styles.inputContainerStyle}
+
+		           value={this.email}
 		           keyboardType="email-address"
 		           onChangeText={(value) => {
-		           	
+
 		           	this.setState({email:value},()=>{
 		        					if(value == ''){
 		        						this.setState({
@@ -390,7 +391,7 @@ export default class Createaccount extends React.Component  {
 		        							});
 		        					}
 		        		});
-		        				
+
 		           }} />
 		        </View>
 		       </View>
@@ -409,7 +410,7 @@ export default class Createaccount extends React.Component  {
 		        					}
 		        		});
 		        	}}
-		        		
+
 		        	selectedValue={this.state.planner}>
 		        		<Picker.Item label="Select Partner" value="" />
 		        		 {this.state.partners.length > 0 && this.state.partners.map((val, index) =>{
@@ -425,5 +426,5 @@ export default class Createaccount extends React.Component  {
         </PaperProvider>)
     }
     //'First name is required'
-	
+
 }

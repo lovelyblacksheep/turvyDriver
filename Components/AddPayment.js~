@@ -8,13 +8,13 @@ import { theme, DOMAIN} from '../Riders/Constant';
 import { Col, Row, Grid } from "react-native-easy-grid";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const imagemarker = require('../assets/map-pin.png');
-import { FontAwesome, AntDesign, Entypo } from '@expo/vector-icons'; 
+import { FontAwesome, AntDesign, Entypo } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
 import { GooglePay } from 'react-native-google-pay';
 const imagegpay = require('../assets/images/gpay.png');
 const imagegstripe = require('../assets/images/credit-card_1.png');
 
-import * as firebase from "firebase";
+import firebase from 'firebase/compat/app';
 import "firebase/firestore";
 import * as geofirestore from 'geofirestore';
 import apiKeys from '../config/keys';
@@ -38,9 +38,9 @@ export default class AddPayment extends React.Component {
         	rewardpoints:0,
     };
    }
-   
+
   componentDidMount(){
-    
+
   }
 
   render() {
@@ -81,13 +81,13 @@ export default class AddPayment extends React.Component {
               </Row>
            </TouchableOpacity>
             <Row size={70} style={{height:65}}>
-                  
+
               </Row>
-          </Grid> 		
-          <Grid style={{flex:1, flexDirection:'row'}}>
-          
           </Grid>
-              
+          <Grid style={{flex:1, flexDirection:'row'}}>
+
+          </Grid>
+
          </Surface>
 	  </View>
 	    </PaperProvider>
@@ -100,8 +100,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  labelstyle:{    
-    fontSize:16,    
+  labelstyle:{
+    fontSize:16,
     textAlign:'left',
     marginTop:10,
     fontFamily: 'WuerthBook'
@@ -119,12 +119,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         height:170,
     },
-    text: {    
+    text: {
         color: "white",
-        fontSize: 25,    
-        textAlign: "center",         
+        fontSize: 25,
+        textAlign: "center",
     },
-    overlay: {    
+    overlay: {
         justifyContent: "center",
         backgroundColor:'rgba(0,0,0,0.6)',
         height:170,
@@ -136,17 +136,17 @@ const styles = StyleSheet.create({
       marginBottom:10,
       marginLeft:5,
       marginRight:5,
-      backgroundColor:'#FFF',      
+      backgroundColor:'#FFF',
       height:35
     },
     scText:{color:'#000',fontSize:14},
-    active:{      
-      backgroundColor:'#7a49a5',            
+    active:{
+      backgroundColor:'#7a49a5',
     },
     actText:{color:'#FFF'},
     boxstyle:{
     	flex:1,
-    	backgroundColor:'#fff',  
+    	backgroundColor:'#fff',
     	borderRadius:10,borderWidth: 1,
     	borderColor: '#fff',
     	padding:10,margin:20,
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     }
 });
 
-const localStyle = StyleSheet.create({ 
+const localStyle = StyleSheet.create({
     MainTablabel: {
         color: 'silver',
         fontWeight:'bold',

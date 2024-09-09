@@ -1,4 +1,5 @@
 package com.turvy.rider
+
 import android.app.Application
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
@@ -10,6 +11,7 @@ import com.facebook.react.defaults.DefaultReactHost.getDefaultReactHost
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.soloader.SoLoader
 import com.turvy.BuildConfig
+import expo.modules.updates.UpdatesController
 
 class MainApplication : Application(), ReactApplication {
 
@@ -35,6 +37,7 @@ class MainApplication : Application(), ReactApplication {
     override fun onCreate() {
         super.onCreate()
         SoLoader.init(this, false)
+        UpdatesController.initialize(this);
         if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
             // If you opted-in for the New Architecture, we load the native entry point for this app.
             load()

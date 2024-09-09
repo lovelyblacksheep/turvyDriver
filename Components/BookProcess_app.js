@@ -6,7 +6,7 @@ import MapView , { Marker , Polyline ,Callout }from 'react-native-maps';
 import * as Location from 'expo-location';
 import MapViewDirections from 'react-native-maps-directions';
 import GooglePlacesInput from './GooglePlacesInput';
-import { EvilIcons,Ionicons,MaterialCommunityIcons,FontAwesome5,Entypo } from '@expo/vector-icons'; 
+import { EvilIcons,Ionicons,MaterialCommunityIcons,FontAwesome5,Entypo } from '@expo/vector-icons';
 const imagemarker = require('../assets/location-pin-2965.png');
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
@@ -17,7 +17,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const { width, height } = Dimensions.get('window');
 const imageveh = require('../assets/images/driver-veh-images_60.png');
 const DEVICE_WIDTH = width;
-const DEVICE_HEIGHT = height;		
+const DEVICE_HEIGHT = height;
  const drivernear = [];
 
 import SwipeButton from 'rn-swipe-button';
@@ -26,7 +26,7 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0043;
 const SCREENHEIGHT = height*.60;
 
-import * as firebase from "firebase";
+import firebase from 'firebase/compat/app';
 import "firebase/firestore";
 import * as geofirestore from 'geofirestore';
 import apiKeys from '../config/keys';
@@ -122,12 +122,12 @@ export default class BookProcess extends React.Component {
          waypointslnglat:[],
          selectedcancelchr:0
     };
-        	
+
     this.mapView = null;
     this.myinterval = React.createRef();
-    
+
    }
-   
+
    async getnearestDriver(){
    	// Create a GeoQuery based on a location
    	console.log(this.state.origin);
@@ -141,7 +141,7 @@ export default class BookProcess extends React.Component {
 		  // All GeoDocument returned by GeoQuery, like the GeoDocument added above
 		  //console.log("IN QUERY");
 		  //console.log(value.docs);
-		 
+
 		   value.docs.map((item, index) => {
 		   	 //console.log("DRIVER MAP");
 		   	//console.log(item.data().coordinates);
@@ -160,41 +160,41 @@ export default class BookProcess extends React.Component {
 						   	let newdriver = drivernear;
 						   	newdriver = newdriver.shift();
 						   	console.log("DRIVER ABC LIST",drivernear);
-						   	this.setState({	
+						   	this.setState({
 						   		drivernearRem:newdriver,
 						   	});
 						     //console.log(" BEFORE ASSIGN DRIVER ID");
 						     this.assignDriver(driverID);
 						   }
 	      			 }
-	      			  
+
 	      		});
 		   	}
 		   });
-		   
+
 		   //console.log(drivernear);
 		   console.log("DRIVER ID");
 		   console.log(drivernear[0].driverId);
-		 
-		   
+
+
 		   /*	if(item.exists == true){
 		   		console.log(item);
 		   		const nearestDriver = item.id;
 		   		/*CODE SATRT HERE*/
-		   		
+
 		   		/*fetch('https://turvy.net/api/rider/assigndriver/'+this.state.bookingresponse.id,{
-				     	  	method: 'POST', 
+				     	  	method: 'POST',
 						   headers: new Headers({
-						     'Authorization': 'Bearer '+accesstoken, 
+						     'Authorization': 'Bearer '+accesstoken,
 						     'Content-Type': 'application/json'
-						   }), 
+						   }),
 						   body:JSON.stringify({
 					 				'driver_id' : nearestDriver,
-					 				
-					 			}) 
+
+					 			})
 						   })
 				      .then((response) => response.json())
-				      .then((json) =>{ 
+				      .then((json) =>{
 				      	console.log(json);
 				      	if(json.status == 1){
 					      	if(this.state.statusrecived == false){
@@ -204,15 +204,15 @@ export default class BookProcess extends React.Component {
 	            	  		}else{
 	            	  			clearInterval(this.myinterval);
 	            	  		}
-				      	} 
-				      	
+				      	}
+
 				      	//console.log("Payment successful ", paymentIntent);
-				          
+
 				   		//hideMessage()
 				   		//props.navigation.navigate('BookDetails',this.state);
-				   		
+
 				      	/*if(json.status == 1){
-				      		 this.setState({                                        
+				      		 this.setState({
 					         	isLoading:false,
 				    				vehborder:'red',
 				    				bookingresponse:json.data
@@ -224,48 +224,48 @@ export default class BookProcess extends React.Component {
 				      )
 				      .catch((error) => console.error(error));
 				     */
-				   
+
 		   		/********************* END HERE****************/
 		   	//}
-		   	
-		  
-		   }); 
+
+
+		   });
 		//});
    }
-   
+
     assignDriver = async(driver_id) =>{
    			const accesstoken = await AsyncStorage.getItem('accesstoken');
    			console.log(accesstoken);
    			console.log(this.state.bookingresponse.id);
    			alert("BEFORE ASSIGN "+driver_id);
    	fetch('https://turvy.net/api/rider/assigndriver/'+this.state.bookingresponse.id,{
-				     	  	method: 'POST', 
+				     	  	method: 'POST',
 						   headers: new Headers({
-						     'Authorization': 'Bearer '+accesstoken, 
+						     'Authorization': 'Bearer '+accesstoken,
 						     'Content-Type': 'application/json'
-						   }), 
+						   }),
 						   body:JSON.stringify({
 					 				'driver_id' : driver_id,
-					 			}) 
+					 			})
 						   })
 				      .then((response) => {
 				      	return response.json();
 				      	console.log(response);
 				      	})
-				      .then((json) =>{ 
+				      .then((json) =>{
 				      	console.log("IN ASSIGN ");
 				      	console.log(json);
 				      	alert("AFTER ASSIGN "+driver_id);
 				      	if(json.status == 1){
 					      	if(this.state.statusrecived == false){
 					      		this.myinterval = setInterval(() => {
-					      			console.log("Call Booking status");	
+					      			console.log("Call Booking status");
 	            	  				this.getbookingStatus()
 	            	  			}, 10000);
 	            	  		}else{
 	            	  			clearInterval(this.myinterval);
 	            	  		}
-				      	}else if(json.status == 0){	
+				      	}else if(json.status == 0){
 				      	  //
 				      	  if(drivernear[0].driverId > 0){
 				      	  	let driverID = drivernear[0].driverId;
@@ -273,18 +273,18 @@ export default class BookProcess extends React.Component {
 							   	console.log(" BEFORE ASSIGN NEXT DRIVER ID");
 							      this.assignDriver(driverID);
 							   }
-		   
+
 				      	  if(json.message == "Driver not exits"){
 				      	  }
-				      	} 
-				      	
+				      	}
+
 				      	//console.log("Payment successful ", paymentIntent);
-				          
+
 				   		//hideMessage()
 				   		//props.navigation.navigate('BookDetails',this.state);
-				   		
+
 				      	/*if(json.status == 1){
-				      		 this.setState({                                        
+				      		 this.setState({
 					         	isLoading:false,
 				    				vehborder:'red',
 				    				bookingresponse:json.data
@@ -300,37 +300,37 @@ export default class BookProcess extends React.Component {
    	clearTimeout(this.settimeout);
    	 await AsyncStorage.getItem('accesstoken').then((value) => {
       	fetch('https://turvy.net/api/rider/book/cancel/'+this.state.bookingresponse.id,{
-     	  	method: 'GET', 
+     	  	method: 'GET',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+value, 
+		     'Authorization': 'Bearer '+value,
 		     'Content-Type': 'application/json'
 		   }),
 		   })
       .then((response) => response.json())
-      .then((json) =>{ 			
+      .then((json) =>{
       	//console.log("NEAR BY DRIVER");
       	console.log(json);
       	if(json.status == 1){
       		this.props.navigation.replace('BookDetails',this.state);
       	}
-     	 }	
+     	 }
       )
       .catch((error) =>{
-      	console.error(error);	
+      	console.error(error);
       });
-     }); 	
+     });
    }
-   
+
     componentDidMount(){
     	const {navigation} = this.props;
 		if(this.props.route.params.selectedvehicle){
-      	this.setState({ 
+      	this.setState({
              selectedvehicle:this.props.route.params.selectedvehicle,
              origin:this.props.route.params.origin,
              destination:this.props.route.params.destination,
              latitudedest:this.props.route.params.latitudedest,
              longitudedest:this.props.route.params.longitudedest,
-             latitudecur:this.props.route.params.latitudecur, 
+             latitudecur:this.props.route.params.latitudecur,
              longitudecur:this.props.route.params.longitudecur,
              bookingresponse:this.props.route.params.bookingresponse,
              waypointslnglat:this.props.route.params.waypointslnglat,
@@ -342,31 +342,31 @@ export default class BookProcess extends React.Component {
           this.getnearestDriver();
         });
       }
-      
+
         this.props.navigation.addListener('blur', () => {
             clearInterval(this.myinterval);
         });
 
-		
+
       /*
   		this.unsubscribe =  navigation.addListener("focus",() => {
   			   	//
-  			this.setState({ 
+  			this.setState({
              selectedvehicle:this.props.route.params.selectedvehicle,
              inprocessing:0,
          },()=>{
          	//setTimeout(()=>{ this.props.navigation.navigate('RideConfirm',this.state) }, 2000)
          });
-         
+
   			this.intialLoad();
-  		});	
-  		*/		
+  		});
+  		*/
   } // end of function
-   
+
 
    UNSAFE_componentWillUnmount() {
     //this.unsubscribe();
-  
+
     if(this.state.interval){
       clearInterval(this.myinterval);
     }
@@ -374,28 +374,28 @@ export default class BookProcess extends React.Component {
    	 clearTimeout(this.settimeout);
    }
   }
-  
+
   async getbookingStatus(){
   	   if(this.state.statusrecived == true){
   	   	 clearInterval(this.myinterval);
   	   	 clearTimeout(this.settimeout);
   	   	 return;
   	   }
-  	   console.log("here in status");	
+  	   console.log("here in status");
   		 await AsyncStorage.getItem('accesstoken').then((value) => {
   		 	//alert('https://turvy.net/api/rider/requestbookstatus/'+this.state.bookingresponse.id);
       	fetch('https://turvy.net/api/rider/requestbookstatus/'+this.state.bookingresponse.id,{
-     	  	method: 'GET', 
+     	  	method: 'GET',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+value, 
+		     'Authorization': 'Bearer '+value,
 		     'Content-Type': 'application/json'
 		   }),
 		   })
       .then((response) => response.json())
-      .then((json) =>{ 
+      .then((json) =>{
       	console.log("get status if driver accept");
       	console.log(json);
-      	
+
       	if(json.status == 1){
       		console.log("INTERVAL IF "+this.myinterval);
       	   console.log(json.message);
@@ -410,13 +410,13 @@ export default class BookProcess extends React.Component {
       			    /*
       			    });
       			    */
-      			// 
+      			//
       			this.setState({
       					rideinfoinprocess:json.data.booking,
       					bookingdriver:json.data.driver,
       					statusrecived:true,
       			},()=>{
-      					this.props.navigation.replace('RideConfirm1',this.state);	
+      					this.props.navigation.replace('RideConfirm1',this.state);
       			})
       		}else if(json.message == 'complete'){
       			 clearInterval(this.myinterval);
@@ -426,7 +426,7 @@ export default class BookProcess extends React.Component {
       			},()=>{
       				this.props.navigation.replace('BookMain');
       			})
-      		  
+
       		}else if(json.message == 'cancel'){
       			 clearInterval(this.myinterval);
       	      clearTimeout( this.settimeout);
@@ -462,13 +462,13 @@ export default class BookProcess extends React.Component {
 					   		});
 					   		this.assignDriver(driverID);
 					   	}
-					   	
+
 					     //console.log(" BEFORE ASSIGN DRIVER ID");
-					     
+
 					   }else{
 					    let  remigdriver = this.state.drivernearAll;
 					   if(remigdriver.length > 0){
-					   	if(remigdriver[0].driverId > 0){	
+					   	if(remigdriver[0].driverId > 0){
 					   		remigdriver.shift();
 						   	this.setState({
 						   		drivernearRem:remigdriver,
@@ -482,7 +482,7 @@ export default class BookProcess extends React.Component {
       				console.log("HERE IN ELSE NO ELEMENT",this.state.drivernearAll);
       				remigdriver = this.state.drivernearAll;
       				if(this.state.drivernearAll.length > 0){
-      					if(this.state.drivernearAll[0].driverId > 0){		
+      					if(this.state.drivernearAll[0].driverId > 0){
 					   		remigdriver.shift();
 						   	this.setState({
 						   		drivernearRem:remigdriver,
@@ -491,10 +491,10 @@ export default class BookProcess extends React.Component {
 						   	});
 						   } // end of if
       				}
-      			   
+
       			}
-      			
-      		  // not acccpeted yet 	        		  
+
+      		  // not acccpeted yet
       		}
       	}
       		/*const drivernear = [];
@@ -502,14 +502,14 @@ export default class BookProcess extends React.Component {
       			//console.log(marker.lat);
       			//console.log(marker.lng);
       			const coordinates = {
-      					latitude:Number(marker.lat), 
+      					latitude:Number(marker.lat),
 				      	longitude:Number(marker.lng) };
-				  
-				      	
+
+
 			      drivernear.push({['coordinates']:coordinates,
 			      	['driverId']:marker.driverId,	});
       		});
-      		
+
       		console.log(drivernear);
       		this.setState({
       			drivernear:drivernear,
@@ -519,14 +519,14 @@ export default class BookProcess extends React.Component {
      	 }
       )
       .catch((error) => console.error(error));
-     }); 	
+     });
   }
-    
+
 
 	swipicon =() =>{
 		return(<Ionicons name="ios-close-outline" size={40} color="black" />)
-	} 
-	
+	}
+
     renderContent = () => (
     <>
     <View
@@ -546,7 +546,7 @@ export default class BookProcess extends React.Component {
 			borderRadius:10,
       }}
     >
-  
+
        	<Grid >
    			<Row size={15}>
    			<Col size={12}>
@@ -575,7 +575,7 @@ export default class BookProcess extends React.Component {
               console.log('Submitted successfully!')
               	this.props.navigation.navigate('BookCancel',this.state);
             }}
-            railBackgroundColor="silver"  
+            railBackgroundColor="silver"
             railBorderColor="silver"
             railStyles={{
               backgroundColor: '#E5E9F2',
@@ -602,12 +602,12 @@ export default class BookProcess extends React.Component {
    		</Grid>
      </View>
    </>
-  );   
-  
-  
+  );
+
+
   async intialLoad() {
-  	
-  	  
+
+
      let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
@@ -618,7 +618,7 @@ export default class BookProcess extends React.Component {
        //console.log(location.coords.longitude);
        const latitudeDelta = location.coords.latitude-location.coords.longitude;
        const longitudeDelta = latitudeDelta * ASPECT_RATIO;
-       
+
         //console.log(latitudeDelta);
        //console.log(longitudeDelta);
        let origin ={};
@@ -627,10 +627,10 @@ export default class BookProcess extends React.Component {
        	 origin = this.props.route.params.origin;
 		}else{
 			 origin = {
-	      	latitude: location.coords.latitude, 
+	      	latitude: location.coords.latitude,
 	      	longitude: location.coords.longitude
-	      } 
-		}      
+	      }
+		}
 		let destination = {};
 		let longitudedest = '';
 		let latitudedest= '';
@@ -644,7 +644,7 @@ export default class BookProcess extends React.Component {
       if(this.props.route.params.selectedvehicle){
       	selectedvehicle = this.props.route.params.selectedvehicle;
       }
-      
+
       this.setState({
       	locationcur:location,
       	latitudecur:location.coords.latitude,
@@ -666,12 +666,12 @@ export default class BookProcess extends React.Component {
 		        longitude : longitudedest
 		    }
 		    /*let response = await Location.reverseGeocodeAsync(keys);
-		    
+
 		     //console.log(response);
-		    
+
 		   let address = '';
 		    for (let item of response) {
-		    	//${item.street}, 
+		    	//${item.street},
 		      let address = `${item.name}, ${item.postalCode}, ${item.city}`;
 		       //console.log(address);
 		       this.setState({
@@ -682,11 +682,11 @@ export default class BookProcess extends React.Component {
 		  //}
       //.finally(() => setLoading(false));
     }
-    
+
   render() {
-  
+
   	 return (
-  	  
+
 	    <View style={styles.container}>
 	    <StatusBar backgroundColor="#fff" barStyle="light-content"/>
       <MapView style={styles.map}
@@ -696,7 +696,7 @@ export default class BookProcess extends React.Component {
          latitudeDelta: this.state.latitudeDelta,
          longitudeDelta: this.state.longitudeDelta,
        }}
-       customMapStyle={stylesArray}  
+       customMapStyle={stylesArray}
                ref={c => this.mapView = c}
         onRegionChangeComplete ={ (e) => {
   				if(this.state.display == false){
@@ -704,33 +704,33 @@ export default class BookProcess extends React.Component {
   					display:true,
   				});
   				}
-  				
+
   }}
-    
+
        >
      {Object.keys(this.state.drivernear).length > 0 ?
      this.state.drivernear.map((marker, index) => {
      	return (
 			    <MapView.Marker.Animated
 			    key={marker.id}
-			      coordinate={{latitude: marker.coordinates.latitude, longitude: marker.coordinates.longitude}} 
+			      coordinate={{latitude: marker.coordinates.latitude, longitude: marker.coordinates.longitude}}
 			      title={'vehcile'}
 			    >
 			    <Image
 			        style={styles.vehmarkerimage}
 			        source={imageveh} />
-			   </MapView.Marker.Animated>	
+			   </MapView.Marker.Animated>
   		    );
      })
      : null
-    }	
+    }
     <>
      { this.state.latitudecur  && this.state.longitudecur  ?
        (
      <Marker
       key={1}
-      coordinate={{latitude:this.state.latitudecur, longitude:this.state.longitudecur}} 
-     
+      coordinate={{latitude:this.state.latitudecur, longitude:this.state.longitudecur}}
+
       style={{ alignItems: "center"}} >
     <View  style={{
           alignItems: "center",
@@ -765,15 +765,15 @@ export default class BookProcess extends React.Component {
     </Marker>)
     :(<></>)
     }
-   
+
     { this.state.latitudedest  && this.state.longitudedest  ?
        (
        	<Marker
       key={'destinationkey'}
-      coordinate={{latitude:this.state.latitudedest, longitude:this.state.longitudedest}} 
-      
+      coordinate={{latitude:this.state.latitudedest, longitude:this.state.longitudedest}}
+
       style={{ alignItems: "center"}} >
-    
+
        <View  style={{
           alignItems: "center",
           borderColor:'#135AA8',
@@ -785,10 +785,10 @@ export default class BookProcess extends React.Component {
           flex:1,
           flexDirection:'row'
         }}>
-       
+
          <View  style={{alignItems: 'center',
     justifyContent:'center',width:'100%',padding:10}}>
-    
+
          <Text
    	    numberOfLines={1}
           style={{
@@ -797,30 +797,30 @@ export default class BookProcess extends React.Component {
             fontWeight: "bold",
             textAlign: "center",
             fontSize: 12,
-           
+
           }}
         >{this.state.bookingresponse.destination}</Text>
         </View>
     </View>
    <FontAwesome5 name="map-marker-alt" size={30} color={"#D23C2F"} />
-   
+
     </Marker>
        ) :
        (
        <></>
        )
-     
+
      }
       {Object.keys(this.state.waypointslnglat).length > 0 ?
     this.state.waypointslnglat.map((item, key) => {
     	return(
     		<MapView.Marker.Animated
-  		coordinate={{latitude: item.latitude,longitude: item.longitude}} 
+  		coordinate={{latitude: item.latitude,longitude: item.longitude}}
   		>
   		<Entypo name="stopwatch" size={24} color="#D23C2F" />
-  		</MapView.Marker.Animated>	
+  		</MapView.Marker.Animated>
     	)
-	 }) 
+	 })
 	 :null
    }
     { Object.keys(this.state.origin).length > 0 && Object.keys(this.state.destination).length > 0 ?
@@ -839,16 +839,16 @@ export default class BookProcess extends React.Component {
       lineJoin={'miter'}
       onStart={(params) => {
               console.log(`Started routing between "${params.origin}" and "${params.destination}"`);
-             
+
             }}
       onReady={result => {
       			//console.log(result);
               //console.log(`Distance: ${result.distance} km`)
-              
+
               console.log(`Duration: ${result.duration} min.`)
               let duration = result.duration.toFixed();
               let distance = result.distance;
-              // find amount to display 
+              // find amount to display
 
              const  distancecal = distance/2;
 		        const circumference = 40075;
@@ -878,7 +878,7 @@ export default class BookProcess extends React.Component {
                    animated: true,
               });
     	     });
-              
+
             }}
   			/>
   		</>
@@ -891,7 +891,7 @@ export default class BookProcess extends React.Component {
     }
    </>
   </MapView>
-  
+
   { this.state.display ? (
   <BottomSheet
         snapPoints={[SCREENHEIGHT]}
@@ -906,7 +906,7 @@ export default class BookProcess extends React.Component {
       	<Text></Text>
       )
     }
-    
+
     <View style={{position:'absolute',width:'100%',
   				height:200,top:'9%',left:'0%',zIndex:100,backgroundColor:'transparent',flex:1,flexDirection:'row'}}>
   			 <Grid>
@@ -934,10 +934,10 @@ export default class BookProcess extends React.Component {
 			</Row>
 		</Grid>
 	</View>
-  </View>	
+  </View>
 	  );
    }
- 
+
 }
 
 const styles = StyleSheet.create({
@@ -996,7 +996,7 @@ const styles = StyleSheet.create({
 			},
 			shadowOpacity: 0.27,
 			shadowRadius: 4.65,
-			
+
 			elevation: 6,
 	     },
 	serachbox:{

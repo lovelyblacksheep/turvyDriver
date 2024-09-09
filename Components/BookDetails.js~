@@ -6,7 +6,7 @@ import MapView , { Marker , Polyline ,Callout }from 'react-native-maps';
 import * as Location from 'expo-location';
 import MapViewDirections from 'react-native-maps-directions';
 import GooglePlacesInput from './GooglePlacesInput';
-import { EvilIcons,Ionicons,MaterialCommunityIcons,FontAwesome5,Entypo,FontAwesome } from '@expo/vector-icons'; 
+import { EvilIcons,Ionicons,MaterialCommunityIcons,FontAwesome5,Entypo,FontAwesome } from '@expo/vector-icons';
 const imagemarker = require('../assets/location-pin-2965.png');
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
@@ -25,7 +25,7 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0043;
 const SCREENHEIGHT = height*.65;
 
-import * as firebase from "firebase";
+import firebase from 'firebase/compat/app';
 import "firebase/firestore";
 import * as geofirestore from 'geofirestore';
 import apiKeys from '../config/keys';
@@ -120,22 +120,22 @@ export default class BookDetails extends React.PureComponent {
          selectedcancelchr:0,
     };
     this.mapView = null;
-    
+
    }
-   
+
     componentDidMount(){
    	const {navigation,state} = this.props;
         	this.getNearBydriver();
    	if(this.props.route.params.selectedvehicle){
    		   		console.log("SELECTED VEHCILE REsponse");
    		console.log(this.props.route.params.selectedvehicle);
-      	this.setState({ 
+      	this.setState({
              selectedvehicle:this.props.route.params.selectedvehicle,
              origin:this.props.route.params.origin,
              destination:this.props.route.params.destination,
              latitudedest:this.props.route.params.latitudedest,
              longitudedest:this.props.route.params.longitudedest,
-             latitudecur:this.props.route.params.latitudecur, 
+             latitudecur:this.props.route.params.latitudecur,
              longitudecur:this.props.route.params.longitudecur,
              bookingresponse:this.props.route.params.bookingresponse,
              selectedvehiclefare:this.props.route.params.selectedvehiclefare,
@@ -146,20 +146,20 @@ export default class BookDetails extends React.PureComponent {
         });
         //console.log(this.props.route.params.selectedvehiclefare);
       }
-      
+
    	this.intialLoad();
   		this.unsubscribe =  navigation.addListener("focus",() => {
-  			this.setState({ 
+  			this.setState({
              selectedvehicle:this.props.route.params.selectedvehicle,
              inprocessing:0,
          });
   			this.intialLoad();
-  		});			
+  		});
   } // end of function
-   
+
    async getNearBydriver(){
   		//await AsyncStorage.getItem('accesstoken').then((value) => {
-  			
+
   			const query = geocollection.near({ center: new firebase.firestore.GeoPoint(-33.8688,151.2195 ), radius: 100 });
 	 		//.where('isBusy','==','no')
 	 		const accesstoken = await AsyncStorage.getItem('accesstoken');
@@ -172,7 +172,7 @@ export default class BookDetails extends React.PureComponent {
 			   value.docs.map((item, index) => {
 			   		  console.log(item.data().coordinates);
 			   	if(item.exists == true){
-			   			
+
 			   			drivernear.push({['coordinates']:item.data().coordinates,});
 					      this.setState({
 		      			drivernear:drivernear,
@@ -180,16 +180,16 @@ export default class BookDetails extends React.PureComponent {
 			   	}
 			   });
 			 });
-	 
+
       	/*fetch('https://turvy.net/api/rider/nearByDrivers',{
-     	  	method: 'GET', 
+     	  	method: 'GET',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+value, 
+		     'Authorization': 'Bearer '+value,
 		     'Content-Type': 'application/json'
 		   }),
 		   })
       .then((response) => response.json())
-      .then((json) =>{ 
+      .then((json) =>{
       	console.log("NEAR BY DRIVER");
       	console.log(json.data);
       	if(json.status == 1){
@@ -198,10 +198,10 @@ export default class BookDetails extends React.PureComponent {
       			//console.log(marker.lat);
       			//console.log(marker.lng);
       			const coordinates = {
-      					latitude:Number(marker.lat), 
+      					latitude:Number(marker.lat),
 				      	longitude:Number(marker.lng) };
-				  
-				      	
+
+
 			      drivernear.push({['coordinates']:coordinates,
 			      	['driverId']:marker.driverId,	});
       		});
@@ -219,80 +219,80 @@ export default class BookDetails extends React.PureComponent {
    componentWillUnmount() {
     this.unsubscribe();
   }
-  
+
   async _retry(){
-  			
+
   			await AsyncStorage.getItem('accesstoken').then((value) => {
       	fetch('https://www.turvy.net/api/rider/book/retry/'+this.state.bookingresponse.id,{
-     	  	method: 'POST', 
+     	  	method: 'POST',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+value, 
+		     'Authorization': 'Bearer '+value,
 		     'Content-Type': 'application/json'
 		   }),
 		   body:JSON.stringify({
 	 				'fee' : this.props.route.params.selectedcancelchr,
-	 			}) 
+	 			})
 		   })
       .then((response) => response.json())
-      .then((json) =>{ 			
+      .then((json) =>{
       	//console.log("No RESponse CAncellled");
       	console.log("DELTE ",json);
       	if(json.status == 1){
       		this.props.navigation.replace('BookProcess',this.state);
       	}
-     	 }	
+     	 }
       )
       .catch((error) =>{
-      	console.error(error);	
+      	console.error(error);
       });
-     }); 	
-     
-  
+     });
+
+
   }
-    
+
   async _onPressDone(){
   //	alert(this.state.bookingresponse.id);
   	//alert(this.props.route.params.selectedcancelchr);
   	await AsyncStorage.getItem('accesstoken').then((value) => {
       	fetch('https://www.turvy.net/api/rider/book/cancel/'+this.state.bookingresponse.id,{
-     	  	method: 'POST', 
+     	  	method: 'POST',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+value, 
+		     'Authorization': 'Bearer '+value,
 		     'Content-Type': 'application/json'
 		   }),
 		   body:JSON.stringify({
 	 				'fee' : 0,
-	 			}) 
+	 			})
 		   })
       .then((response) => response.json())
-      .then((json) =>{ 			
+      .then((json) =>{
       	//console.log("No RESponse CAncellled");
       	console.log("BOOK CANCEL DELTE ",json);
       	if(json.status == 1){
       		this.props.navigation.replace('BookMain',this.state);
       	}
-     	 }	
+     	 }
       )
       .catch((error) =>{
-      	console.error(error);	
+      	console.error(error);
       });
-     }); 	
-     
+     });
+
   		/*this.setState({
   			isLoading:false,
   		},()=>{
     		this.props.navigation.navigate('BookMain',this.state);
     	});
-    	*/	
-    	
+    	*/
+
   }
 
 	swipicon =() =>{
 		return(<Ionicons name="ios-close-outline" size={40} color="black" />)
-	} 
-	
+	}
+
     renderContent = () => (
-    <>	
+    <>
     <View
       style={{
         backgroundColor: 'white',
@@ -310,8 +310,8 @@ export default class BookDetails extends React.PureComponent {
 			borderRadius:10,
       }}
     >
-    {this.state.inprocessing == 0 ? 
-   	( <Grid >           
+    {this.state.inprocessing == 0 ?
+   	( <Grid >
    			<Row size={3}>
    			<Col >
    			 	<View style={{backgroundColor:'#cccccc',borderRadius:10,borderColor:'#cccccc',padding:10}}>
@@ -326,7 +326,7 @@ export default class BookDetails extends React.PureComponent {
 				    Try again
 				 	</Button>
    			</Col>
-   			
+
    			</Row>
    			<Row size={1}>
    			<Col size={12} style={{paddingTop:10}}>
@@ -368,7 +368,7 @@ export default class BookDetails extends React.PureComponent {
             onSwipeSuccess={() =>
               console.log('Submitted successfully!')
             }
-            railBackgroundColor="silver"  
+            railBackgroundColor="silver"
             railBorderColor="silver"
             railStyles={{
               backgroundColor: '#44000088',
@@ -390,42 +390,42 @@ export default class BookDetails extends React.PureComponent {
    			</Row>
    		</Grid>
        )
-      } 
+      }
     </View>
    </>
-  );   
-  
-  
+  );
+
+
   async intialLoad() {
-  	
-  	  
+
+
      let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
         return;
       }
-    
+
     }
-    
+
    getdriverList(){
 		 if(Object.keys(this.state.drivernear).length > 0){
 		 	this.state.drivernear.map((marker, index) =>{
 		 	if(marker.coordinates.latitude && marker.coordinates.longitude ){
-		 		return(<MapView.Marker 
+		 		return(<MapView.Marker
 	    key={index}
 	      coordinate={marker.coordinates}
 	      title={'vehcile'}
-	    > 
+	    >
 	    <Image
         style={styles.vehimage}
         source={imageveh} />
 	  </MapView.Marker>);
 		 	}
-		 }); 
-		}  
+		 });
+		}
    }
   render() {
-  
+
   	 return (
 	    <View style={styles.container}>
 	    <StatusBar backgroundColor="#fff" barStyle="light-content"/>
@@ -434,7 +434,7 @@ export default class BookDetails extends React.PureComponent {
           color='#FFF'
           overlayColor='rgba(0, 0, 0, 0.5)'
         />
-       
+
 	    	  <TopBar {...this.props} />
       <MapView style={styles.map}
        region={{
@@ -443,19 +443,19 @@ export default class BookDetails extends React.PureComponent {
          latitudeDelta: this.state.latitudeDelta,
          longitudeDelta: this.state.longitudeDelta,
        }}
-        customMapStyle={stylesArray}  
+        customMapStyle={stylesArray}
                ref={c => this.mapView = c}
-        onRegionChangeComplete ={ (e) => {	
-  }} >	
+        onRegionChangeComplete ={ (e) => {
+  }} >
  	{this.getdriverList()}
-	  
+
     <>
      { this.state.latitudecur  && this.state.longitudecur  ?
        (
      <Marker
        key={'sourcekey'}
-      coordinate={{latitude:this.state.latitudecur, longitude:this.state.longitudecur}} 
-     
+      coordinate={{latitude:this.state.latitudecur, longitude:this.state.longitudecur}}
+
       style={{ alignItems: "center"}} >
     <View  style={{
           alignItems: "center",
@@ -485,22 +485,22 @@ export default class BookDetails extends React.PureComponent {
           }}
         >{this.state.bookingresponse.origin}</Text>
         </View>
-   	  
+
     </View>
   	 <FontAwesome5 name="map-pin" size={30} color={"#D23C2F"} />
     </Marker>)
     :(<></>)
  }
-   
-    
+
+
     { this.state.latitudedest  && this.state.longitudedest  ?
        (
        	<Marker
       key={'destinationkey'}
-      coordinate={{latitude:this.state.latitudedest, longitude:this.state.longitudedest}} 
-      
+      coordinate={{latitude:this.state.latitudedest, longitude:this.state.longitudedest}}
+
       style={{ alignItems: "center"}} >
-    
+
        <View  style={{
           alignItems: "center",
           borderColor:'#135AA8',
@@ -512,10 +512,10 @@ export default class BookDetails extends React.PureComponent {
           flex:1,
           flexDirection:'row'
         }}>
-       
+
          <View  style={{alignItems: 'center',
     justifyContent:'center',width:'100%',padding:10}}>
-    
+
          <Text
    	    numberOfLines={1}
           style={{
@@ -524,21 +524,21 @@ export default class BookDetails extends React.PureComponent {
             fontWeight: "bold",
             textAlign: "center",
             fontSize: 12,
-           
+
           }}
         >{this.state.bookingresponse.destination}</Text>
         </View>
     </View>
    <FontAwesome5 name="map-marker-alt" size={30} color={"#D23C2F"} />
-   
+
     </Marker>
        ) :
        (
        <></>
        )
-     
+
      }
-     
+
     { Object.keys(this.state.origin).length > 0 && Object.keys(this.state.destination).length > 0 ?
     (
     <>
@@ -554,16 +554,16 @@ export default class BookDetails extends React.PureComponent {
       lineJoin={'miter'}
       onStart={(params) => {
               console.log(`Started routing between "${params.origin}" and "${params.destination}"`);
-             
+
             }}
       onReady={result => {
       			//console.log(result);
               //console.log(`Distance: ${result.distance} km`)
-              
+
               console.log(`Duration: ${result.duration} min.`)
               let duration = result.duration.toFixed();
               let distance = result.distance;
-              // find amount to display 
+              // find amount to display
 
              const  distancecal = distance/2;
 		       const circumference = 40075;
@@ -593,7 +593,7 @@ export default class BookDetails extends React.PureComponent {
                    animated: true,
               });
     	     });
-              
+
             }}
   			/>
   		</>
@@ -620,7 +620,7 @@ export default class BookDetails extends React.PureComponent {
       	<Text></Text>
       )
     }
-  </View>	
+  </View>
 	  );
    }
 }
@@ -685,7 +685,7 @@ const styles = StyleSheet.create({
 			},
 			shadowOpacity: 0.27,
 			shadowRadius: 4.65,
-			
+
 			elevation: 6,
 	     },
 	serachbox:{

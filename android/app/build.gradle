@@ -110,7 +110,7 @@ android {
     }
 
     defaultConfig {
-        applicationId 'com.turvy.cabrider'
+        applicationId 'com.turvy.rider'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 102
@@ -166,6 +166,10 @@ dependencies {
 
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+
+    implementation platform('com.google.firebase:firebase-bom:33.2.0')
+    // When using the BoM, don't specify versions in Firebase dependencies
+    implementation 'com.google.firebase:firebase-auth:23.0.0'
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")

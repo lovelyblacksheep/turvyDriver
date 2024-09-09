@@ -9,11 +9,11 @@ import MapView , { Marker, Circle ,AnimatedRegion }from 'react-native-maps';
 import MapViewDirections from 'react-native-maps-directions';
 import * as Location from 'expo-location';
 
-import { EvilIcons } from '@expo/vector-icons'; 
+import { EvilIcons } from '@expo/vector-icons';
 //import Animated from 'react-native-reanimated';
 
 import { Col, Row, Grid } from "react-native-easy-grid";
-import { FontAwesome ,FontAwesome5,Entypo,Feather,AntDesign,Ionicons } from '@expo/vector-icons'; 
+import { FontAwesome ,FontAwesome5,Entypo,Feather,AntDesign,Ionicons } from '@expo/vector-icons';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,7 +24,7 @@ import Pusher from 'pusher-js/react-native';
 import TopBar from "./TopBar";
 import * as geolib from 'geolib';
 const { width, height } = Dimensions.get('window');
-import * as firebase from "firebase";
+import firebase from 'firebase/compat/app';
 import firestore from '@react-native-firebase/firestore';
 import apiKeys from '../config/keys';
 
@@ -40,7 +40,7 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0043;
 const SCREENHEIGHT = height*.50;
 const DEVICE_WIDTH = width;
-const DEVICE_HEIGHT = height;		
+const DEVICE_HEIGHT = height;
 const faresmap = [];
 
 const stylesArray = [
@@ -135,36 +135,36 @@ export default class BookingMap extends React.Component {
             messagecount:0
         };
         this.myRefbt = React.createRef();
-        this.mapView = null;    
+        this.mapView = null;
         this.myinterval = React.createRef();
         this.myinterval2 = React.createRef();
         this.onGoBackCallback = this.onGoBackCallback.bind(this);
-        this.pusher = new Pusher('389d667a3d4a50dc91a6', { cluster: 'ap2' }); 
-        this.listenForChanges();  
+        this.pusher = new Pusher('389d667a3d4a50dc91a6', { cluster: 'ap2' });
+        this.listenForChanges();
     }
-    
+
     listenForChanges = () => {
-		const channel = this.pusher.subscribe('turvy-channel'); 
+		const channel = this.pusher.subscribe('turvy-channel');
 		 channel.bind('end_trip_event', data => {
 		 	this.getrideEnd();
 		  //alert(JSON.stringify(data));
-		  }); 
-		 
+		  });
+
 		  /*channel.bind('driver_offline_event', data => {
 		 	this.getNearBydriver();
 		 //alert(JSON.stringify(data));
 		  });
-		  */ 
+		  */
 	};
-	
-	
+
+
 	 getfares(){
     		 fetch('https://www.turvy.net/api/farecardall/2',{
 	       method: 'GET',
 	      }).then(function (response) {
 	      return response.json();
 	      }).then( (result)=> {
-	      	
+
 	        console.log(result);
 	        if(result.status == 1){
 	        	console.log("INSIDE IF DATA");
@@ -192,13 +192,13 @@ export default class BookingMap extends React.Component {
 	        		 		 let minimumfaren = parseFloat(item.price_per_unit)*parseFloat(distance);
 				        	 let  gstper =  item.gst_charge;
 				        	 gstper = gstper.replace("%", "");
-				        	 
+
 				        	  if(item.servicetype_id == 1){
 				        	 	 surchnageslist = (parseFloat(item.fuel_surge_charge))+parseFloat(item.nsw_gtl_charge)+parseFloat(item.nsw_ctp_charge)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
 				        	 }else{
 				        	 	 surchnageslist = (parseFloat(item.fuel_surge_charge))+parseFloat(item.nsw_gtl_charge)+parseFloat(item.nsw_ctp_charge)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
 				        	 }
-				        	 
+
 		        	      totalchangre = parseFloat(fareoff) + parseFloat(surchnageslist);
 	        		 	}
 	        		 });
@@ -210,8 +210,8 @@ export default class BookingMap extends React.Component {
 	        }
 	    });
     }
-	
-   
+
+
     async intialLoad() {
     	let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
@@ -230,10 +230,10 @@ export default class BookingMap extends React.Component {
         // console.log(longitudeDelta);
 
         const origin = {
-        	latitude: location.coords.latitude, 
+        	latitude: location.coords.latitude,
         	longitude: location.coords.longitude
-        } 
-      
+        }
+
         this.setState({
         	locationcur:location,
         	latitudecur:location.coords.latitude,
@@ -254,7 +254,7 @@ export default class BookingMap extends React.Component {
 
             let address = '';
             for (let item of response) {
-                //${item.street}, 
+                //${item.street},
                 let address = `${item.name}, ${item.postalCode}, ${item.city}`;
                 // console.log(address);
                 this.setState({
@@ -264,7 +264,7 @@ export default class BookingMap extends React.Component {
             }
         }
         */
-        AsyncStorage.getItem('accesstoken').then((value) => {           
+        AsyncStorage.getItem('accesstoken').then((value) => {
             if(value != '' && value !== null){
                 this.setState({
                     accessTokan:value
@@ -272,15 +272,15 @@ export default class BookingMap extends React.Component {
             }
         })
         //alert(this.state.isOnline)
-    } 
-    
+    }
+
     async componentDidMount() {
     	const {navigation,state} = this.props;
-    	 
+
     	  this.getRewards();
     	   BackHandler.addEventListener('hardwareBackPress', this.onGoBackCallback);
         navigation.addListener('gestureEnd', this.onGoBackCallback);
-        
+
 		// this.getrewards();
 		this.unsubscribe =  navigation.addListener("focus",() => {
 			BackHandler.addEventListener('hardwareBackPress', this.onGoBackCallback);
@@ -291,17 +291,17 @@ export default class BookingMap extends React.Component {
           //clearInterval(this.myintervalaccp);
       	BackHandler.removeEventListener('hardwareBackPress', this.onGoBackCallback);
       });
-      
+
       console.log("Booking driver",this.props.route.params.bookingdriver);
       if(this.props.route.params.selectedvehicle){
-      	
-      	this.setState({ 
+
+      	this.setState({
              selectedvehicle:this.props.route.params.selectedvehicle,
              origin:this.props.route.params.origin,
              destination:this.props.route.params.destination,
              latitudedest:this.props.route.params.latitudedest,
              longitudedest:this.props.route.params.longitudedest,
-             latitudecur:this.props.route.params.latitudecur, 
+             latitudecur:this.props.route.params.latitudecur,
              longitudecur:this.props.route.params.longitudecur,
              bookingresponse:this.props.route.params.bookingresponse,
              rideinfoinprocess:this.props.route.params.rideinfoinprocess,
@@ -317,7 +317,7 @@ export default class BookingMap extends React.Component {
 					            }),
         },
         ()=>{
-        	
+
         	const center = {
                 latitude: (this.state.origin.latitude + this.state.destination.latitude) / 2,
                 longitude: (this.state.origin.longitude + this.state.destination.longitude) / 2,
@@ -329,39 +329,39 @@ export default class BookingMap extends React.Component {
                   pathCenter:center
               });
         	        /* const origin = {
-		            	latitude: 21.11922760, 
+		            	latitude: 21.11922760,
 		            	longitude:79.10470160
-		            } 
-      
+		            }
+
 		            this.setState({
 		            	origin:origin
 		            });
         	      */
         });
-        
-        	
+
+
          //console.log("RESPONSE AFTER FARE",faresmap);
        // alert("BEFORE LOOP");
          this.loopfuntions();
-         
-       
-       
-         	
-         /*	
+
+
+
+
+         /*
         let locations = await Location.watchPositionAsync({ accuracy: Location.Accuracy.BestForNavigation, timeInterval: 10000, distanceInterval: 1 }, (pos) => {
 	            console.log('cords:',pos.coords);
 	             const { latitude, longitude } = pos.coords;
 	             const origin = {
-		            	latitude: latitude, 
-		            	longitude:longitude	
-		            } 	
+		            	latitude: latitude,
+		            	longitude:longitude
+		            }
 		            this.setState({
 		            	latitudecur:latitude,
 		            	longitudecur:longitude,
 		            	origin:origin
 		            });
 	            //console.log(driverId);
-	        }); 
+	        });
 			*/
         //this.intialLoad()
         //alert("here before load "+this.props.route.params.bookingdriver.id);
@@ -375,7 +375,7 @@ export default class BookingMap extends React.Component {
              destination:this.props.route.params.destination,
              latitudedest:this.props.route.params.latitudedest,
              longitudedest:this.props.route.params.longitudedest,
-             latitudecur:this.props.route.params.latitudecur, 
+             latitudecur:this.props.route.params.latitudecur,
              longitudecur:this.props.route.params.longitudecur,
              bookingdriver:this.props.route.params.bookingdriver,
              bookingresponse:this.props.route.params.bookingresponse,
@@ -396,22 +396,22 @@ export default class BookingMap extends React.Component {
 	              this.setState({
 	                  pathHeading:destheading,
 	                  pathCenter:center
-	              })      		
-      		
+	              })
+
       		//this.getrideStart();
       	});
-      
+
       }
-     
-     AsyncStorage.getItem('messagecount').then((value) => {           
+
+     AsyncStorage.getItem('messagecount').then((value) => {
             if(value != '' && value !== null){
                 this.setState({messagecount:value})
                 //alert(value)
             }
-        });	 
-       
+        });
+
    }
-    
+
 	 onRegionChangeComplete = (region) => {
 	     //console.log('onRegionChangeComplete', region);
 	     /*this.setState({
@@ -419,14 +419,14 @@ export default class BookingMap extends React.Component {
 	         longitudeDelta: region.longitudeDelta,
 	     });
 	     */
-	     
+
 	     this.setState({
 	         latitudeDelta: 0.008765219166956939,
 	         longitudeDelta: 0.005394257605075836,
 	     });
 	 };
-	 
-	 
+
+
 	 // Converts from degrees to radians.
     toRadians = (degrees) => {
       return (degrees * Math.PI) / 180;
@@ -436,8 +436,8 @@ export default class BookingMap extends React.Component {
     toDegrees = (radians) => {
       return (radians * 180) / Math.PI;
     }
-	
-   
+
+
     getHeading = (origin, destination) => {
         const originLat = this.toRadians(origin.latitude);
         const originLng = this.toRadians(origin.longitude);
@@ -451,7 +451,7 @@ export default class BookingMap extends React.Component {
         const heading = this.toDegrees(Math.atan2(y, x));
         return (heading + 360) % 360;
     }
-    
+
    onGoBackCallback(){
       console.log('Android hardware back button pressed and iOS back gesture ended');
       this.setState({
@@ -460,15 +460,15 @@ export default class BookingMap extends React.Component {
       this.props.navigation.replace('BookMain',this.state);
      return true;
    }
-   
+
     async getRewards(){
 		 await AsyncStorage.getItem('rewardpoints').then((value) => {
 			this.setState({
 				rewardpoints:value,
 			});
-		});	    
+		});
   }
-  
+
     loopfuntions =() =>{
     	//alert(" LOOP START");
     		//alert(this.props.route.params.bookingdriver.id);
@@ -479,62 +479,62 @@ export default class BookingMap extends React.Component {
           }
         }, 10000);
         */
-        
-	   
+
+
          this.myinterval2 = setInterval(() => {
           	this.getDriverCoordinate();
         }, 4000);
 
-         this.getrideEnd();   
+         this.getrideEnd();
     }
-    
+
   getDriverCoordinate = () =>{
-  
+
   		 var docRef = firestore().collection("driver_locations").doc(JSON.stringify(this.props.route.params.bookingdriver.id));
                 docRef.get().then((doc) => {
-                		
+
                     if (doc.exists) {
                     	//alert("IN QUERY DOC");
                         console.log("Document data INITAL 1 :", doc.data());
-                        
+
                          let latitude = doc.data().coordinates.latitude;
                          let longitude= doc.data().coordinates.longitude;
 				             let origin = {
-					            	latitude: latitude, 
-					            	longitude:longitude	
-					            } 	
+					            	latitude: latitude,
+					            	longitude:longitude
+					            }
 					            this.setState({
 					            	latitudecur:latitude,
 					            	longitudecur:longitude,
 					            	origin:origin
 					            });
-					            
-					            
+
+
 					             let rotateAngl = 0;
-                   
+
 			                    rotateAngl = (doc.data().heading/360);
 			                    Animated.timing(this.state.rotateValue, {
 						                toValue: rotateAngl,
 						                duration: 2000,
 						                useNativeDriver: true,
 						            }).start();
-						            
-		            
+
+
 					            const newCoordinate = {
 					                latitude: latitude,
 					                longitude: longitude,
 					                latitudeDelta:this.state.latitudeDelta,
 					                longitudeDelta: this.state.longitudeDelta,
 					            };
-					
-					
+
+
 					            if (this.marker) {
-					                //console.log('newCoordinate',newCoordinate)                
+					                //console.log('newCoordinate',newCoordinate)
 					                this.state.driverCoordinate.timing({ ...newCoordinate, useNativeDriver: true,duration: 4000 }).start();
 					            }
-					            
-					            
-					            
+
+
+
 					           if(this.mapView) {
 						            this.mapView.animateCamera({
 						                center:{
@@ -543,14 +543,14 @@ export default class BookingMap extends React.Component {
 						                }
 						            });
 						        }
-						        
+
 
                        /* this.setState({driverLocation:doc.data().coordinates,
                         displaydriveloc:true},()=>{
-					       	 console.log(" ORGIN SET INITAL "+JSON.stringify(this.state.driverLocation));      	
+					       	 console.log(" ORGIN SET INITAL "+JSON.stringify(this.state.driverLocation));
 					         });
 					         */
-					         
+
                     } else {
                         // doc.data() will be undefined in this case
                         console.log("No such document!");
@@ -558,9 +558,9 @@ export default class BookingMap extends React.Component {
                 }).catch((error) => {
                     console.log("Error getting document:", error);
                 });
-                
-               
-     
+
+
+
   }
   getrideEnd =()=>{
   	console.log('fares --- ',this.state.fares);
@@ -572,11 +572,11 @@ export default class BookingMap extends React.Component {
 			  .get()
 			  .then(querySnapshot => {
 			    console.log('Total bOOKING STATUS: ', querySnapshot.size);
-			    
+
 			    if(querySnapshot.size > 0){
-			    	
+
 			     this.getfares();
-				   
+
 			    	clearInterval(this.myinterval);
 			    	clearInterval(this.myinterval2);
 			    		this.setState({
@@ -585,22 +585,22 @@ export default class BookingMap extends React.Component {
 				    		this.setDriverPayment();
 			       		this.props.navigation.replace('RideArriveDest',this.state);
 				    	})
-			    }																																																																																																																																															
+			    }
 			  });
   }
- 
-   
+
+
    UNSAFE_componentWillUnmount() {
-    
+
     if(this.myinterval){
       clearInterval(this.myinterval);
     }
-   
+
     if(this.myinterval2){
     	clearInterval(this.myinterval2);
     }
   }
-  
+
     openDialScreen (){
     let number = '';
     if (Platform.OS === 'ios') {
@@ -610,11 +610,11 @@ export default class BookingMap extends React.Component {
     }
     Linking.openURL(number);
   }
-    
-    
 
-    
-    
+
+
+
+
       renderContent = () => (
     <>
     <View
@@ -634,13 +634,13 @@ export default class BookingMap extends React.Component {
 			borderRadius:10,
       }}
     >
-  
-    <Grid >   	
-   			
+
+    <Grid >
+
    			<Row style={{height:100}}>
    				<Col size={5} style={{padding:10}}>
    				<View style={{borderWidth:1,borderColor:'silver',height:60,padding:10,borderRadius:8,backgroundColor:'#ccc'}}>
-						{this.state.avatar && this.state.avatar != null ? 
+						{this.state.avatar && this.state.avatar != null ?
 							(<Image
 				        source={{uri:"https://www.turvy.net/"+this.state.avatar}}
 				        style={styles.servicebocimage}
@@ -653,14 +653,14 @@ export default class BookingMap extends React.Component {
 				        Resizemode={'contain'}
 				         />)
 						}
-   					
-   				</View>	
+
+   				</View>
    				</Col>
    				<Col size={7} style={{padding:10}}>
-   					
+
    					<Text style={{fontSize:20,fontWeight:'bold'}}>{this.state.name}</Text>
    				</Col>
-   				
+
    			</Row>
    			<Row style={{height:80}}>
    				<Col size={4} style={{padding:6}}>
@@ -708,7 +708,7 @@ export default class BookingMap extends React.Component {
    				</Col>
    			</Row>
    		</Grid>
-      
+
     </View>
    </>
   );
@@ -720,21 +720,21 @@ export default class BookingMap extends React.Component {
 							//console.log('https://turvy.net/api/rider/driverrequestPayment/'+this.state.bookingresponse.id);
 							//this.props.route.params
 							fetch('https://www.turvy.net/api/rider/driverrequestPayment/'+this.state.bookingresponse.id,{
-				     	  	method: 'POST', 
+				     	  	method: 'POST',
 						   headers: new Headers({
-						     'Authorization': 'Bearer '+value, 
+						     'Authorization': 'Bearer '+value,
 						     'Content-Type': 'application/json'
-						   }), 
+						   }),
 						   body:JSON.stringify({
 					 				'driver_id' : this.state.bookingdriver.id
-					 			}) 
+					 			})
 						   })
 				      .then((response) => response.json())
-				      .then((json) =>{ 
+				      .then((json) =>{
 				      	console.log(json);
-				      
+
 				      	/*if(json.status == 1){
-				      		 this.setState({                                        
+				      		 this.setState({
 					         	isLoading:false,
 				    				vehborder:'red',
 				    				bookingresponse:json.data
@@ -747,29 +747,29 @@ export default class BookingMap extends React.Component {
 				      .catch((error) => console.error(error));
 				      })
  }
-  
-    render() {  	
+
+    render() {
     	let rotateAngl = 0;
 	   rotateAngl = (this.state.heading/360);
 	  	const spin = this.state.rotateValue.interpolate({
 	          inputRange: [0, 1],
 	          outputRange: ['0deg', '360deg']
 	        });
-        
+
         return (
-            <>	 
+            <>
                 <View style={styles.container}  >
                     <View >
                         <View>
                             <View
                                 style={{
                                   alignItems: 'center',
-                                  flexDirection:'row',                    
+                                  flexDirection:'row',
                                 }}
                             >
                             <View style={{flexDirection:'row',width: '96%'}}>
                             </View>
-                            </View>        
+                            </View>
                         </View>
                         <View style={{flex:6}}>
                             <MapView style={styles.map}
@@ -781,18 +781,18 @@ export default class BookingMap extends React.Component {
                                   longitudeDelta:this.state.longitudeDelta,
                                 }}
                                onRegionChangeComplete={this.onRegionChangeComplete}
-                               customMapStyle={stylesArray}  
-                                
+                               customMapStyle={stylesArray}
+
                             >
-                             
+
       { this.state.latitudecur != '' && this.state.longitudecur != '' && Object.keys(this.state.origin).length > 0 ?
                                  ( 	<Marker.Animated
                                   ref={marker => {this.marker = marker;}}
-            coordinate={this.state.driverCoordinate} 
+            coordinate={this.state.driverCoordinate}
       style={{ alignItems: "center"}}
       anchor={{ x: 0.5, y: 0.5 }}
       flat >
-    
+
 			 <Animated.Image
         style={{
                  width: 40,
@@ -810,7 +810,7 @@ export default class BookingMap extends React.Component {
        	<Marker
        	tracksViewChanges={false}
       key={'destinationkey'}
-      coordinate={{latitude:this.state.latitudedest, longitude:this.state.longitudedest}} 
+      coordinate={{latitude:this.state.latitudedest, longitude:this.state.longitudedest}}
       style={{ alignItems: "center"}} >
        <View  style={{
           alignItems: "center",
@@ -825,7 +825,7 @@ export default class BookingMap extends React.Component {
         }}>
          <View  style={{alignItems: 'center',
     justifyContent:'center',width:'100%',padding:10}}>
-    
+
          <Text
    	    numberOfLines={3}
           style={{
@@ -834,11 +834,11 @@ export default class BookingMap extends React.Component {
             fontWeight: "bold",
             textAlign: "center",
             fontSize: 12,
-           
+
           }}
         >{this.state.bookingresponse.destination}</Text>
         </View>
-   	  
+
     </View>
    	 <Entypo name="location-pin" size={40} color={"#910101"} />
     </Marker>
@@ -847,7 +847,7 @@ export default class BookingMap extends React.Component {
        <></>
        )
      }
-    
+
     {Object.keys(this.state.waypointslnglat).length > 0 ?
     this.state.waypointslnglat.map((item, key) => {
     	return(
@@ -857,11 +857,11 @@ export default class BookingMap extends React.Component {
     		<Entypo name="location-pin" size={30} color="green" />
     	 </MapView.Marker.Animated>
     	)
-	 }) 
+	 })
 	 :null
-   }    
+   }
                                 { Object.keys(this.state.origin).length > 0 && Object.keys(this.state.destination).length > 0 ?
-    										(	
+    										(
 										    <>
 										    	<MapViewDirections
 										    	region={'AU'}
@@ -880,16 +880,16 @@ export default class BookingMap extends React.Component {
 										      onReady={result => {
 										      			//console.log(result);
 										              //console.log(`Distance: ${result.distance} km`)
-										              
+
 										              console.log(`Duration: ${result.duration} min.`)
 										              let duration = result.duration.toFixed();
 										              let distance = result.distance;
 										              if(duration == 0){
-										              	
+
 										              	 //this.state.bookingdriver.id
 										                //this.props.navigation.navigate('RideArriveDest',this.state);
-										              }	
-										              
+										              }
+
 										              console.log(duration);
 										              this.setState({
 										              	duration:duration,
@@ -899,7 +899,7 @@ export default class BookingMap extends React.Component {
 										              		this.setState({
 										              			mapfitdone:true,
 										              		},()=>{
-										              		
+
 										              			 /*this.mapView.fitToCoordinates(result.coordinates, {
 												                edgePadding: {
 													                  right: DEVICE_WIDTH*0.20,
@@ -910,17 +910,17 @@ export default class BookingMap extends React.Component {
 													                   animated: false,
 													              });
 													              */
-													              
+
 													              	this.mapView.animateCamera({
 													                   heading: this.state.pathHeading,
 													               });
-													              
+
 										              		})
-										              		
+
 										              	}
-										    				
+
 										    	     });
-										              
+
 										            }}
 										  			/>
 										  		</>
@@ -931,13 +931,13 @@ export default class BookingMap extends React.Component {
 										    	</>
 										    	)
 										    }
-    
+
                             </MapView>
                         </View>
                     </View>
-                </View>	
+                </View>
               <TopBar {...this.props} />
-	
+
             </>
         );
     }
@@ -989,11 +989,11 @@ const styles = StyleSheet.create({
         color:'#FFF',
         elevation: 10,
     },
-    offlineBtn:{      
+    offlineBtn:{
         backgroundColor:"#ccc",
         justifyContent:'center',
         alignItems:'center',
-        flexDirection:'row',    
+        flexDirection:'row',
         borderRadius:45,
     },
   menubox:{
@@ -1015,7 +1015,7 @@ const styles = StyleSheet.create({
 			},
 			shadowOpacity: 0.27,
 			shadowRadius: 4.65,
-			
+
 			elevation: 6,
 	     },
 	serachbox:{

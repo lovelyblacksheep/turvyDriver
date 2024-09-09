@@ -2,7 +2,7 @@ import React from "react";
 import { AppRegistry, Image, StatusBar,StyleSheet,View ,  FlatList,TouchableWithoutFeedback,TouchableOpacity,ImageBackground} from "react-native";
 import { Text, List , Divider  } from "react-native-paper";
 
-import { MaterialCommunityIcons , EvilIcons,Ionicons} from '@expo/vector-icons'; 
+import { MaterialCommunityIcons , EvilIcons,Ionicons} from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Col, Row, Grid } from "react-native-easy-grid";
@@ -10,7 +10,7 @@ import { Avatar ,Badge} from "react-native-elements";
 import {styles,theme, DOMAIN} from '../Riders/Constant';
 import UploadImage from '../Components/UploadImage';
 import * as Font from 'expo-font';
-import * as firebase from "firebase";
+import firebase from 'firebase/compat/app';
 
 const imagenot= require('../assets/New-Message-bell_P1-new.png');
 
@@ -37,13 +37,13 @@ const routes = [
  ];
 
 export default class SideBar extends React.Component {
-	
+
 	 constructor(props) {
     super(props);
     this.state = {
     		profiledat:{},
     		 avatar:DOMAIN+'images/no-person.png',
-    		 riderId:0,	
+    		 riderId:0,
     		 accesstoken:'',
     		 messagecount:0
     }
@@ -55,7 +55,7 @@ export default class SideBar extends React.Component {
     });
 
 
-		
+
 		await AsyncStorage.getItem('messagecount').then((value) => {
 			this.setState({
 				messagecount:value ,
@@ -66,19 +66,19 @@ export default class SideBar extends React.Component {
 			//console.log(value);
 			if(value != '' && value != null){
 				this.setState({
-					accesstoken:value,																				
+					accesstoken:value,
 				})
 			//this.props.route.params
 			fetch('https://www.turvy.net/api/rider/profile',{
-     	  	method: 'GET', 
+     	  	method: 'GET',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+value, 
+		     'Authorization': 'Bearer '+value,
 		     'Content-Type': 'application/json'
-		   }), 
-		 
+		   }),
+
 		   })
       .then((response) => response.json())
-      .then((json) =>{ 
+      .then((json) =>{
       console.log("here in reso");
       	console.log(json);
 
@@ -87,7 +87,7 @@ export default class SideBar extends React.Component {
       		 let avatar = '';
       		  if(profiledat.avatar && profiledat.avatar !== null){
 	           avatar = DOMAIN+profiledat.avatar;
-	           
+
 	           console.log("AVATAR",avatar);
 	           this.setState({
 	           	avatar:avatar,
@@ -108,18 +108,18 @@ export default class SideBar extends React.Component {
         }
       )
       .catch((error) => console.error(error));
-      
-      
+
+
       fetch('https://www.turvy.net/api/rider/getunreadmessages',{
-     	  	method: 'GET', 
+     	  	method: 'GET',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+value, 
+		     'Authorization': 'Bearer '+value,
 		     'Content-Type': 'application/json'
-		   }), 
-		 
+		   }),
+
 		   })
       .then((response) => response.json())
-      .then((json) =>{ 
+      .then((json) =>{
       console.log("MESSAGE COUNT ",json);
       //alert(json.data.count);
       	if(json.data != '' && json.data != null){
@@ -128,26 +128,26 @@ export default class SideBar extends React.Component {
          {
          	messagecount:json.data.count,
          });
-      } 
+      }
    	}).catch((error) => console.error(error));
-     } 	
+     }
 	})
-	
-	
+
+
 	     this.sideBarInt = setInterval(() => {
 
-           
-            AsyncStorage.getItem('avatar').then((value) => {      
-              //alert(value);       
+
+            AsyncStorage.getItem('avatar').then((value) => {
+              //alert(value);
                 if(value != '' && value !== null){
                     this.setState({
                         avatar: value
                     },()=>{
                       //console.log("avatar sidebaer",value);
-                    });        
+                    });
                 }
             });
-            
+
 				 AsyncStorage.getItem('messagecount').then((value) => {
 					if(value != '' && value !== null){
 					this.setState({
@@ -155,7 +155,7 @@ export default class SideBar extends React.Component {
 					});
 				  }
 				});
-           /* AsyncStorage.getItem('accesstoken').then((value) => {         
+           /* AsyncStorage.getItem('accesstoken').then((value) => {
                 if(value != '' && value !== null){
                     this.setState({
                         accessTokan:value
@@ -168,14 +168,14 @@ export default class SideBar extends React.Component {
             }
 				*/
         }, 2000);
-	 
-  		
-	
-  }
-  
-  
 
-  
+
+
+  }
+
+
+
+
   openmenu = async (id) =>{
   		if(id == 'logout'){
   				//console.log('log out ');
@@ -185,14 +185,14 @@ export default class SideBar extends React.Component {
   		}else{
   			this.props.navigation.navigate(id)
   		}
-  		
+
   }
-  
+
   render() {
     return (
      <View style={{background: '#FFFFFF'}}>
-          <View style={{height:150}}>  
-          	
+          <View style={{height:150}}>
+
           	<Grid  style={{height:150,flexDirection: 'row', alignItems: 'center',paddingTop:30 }}>
           		<Row size={75}>
           			<Col size={1}>
@@ -204,7 +204,7 @@ export default class SideBar extends React.Component {
 
                 <Text style={{fontWeight:'bold',color:'#000',fontSize:19,padding:5}} >
                   {this.state.profiledat.first_name} {this.state.profiledat.last_name}
-                  </Text>                
+                  </Text>
 						<View style={{paddingLeft:5}} >
           		  	<TouchableWithoutFeedback onPress={()=>this.props.navigation.navigate('EditProfile')}><Text style={{fontWeight:'bold',color:'#3f78ba',fontSize:16,paddingLeft:5}}>Edit Profile</Text></TouchableWithoutFeedback>
 						</View>
@@ -229,9 +229,9 @@ export default class SideBar extends React.Component {
                                )
                             	:
                             	(<Text style={[styles.ubarFont,{fontSize:18}]}>{item.Lable}</Text>)
-                            	} 
+                            	}
                             </View>
-                        </TouchableOpacity> 
+                        </TouchableOpacity>
                     );
             }}
           />
@@ -239,15 +239,15 @@ export default class SideBar extends React.Component {
                     <View style={{paddingVertical:7,marginLeft:30,marginTop:25}}>
                         <Text style={[styles.ubarFont,{fontSize:18}]}>Logout</Text>
                     </View>
-                </TouchableOpacity> 
+                </TouchableOpacity>
           </View>
     );
   }
 }
 const styles1 = StyleSheet.create({
-  text: {    
+  text: {
         color: "black",
-        fontSize: 25,    
-        textAlign: "center", 
+        fontSize: 25,
+        textAlign: "center",
     },
 })

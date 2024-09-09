@@ -8,11 +8,11 @@ import MapView , { Marker , Polyline , PROVIDER_GOOGLE , Geojson}from 'react-nat
 import * as Location from 'expo-location';
 import MapViewDirections from 'react-native-maps-directions';
 import GooglePlacesInput from './GooglePlacesInput';
-import { EvilIcons,MaterialCommunityIcons,Ionicons,Entypo,MaterialIcons } from '@expo/vector-icons'; 
+import { EvilIcons,MaterialCommunityIcons,Ionicons,Entypo,MaterialIcons } from '@expo/vector-icons';
 import Animated from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
 import { Col, Row, Grid } from "react-native-easy-grid";
-import { FontAwesome ,FontAwesome5,Octicons } from '@expo/vector-icons'; 
+import { FontAwesome ,FontAwesome5,Octicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const imagemarker = require('../assets/location-0101.png');
 const imageveh = require('../assets/images/driver-veh-images_60.png');
@@ -20,23 +20,23 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import Pusher from 'pusher-js/react-native';
 
 
- // Enable pusher logging - don't include this in production 
- 
- 
+ // Enable pusher logging - don't include this in production
+
+
 const intiallat = -33.8688;
 const intiallngh = 151.2195;
-const origin = {latitude: -33.8688, longitude: 151.2195};	
+const origin = {latitude: -33.8688, longitude: 151.2195};
 const destination = {latitude:  -33.8688, longitude: 151.2195};
 
 const { width, height } = Dimensions.get('window');
 
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0043;
- import * as firebase from "firebase";
+ import firebase from 'firebase/compat/app';
 import firestore from '@react-native-firebase/firestore';
 
-/* 
-   import * as firebase from "firebase";
+/*
+   import firebase from 'firebase/compat/app';
   import "firebase/firestore";
 */
 import * as geofirestore from 'geofirestore';
@@ -83,7 +83,7 @@ const stylesArray = [
 	{
 	"featureType": "landscape.natural.landcover",
     "stylers": [
-      { "color": "#C9E7D2"  }																																														
+      { "color": "#C9E7D2"  }
     ]
 	},
 	{
@@ -130,28 +130,28 @@ export default class BookMain extends React.Component {
          accesstoken:'',
     };
     this.myRefbt = React.createRef();
-    this.mapView = null;   
-     this.pusher = new Pusher('389d667a3d4a50dc91a6', { cluster: 'ap2' }); 
-     this.listenForChanges(); 
+    this.mapView = null;
+     this.pusher = new Pusher('389d667a3d4a50dc91a6', { cluster: 'ap2' });
+     this.listenForChanges();
    }
-	
+
 	listenForChanges = () => {
-		const channel = this.pusher.subscribe('turvy-channel'); 
+		const channel = this.pusher.subscribe('turvy-channel');
 		 channel.bind('driver_online_event', data => {
 		 	this.getNearBydriver();
 		  //alert(JSON.stringify(data));
-		  }); 
-		 
+		  });
+
 		  channel.bind('driver_offline_event', data => {
 		  	//alert(JSON.stringify(data));
 		 	this.getNearBydriver();
 		 //
-		  }); 
+		  });
 	};
    componentDidMount(){
-   	//Pusher.logToConsole = true; 
-		
-		 
+   	//Pusher.logToConsole = true;
+
+
    	const {navigation} = this.props;
    	this.getSettings();
 
@@ -160,48 +160,48 @@ export default class BookMain extends React.Component {
 
    	 //21.087547232434844,79.07271710207583|21.09763731725872,79.09177151491762|21.073612179271233,79.10739270022036|21.068486313884367,79.09323063662173|21.06464179890505,79.07031384279848|21.068806685647157,79.09245816042544|21.068165941431435,79.09228649904848|21.066964538586916,79.0808710174811|21.064801989013013,79.06979885866762
    	 //21.096836541916716,79.07203045656802|21.072811274451436,79.06396237185122|21.08049978262587,79.08919659426333
-  
+
 	//alert(res);
 
 	//console.log("Queuen - RESPOSNE 2");
-		
+
   		this.unsubscribe =  navigation.addListener("focus",() => {
   			console.log("IN FOCUS ",this.props);
   			this.getrewards();
   			this.myRefbt.current.snapTo(2);
-  			
-  			this.setState({ 
+
+  			this.setState({
              state:this.props.route.params,
              destinationto:'',
              destination:{},
              initialSnap:2,
          });
   			//this.intialLoad();
-  		});		
+  		});
   } // end of function
 
 
 
 async removedriverNotexist(){
-  	  	
-    // get data from firebase 
+
+    // get data from firebase
     const value = await AsyncStorage.getItem('accesstoken');
-     await AsyncStorage.getItem('accesstoken').then((value) => {           
+     await AsyncStorage.getItem('accesstoken').then((value) => {
             if(value != '' && value !== null){
                 this.setState({accesstoken:value})
                 //alert(value)
             }
-        }) 
+        })
    let query = '';
    //alert(this.state.search_radius);
-     const geocollection = GeoFirestore.collection('driver_locations');     
+     const geocollection = GeoFirestore.collection('driver_locations');
      query = geocollection.near({ center: new firebase.firestore.GeoPoint(this.state.latitudecur,this.state.longitudecur), radius:Number(this.state.search_radius)});
 
 		// Get query (as Promise)
 	query.get().then((value) => {
 	  // All GeoDocument returned by GeoQuery, like the GeoDocument added above
 	  //console.log(value.docs);
-	 
+
 	  const driverList = [];
 	   value.docs.map((item, index) => {
 	   	 //console.log("DRIVER MAP 1");
@@ -210,23 +210,23 @@ async removedriverNotexist(){
 			     driverList.push(item.id);
 	   	}
 	   });
-	   
-	 
+
+
 	  	//alert(value);
 	   fetch('https://www.turvy.net/api/rider/getRemovedDriver',{
-     	  	method: 'POST', 
+     	  	method: 'POST',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+this.state.accesstoken, 
+		     'Authorization': 'Bearer '+this.state.accesstoken,
 		     'Content-Type': 'application/json'
-		   }), 
+		   }),
 		   body:JSON.stringify({
 	 				'driverList' : driverList,
-	 			}) 
+	 			})
 		   })
       .then((response) =>{
       	return response.json();
       })
-      .then((json) =>{ 
+      .then((json) =>{
       	console.log("Remove Driver FB",json);
       	if(json.status == 1){
       		console.log("Remove Driver FB",json.data);
@@ -238,11 +238,11 @@ async removedriverNotexist(){
 			        .delete();
       			});
       		}
-      		
+
       		/*db.collection("driver_locations")
         .doc(this.state.driverId)
         .delete()
-        */  
+        */
       	}
 
      	 }
@@ -255,24 +255,24 @@ async removedriverNotexist(){
 	 });
 
   }
-  
-  
+
+
   async getNearBydriver(){
-  	  	
-    // get data from firebase 
+
+    // get data from firebase
     //alert("IN NEAR BY BEFORE START");
    const value = await AsyncStorage.getItem('accesstoken');
-     await AsyncStorage.getItem('accesstoken').then((value) => {           
+     await AsyncStorage.getItem('accesstoken').then((value) => {
             if(value != '' && value !== null){
                 this.setState({accesstoken:value})
                 //alert(value)
             }
         });
-        //alert("IN NEAR BY BEFORE START"+this.state.latitudecur); 
+        //alert("IN NEAR BY BEFORE START"+this.state.latitudecur);
    let query = '';
    //alert(this.state.search_radius);
      const geocollection = GeoFirestore.collection('driver_locations');
-           
+
      query = geocollection.near({ center: new firebase.firestore.GeoPoint(this.state.latitudecur,this.state.longitudecur), radius:Number(this.state.search_radius)});
 
 		// Get query (as Promise)
@@ -282,7 +282,7 @@ async removedriverNotexist(){
 	  const drivernear = [];
 	  const driverList = [];
 	  if(value.docs.length > 0){
-	
+
 	   value.docs.map((item, index) => {
 	   	 console.log("DRIVER MAP 2");
 	   		  console.log(item.data().coordinates);
@@ -303,22 +303,22 @@ async removedriverNotexist(){
       			drivernear:drivernear
         });
 	  }
-	 
+
 	  	//alert(value);
 	   fetch('https://www.turvy.net/api/rider/getRemovedDriver',{
-     	  	method: 'POST', 
+     	  	method: 'POST',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+this.state.accesstoken, 
+		     'Authorization': 'Bearer '+this.state.accesstoken,
 		     'Content-Type': 'application/json'
-		   }), 
+		   }),
 		   body:JSON.stringify({
 	 				'driverList' : driverList,
-	 			}) 
+	 			})
 		   })
       .then((response) =>{
       	return response.json();
       })
-      .then((json) =>{ 
+      .then((json) =>{
       	console.log("Remove Driver FB",json);
       	if(json.status == 1){
       		console.log("Remove Driver FB",json.data);
@@ -330,11 +330,11 @@ async removedriverNotexist(){
 			        .delete();
       			});
       		}
-      		
+
       		/*db.collection("driver_locations")
         .doc(this.state.driverId)
         .delete()
-        */  
+        */
       	}
 
      	 }
@@ -342,13 +342,13 @@ async removedriverNotexist(){
       .catch((error) =>{
       	console.error(error);
        });
-       	
+
 	   console.log("DRIVER LIST",drivernear);
 	 });
   }
-  
+
   getSettings(){
-  	
+
   	fetch('http://www.turvy.net/api/settings/info',{
 			method: 'GET',
  		}).then(function (response) {
@@ -366,11 +366,11 @@ async removedriverNotexist(){
 	              	}
 	              	if(item.key == 'is_tips'){
 	              		AsyncStorage.setItem('is_tips', item.value);
-	              		
+
 	              	}
 	              	if(item.key == 'tip_amount'){
 	              		AsyncStorage.setItem('tip_amount', item.value);
-	              		
+
 	              	}
 	            });
              }
@@ -378,22 +378,22 @@ async removedriverNotexist(){
   				//setContry(result.data);
 		});
   }
-  
+
   async getrewards(){
   		await AsyncStorage.getItem('accesstoken').then((value) => {
   			//alert(value);
 			//console.log(value);
   		fetch('https://www.turvy.net/api/rider/riderrewardpoints',{
-     	  	method: 'GET', 
+     	  	method: 'GET',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+value, 
+		     'Authorization': 'Bearer '+value,
 		     'Content-Type': 'application/json'
 		   })
 		   })
       .then((response) =>{
       	return response.json();
       })
-      .then((json) =>{ 
+      .then((json) =>{
       	console.log("REWARDS INFO ",json.data);
       	let result = json.data;
       	if(json.status == 1){
@@ -415,13 +415,13 @@ async removedriverNotexist(){
        });
 		});
   }
-  
+
   async setReward(point){
   		AsyncStorage.setItem('rewardpoints', JSON.stringify(point)).then(() => {
 			//alert("SET item ");
 		});
   }
-  
+
   async SetOnline(lat,lng){
   		await AsyncStorage.getItem('accesstoken').then((value) => {
   			 this.setState({
@@ -429,18 +429,18 @@ async removedriverNotexist(){
 	         });
 			console.log(value);
   		fetch('https://www.turvy.net/api/rider/online',{
-     	  	method: 'POST', 
+     	  	method: 'POST',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+value, 
+		     'Authorization': 'Bearer '+value,
 		     'Content-Type': 'application/json'
-		   }), 
+		   }),
 		   body:JSON.stringify({
 	 				'lat' : lat,
 	 				'lng' : lng
-	 			}) 
+	 			})
 		   })
       .then((response) => response.json())
-      .then((json) =>{ 
+      .then((json) =>{
       	console.log(json);
       	if(json.status == 1){
       		 this.setState({
@@ -455,9 +455,9 @@ async removedriverNotexist(){
        });
 		});
   }
-  
+
   async getPickupaddress(location){
-  
+
   		 const { latitude, longitude } = location.coords;
 		    this.SetOnline(latitude,longitude);
 		    Location.setGoogleApiKey('AIzaSyAr2ESV30J7hFsOJ5Qjaa96u9ADSRX6_Sk')
@@ -468,14 +468,14 @@ async removedriverNotexist(){
 		      	useGoogleMaps:true
 		      }
 		    });
-		    
+
 		     // console.log("after reverse");
 		    // console.log(response);
-		    
+
 		   let address = '';
 		   let curlocatdesc ='';
 		    for (let item of response) {
-		    	//${item.street}, 
+		    	//${item.street},
 		    	 //console.log(item);
 		    	if(item.street !== null){
 		    		//console.log(item.street);
@@ -486,7 +486,7 @@ async removedriverNotexist(){
 		    		address = item.name;
 		    		 curlocatdesc = item.name+" "+item.city+" "+item.postalCode;
 		    	}
-		      
+
 		       //console.log("text default");
 		       //console.log(item);
 		       this.setState({
@@ -496,22 +496,22 @@ async removedriverNotexist(){
 		      });
 		    }
   }
-  
+
   async errornolocationprov(){
   	let location = await Location.getLastKnownPositionAsync();
       if (location == null) {
       	console.log("Geolocation failed");
       	 this.setState({
-      	spinneron:false      	
+      	spinneron:false
       });
       }else{
       	if (location.coords) {
-       	
+
        	 const origin = {
-	      	latitude: location.coords.latitude, 
+	      	latitude: location.coords.latitude,
 	      	longitude: location.coords.longitude
-	      } 
-	      
+	      }
+
 	      this.setState({
 	      	locationcur:location,
 	      	latitudecur:location.coords.latitude,
@@ -520,25 +520,25 @@ async removedriverNotexist(){
 	      },()=>{
 	      	this.getNearBydriver();
 	      });
-         
+
       	this.getPickupaddress(location);
       }
      }
   }
-	
-  
+
+
   async intialLoad() {
-  	  
+
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
         return;
       }
-      
+
       this.setState({
-      	spinneron:true      	
+      	spinneron:true
       });
-      
+
       this.removedriverNotexist();
 
       let resp = await Location.getProviderStatusAsync();
@@ -551,25 +551,25 @@ async removedriverNotexist(){
       	console.log(location);
 			if (location.coords) {
        	 const origin = {
-	      	latitude: location.coords.latitude, 
+	      	latitude: location.coords.latitude,
 	      	longitude: location.coords.longitude
-	      } 
-	     
+	      }
+
 	      this.setState({
       	locationcur:location,
       	latitudecur:location.coords.latitude,
       	longitudecur:location.coords.longitude,
       	origin:origin,
-      	
+
       },()=>{
       	this.getNearBydriver();
       });
       //alert("HERE")
-      
-     
+
+
 		    this.getPickupaddress(location);
-		  }      	
-      	
+		  }
+
       },
        (error) => {
        	console.log(error);
@@ -579,37 +579,37 @@ async removedriverNotexist(){
       }
  		this.getNearBydriver();
     }
-  
+
   componentDidUpdate(prevProps,prevState) {
-  
+
   }
-  
+
   UNSAFE_componentWillUnmount() {
       this.unsubscribe();
-    
+
   }
-    
- async handleSourceLocDrag (e){  
+
+ async handleSourceLocDrag (e){
        if (e.nativeEvent.coordinate) {
        	const { latitude, longitude } = e.nativeEvent.coordinate;
        	    const destination = {
-      	latitude: latitude, 
+      	latitude: latitude,
       	longitude:longitude
-      } 
-      
+      }
+
        	this.setState({
 	      	latitudecur:latitude,
 	      	longitudecur:longitude,
 	      	destination:destination
 	      });
-		    
+
 		    let response = await Location.reverseGeocodeAsync({
 		      latitude,
 		      longitude
 		    });
-		    
-		  
-      
+
+
+
 		   let address = '';
 		    for (let item of response) {
 		      let address = `${item.street}, ${item.postalCode}, ${item.city}`;
@@ -620,10 +620,10 @@ async removedriverNotexist(){
 		    }
 		  }
  }
- 
+
 debounceLog = debounce(text=> this._request(text),200);
  _request = (text) => {
-     
+
     if (text ) {
       const request = new XMLHttpRequest();
       //_requests.push(request);
@@ -638,8 +638,8 @@ debounceLog = debounce(text=> this._request(text),200);
         if (request.status === 200) {
           const responseJSON = JSON.parse(request.responseText);
           if (typeof responseJSON.predictions !== 'undefined') {
-          	
-          	
+
+
             // if (_isMounted === true) {
             /*const results =
               props.nearbyPlacesAPI === 'GoogleReverseGeocoding'
@@ -672,7 +672,7 @@ debounceLog = debounce(text=> this._request(text),200);
           // console.warn("google places autocomplete: request could not be completed or has been aborted");
         }
       };
-      
+
       let query =  {
 		    key: 'AIzaSyAr2ESV30J7hFsOJ5Qjaa96u9ADSRX6_Sk',
 		    language: 'en',
@@ -704,7 +704,7 @@ debounceLog = debounce(text=> this._request(text),200);
         <TouchableHighlight
           underlayColor={'#c8c7cc'}
           style={
-             { width: '100%',} 
+             { width: '100%',}
           }
            onPress={() => this._onPress(rowData)}
         >
@@ -717,10 +717,10 @@ debounceLog = debounce(text=> this._request(text),200);
            		borderBottomColor:'#ccc'
            	}}
           >
-           <View style={{width:40,padding:10,}}> 
+           <View style={{width:40,padding:10,}}>
            	<FontAwesome name="location-arrow" size={24} color="grey" />
            	</View>
-           	<View style={{padding:10,}}> 
+           	<View style={{padding:10,}}>
             {this._renderRowData(rowData, index)}
             </View>
           </View>
@@ -728,7 +728,7 @@ debounceLog = debounce(text=> this._request(text),200);
       </ScrollView>
     );
   };
-  
+
  _renderRowData = (rowData, index) => {
     return (
      <>
@@ -736,7 +736,7 @@ debounceLog = debounce(text=> this._request(text),200);
 		</>
     );
   };
-  
+
  _renderDescription = (rowData) => {
  	//console.log(rowData);
     //return rowData.description || rowData.formatted_address || rowData.name;
@@ -763,12 +763,12 @@ debounceLog = debounce(text=> this._request(text),200);
      )
   };
 
-   
-   
+
+
  _onPress = (rowData) => {
    	//console.log("ON PRESS");
       //Keyboard.dismiss();
-    	
+
       // fetch details
       const request = new XMLHttpRequest();
       //_requests.push(request);
@@ -784,25 +784,25 @@ debounceLog = debounce(text=> this._request(text),200);
             // if (_isMounted === true) {
             const details = responseJSON.result;
             console.log(details);
-            
+
             if(this.state.forsourdest == 'dest'){
             	 const destination = {
-			      	latitude: details.geometry.location.lat, 
+			      	latitude: details.geometry.location.lat,
 			      	longitude: details.geometry.location.lng,
-			      } 
+			      }
             	 this.setState({
             	 	destinationto:rowData.description,
             	 	destination:destination,
                },()=>{
-               	
+
                   this.props.navigation.navigate('BookConfirm',this.state)
-              });   
-         
+              });
+
             }else{
             	const origin = {
-			      	latitude: details.geometry.location.lat, 
+			      	latitude: details.geometry.location.lat,
 			      	longitude: details.geometry.location.lng,
-			      } 
+			      }
             	 this.setState({
             	 	curlocatdesc:rowData.description,
             	 	pickup:rowData.description,
@@ -812,7 +812,7 @@ debounceLog = debounce(text=> this._request(text),200);
                },()=>{
                	this.dropoffTextInput.focus();
                	this.myRefbt.current.snapTo(0);
-               	
+
                	this.setState({
                		forsourdest:'dest'
                	});
@@ -822,10 +822,10 @@ debounceLog = debounce(text=> this._request(text),200);
 						  latitudeDelta: 0,
 						  longitudeDelta: 0,
 						});
-						             	
+
                	this.getNearBydriver();
                  // this.props.navigation.navigate('BookConfirm',this.state)
-              });  
+              });
             }
           } else {
             /*_disableRowLoaders();
@@ -858,7 +858,7 @@ debounceLog = debounce(text=> this._request(text),200);
           */
         }
       };
-      
+
       const query =  {
 		    key: 'AIzaSyAr2ESV30J7hFsOJ5Qjaa96u9ADSRX6_Sk',
 		    language: 'en',
@@ -877,10 +877,10 @@ debounceLog = debounce(text=> this._request(text),200);
 
       request.withCredentials = true;
       request.send();
-      
-    
+
+
   };
-  
+
  _getFlatList = () => {
     const keyGenerator = () => Math.random().toString(36).substr(2, 10);
 
@@ -899,7 +899,7 @@ debounceLog = debounce(text=> this._request(text),200);
 
     return null;
   };
- 
+
    renderContent = () => (
     <View
       style={{
@@ -910,18 +910,18 @@ debounceLog = debounce(text=> this._request(text),200);
     >
       {this._getFlatList()}
     </View>
-  );   
-   
+  );
+
   rightIconP = () =>(
  	 <TextInput.Icon name="close" color={'#3f78ba'} onPress={()=>this.setState({pickup:'',stateText:''})} />
   );
-  
+
   rightIconD = () =>(
   	<TextInput.Icon name="close" color={'#3f78ba'} onPress={()=>this.setState({destinationto:'',stateText:''})} />
   )
-  
- 
-   
+
+
+
   /* componentWillReceiveProps(nextProps) {
    	const duration = 500;
    	if (this.marker) {
@@ -932,7 +932,7 @@ debounceLog = debounce(text=> this._request(text),200);
       }
    }
    */
-   
+
    getRegion = () =>{
    		return {
          latitude: this.state.latitudecur,
@@ -941,7 +941,7 @@ debounceLog = debounce(text=> this._request(text),200);
          longitudeDelta: this.state.longitudeDelta,
        };
    }
-   
+
    //function to remove TextInput dynamically
   removeTextInput = () => {
     let textInput = this.state.textInput;
@@ -951,7 +951,7 @@ debounceLog = debounce(text=> this._request(text),200);
     this.setState({ textInput,inputData });
   }
 
-   
+
     addValues = (text, index) => {
     let dataArray = this.state.inputData;
     let checkBool = false;
@@ -975,7 +975,7 @@ debounceLog = debounce(text=> this._request(text),200);
     });
   }
   }
-  
+
     addTextInput = (index) => {
     let textInput = this.state.textInput;
     let removebox ='';
@@ -983,7 +983,7 @@ debounceLog = debounce(text=> this._request(text),200);
     		removebox = <TouchableOpacity
 				     onPress={() => this.removeTextInput() } ><Octicons name="eye-closed" size={24} color="black" /></TouchableOpacity>;
     }
-    
+
     //alert(index);
     textInput.push(<Row><Col size={1}><Row style={{height:20,justifyContent:'center',alignContent:'center'}}>
       				<View style={{width:1,height:22,backgroundColor:'#000'}}/>
@@ -994,15 +994,15 @@ debounceLog = debounce(text=> this._request(text),200);
       		   <Row style={{height:20,justifyContent:'center',alignContent:'center'}}>
       				<View style={{width:1,height:20,backgroundColor:'#000'}}/>
       			</Row>
-      		   </Col><Col size={9} style={{borderTopWidth:1,borderTopColor:'#E0E0E0'}}><TextInput  
+      		   </Col><Col size={9} style={{borderTopWidth:1,borderTopColor:'#E0E0E0'}}><TextInput
       		        key={index}
-                   placeholder="Add a stop" 
+                   placeholder="Add a stop"
 				      placeholderTextColor="grey"
 				       underlineColor={'transparent'}
 				      outlineColor='transparent'
 				      selectionColor='#C0C0C0'
-				      theme={{roundness:0,colors:{primary:'#fff',underlineColor:'transparent'}}} 
-				      style={{backgroundColor:'transparent', 
+				      theme={{roundness:0,colors:{primary:'#fff',underlineColor:'transparent'}}}
+				      style={{backgroundColor:'transparent',
 				      height: 38,
 				    borderRadius: 0,
 				    paddingVertical: 5,
@@ -1016,40 +1016,40 @@ debounceLog = debounce(text=> this._request(text),200);
   }
 
   render() {
-  	
+
   	 return (
 	    <>
-	    <View style={styles.container}>	
+	    <View style={styles.container}>
 	    <Spinner
 					visible={this.state.spinneron}
 					color='#FFF'
 					overlayColor='rgba(0, 0, 0, 0.5)'
 				/>
-	     
+
       <MapView style={styles.map}
        ref={c => this.mapView = c}
         provider={PROVIDER_GOOGLE}
        initialRegion={this.getRegion()}
        region={this.getRegion()}
-       customMapStyle={stylesArray}  
+       customMapStyle={stylesArray}
        mapIds={"af9935eed520f3ec"}
         onRegionChangeComplete ={ (e) => {
 		  }}
 		  showsCompass={true}
-		  
-       >	
+
+       >
        { this.state.latitudecur != '' && this.state.longitudecur != '' ?
        ( <Marker
        tracksViewChanges={false}
       key={'markersoucre'}
       zIndex={10}
-      coordinate={{latitude:this.state.latitudecur, longitude:this.state.longitudecur}} 
+      coordinate={{latitude:this.state.latitudecur, longitude:this.state.longitudecur}}
       draggable
       onDragEnd={(e) =>  this.handleSourceLocDrag(e)}
       style={{ alignItems: "center"}} >
     <View  style={{
           alignItems: "center",
-          borderColor:'#135AA8',	
+          borderColor:'#135AA8',
           borderWidth:1,
           width:200,
           backgroundColor:'#fff',
@@ -1081,7 +1081,7 @@ debounceLog = debounce(text=> this._request(text),200);
         </Col>
         <Col size={2} style={{backgroundColor:'#fff',justifyContent:'center',alignContent:'center',padding:3}}>
 				<MaterialIcons name="keyboard-arrow-right" size={30} color="#135AA8" />
-        	</Col>       
+        	</Col>
         	</Row>
         </Grid>
     </View>
@@ -1091,15 +1091,15 @@ debounceLog = debounce(text=> this._request(text),200);
     </Marker> ):
     (<></>)
  }
-  
+
   	{Object.keys(this.state.drivernear).length > 0 ?
 		 	this.state.drivernear.map((marker, index) =>{
   			return(<MapView.Marker.Animated
 	    		key={'marker_drv'+index}
 	    		 zIndex={11}
-	         coordinate={{latitude: marker.coordinates.latitude, longitude: marker.coordinates.longitude}} 
+	         coordinate={{latitude: marker.coordinates.latitude, longitude: marker.coordinates.longitude}}
 	      			title={marker.driver_name}
-	    				> 
+	    				>
 	    <Image
         style={styles.vehimage}
         source={imageveh} />
@@ -1108,8 +1108,8 @@ debounceLog = debounce(text=> this._request(text),200);
   		})
   		:null
   	}
-		
-  </MapView> 
+
+  </MapView>
   	<View style={{position:'absolute',width:'100%',
   				top:'7%',left:'0%',zIndex:100,backgroundColor:'transparent',flex:1,flexDirection:'row'}}>
   			 <Grid>
@@ -1128,7 +1128,7 @@ debounceLog = debounce(text=> this._request(text),200);
                 </View>
 				</Col>
 				<Col size={4} style={{alignItems:'flex-end', paddingRight:15}}>
-				
+
 				</Col>
 			</Row>
       	<Row style={styles.searchSection}>
@@ -1145,10 +1145,10 @@ debounceLog = debounce(text=> this._request(text),200);
       		<Col size={9} style={{borderBottomWidth:1,borderBottomColor:'#E0E0E0'}}>
       			 <TextInput
       			  ref={(input) => { this.pickupTextInput = input; }}
-				      placeholder="Pick Up" 
+				      placeholder="Pick Up"
 				      placeholderTextColor="grey"
 				      value={this.state.pickup}
-				        onChangeText={(val) =>{ 
+				        onChangeText={(val) =>{
 				        this.myRefbt.current.snapTo(0);
 				        				this.setState({pickup:val,stateText:val,forsourdest:'source'},()=>{
 				                //this.calcualteBmi();
@@ -1162,8 +1162,8 @@ debounceLog = debounce(text=> this._request(text),200);
 				      underlineColor={'transparent'}
 				      outlineColor='transparent'
 				      selectionColor='#C0C0C0'
-				      theme={{roundness:0,colors:{primary:'#fff',underlineColor:'transparent'}}} 
-				      style={{backgroundColor:'transparent', 
+				      theme={{roundness:0,colors:{primary:'#fff',underlineColor:'transparent'}}}
+				      style={{backgroundColor:'transparent',
 				      height: 38,
 				    borderRadius: 0,
 				    paddingVertical: 5,
@@ -1189,13 +1189,13 @@ debounceLog = debounce(text=> this._request(text),200);
       		<Col size={9} >
       		  <TextInput
       		  ref={(input) => { this.dropoffTextInput = input; }}
-      placeholder="Where to?" 
+      placeholder="Where to?"
       placeholderTextColor="grey"
        underlineColor={'transparent'}
 		 outlineColor='transparent'
        selectionColor='#C0C0C0'
       value={this.state.destinationto}
-      theme={{roundness:0,colors:{primary:'#fff',underlineColor:'transparent'}}}      
+      theme={{roundness:0,colors:{primary:'#fff',underlineColor:'transparent'}}}
         onChangeText={(val) => {
         	      this.myRefbt.current.snapTo(0);
         			this.setState({destinationto:val,stateText:val,forsourdest:'dest'},(val)=>{
@@ -1221,16 +1221,16 @@ debounceLog = debounce(text=> this._request(text),200);
       		<TouchableOpacity style={{flex:1,width:'80%',alignItems:'center',justifyContent:'center'}}
 				     onPress={() => this.props.navigation.navigate('MultiDestination',this.state)} >
 					<FontAwesome name="plus" size={20} color="black" />
-				</TouchableOpacity> 
+				</TouchableOpacity>
       		</Col>
       	</Row>
       	 {this.state.textInput.map((value) => {
           return value
         })}
       	</Col>
-      	</Row>	
+      	</Row>
       </Grid>
-     
+
 	</View>
    <BottomSheet
    		keyboardAware
@@ -1244,7 +1244,7 @@ debounceLog = debounce(text=> this._request(text),200);
         enabledBottomClamp={true}
         initialSnap={this.state.initialSnap}
       />
-  
+
   </View>
 
   </>
@@ -1258,7 +1258,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
     alignItems: 'center'
   },
-  map: {	
+  map: {
     ...StyleSheet.absoluteFillObject,
   },
   tinyLogo:{
@@ -1298,7 +1298,7 @@ const styles = StyleSheet.create({
 			},
 			shadowOpacity: 0.27,
 			shadowRadius: 4.65,
-			
+
 			elevation: 6,
 	     },
 	serachbox:{
@@ -1336,7 +1336,7 @@ btnSmall:{
 	 marginTop:30,
 	 justifyContent:'center',
 	 alignContent:'center',
-	 backgroundColor:'#fff', 
+	 backgroundColor:'#fff',
 	 shadowColor: "#000",
 		shadowOffset: {
 			width: 0,

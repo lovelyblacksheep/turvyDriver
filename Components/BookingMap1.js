@@ -6,11 +6,11 @@ import { TextInput, Appbar, Title, Paragraph, Button,Badge } from 'react-native-
 //import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
 
-import { EvilIcons } from '@expo/vector-icons'; 
+import { EvilIcons } from '@expo/vector-icons';
 //import Animated from 'react-native-reanimated';
 import { Divider } from 'react-native-elements';
 import { Col, Row, Grid } from "react-native-easy-grid";
-import { FontAwesome ,FontAwesome5,Entypo,Feather,AntDesign,Ionicons } from '@expo/vector-icons'; 
+import { FontAwesome ,FontAwesome5,Entypo,Feather,AntDesign,Ionicons } from '@expo/vector-icons';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,14 +24,14 @@ import AddaStop from './AddaStop';
 
 import * as geolib from 'geolib';
 const { width, height } = Dimensions.get('window');
-import * as firebase from "firebase";
+import firebase from 'firebase/compat/app';
 import firestore from '@react-native-firebase/firestore';
 import apiKeys from '../config/keys';
 
 //import Annotation from '@react-native-mapbox-gl/maps/javascript/components/annotations/Annotation'; // eslint-disable-line import/no-cycle
 //import MapboxGL from "@rnmapbox/maps";
-import  MapboxGL from "@react-native-mapbox-gl/maps"; 
-import  { changeMode, 
+import  MapboxGL from "@react-native-mapbox-gl/maps";
+import  { changeMode,
     MapboxCustomURL} from  "../Riders/MapDayNight";
 //MapboxGL.setAccessToken("pk.eyJ1IjoibWFsLXdvb2QiLCJhIjoiY2oyZ2t2em50MDAyMzJ3cnltMDFhb2NzdiJ9.X-D4Wvo5E5QxeP7K_I3O8w");
 /*import { lineString as makeLineMapboxCustomURLString } from '@turf/helpers';
@@ -50,7 +50,7 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0043;
 const SCREENHEIGHT = height*.50;
 const DEVICE_WIDTH = width;
-const DEVICE_HEIGHT = height;		
+const DEVICE_HEIGHT = height;
 const faresmap = [];
 
 import CancelPopEnroute from './CancelPopEnroute';
@@ -173,13 +173,13 @@ export default class BookingMap extends React.Component {
        },
         };
         this.myRefbt = React.createRef();
-        this.mapView = null;    
+        this.mapView = null;
         this.myinterval = React.createRef();
         this.myinterval2 = React.createRef();
         this.onGoBackCallback = this.onGoBackCallback.bind(this);
         //this.closeAddastop = this.closeAddastop.bind(this);
-        this.pusher = new Pusher('389d667a3d4a50dc91a6', { cluster: 'ap2' }); 
-        this.listenForChanges();  
+        this.pusher = new Pusher('389d667a3d4a50dc91a6', { cluster: 'ap2' });
+        this.listenForChanges();
         this.bottomSheetRef = React.createRef();
     }
 
@@ -189,11 +189,11 @@ export default class BookingMap extends React.Component {
         modalCancleVisible:false
       })
     }
-    
+
     listenForChanges = () => {
-		const channel = this.pusher.subscribe('turvy-channel'); 
+		const channel = this.pusher.subscribe('turvy-channel');
 		 channel.bind('end_trip_event', data => {
-		 	
+
 		 	console.log("END TRIP ===========",JSON.stringify(data));
 		 	let selectedvehiclefare = parseFloat(data.totalAmount);
 		 	this.setState({
@@ -204,7 +204,7 @@ export default class BookingMap extends React.Component {
 		 		this.getrideEndforPusher();
 		 	})
 		  	//alert(JSON.stringify(data));
-		  }); 
+		  });
 
 		  channel.bind('violent_end_trip_event', data => {
 		  	console.log("violent_end_trip_event==================",JSON.stringify(data));
@@ -217,26 +217,26 @@ export default class BookingMap extends React.Component {
 		  	},()=>{
 		  		this.getrideEndforPusher();
 		  	});
-		 	 
+
 		  	 //alert(JSON.stringify(data));
-		  }); 
+		  });
 		  //this.getrideEnd();
 		 //this.getrideEnd();
 		  /*channel.bind('driver_offline_event', data => {
 		 	this.getNearBydriver();
 		 //alert(JSON.stringify(data));
 		  });
-		  */ 
+		  */
 	};
-	
-	
+
+
 	 getfares(distance){
     		 fetch(DOMAIN+'api/farecardall/2',{
 	       method: 'GET',
 	      }).then(function (response) {
 	      return response.json();
 	      }).then( (result)=> {
-	      	
+
 	        console.log(result);
 	        if(result.status == 1){
 	        	console.log("INSIDE IF DATA");
@@ -264,13 +264,13 @@ export default class BookingMap extends React.Component {
 	        		 		 let minimumfaren = parseFloat(item.price_per_unit)*parseFloat(distance);
 				        	 let  gstper =  item.gst_charge;
 				        	 gstper = gstper.replace("%", "");
-				        	 
+
 				        	  if(item.servicetype_id == 1){
 				        	 	 surchnageslist = (parseFloat(item.fuel_surge_charge))+parseFloat(item.nsw_gtl_charge)+parseFloat(item.nsw_ctp_charge)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
 				        	 }else{
 				        	 	 surchnageslist = (parseFloat(item.fuel_surge_charge))+parseFloat(item.nsw_gtl_charge)+parseFloat(item.nsw_ctp_charge)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
 				        	 }
-				        	 
+
 				        	  console.log("ITEM SERVICES New FAREMAP ",fareoff);
 				        	  console.log("ITEM SERVICES New FAREMAP SUR Charge",surchnageslist);
 		        	        totalchangre = parseFloat(fareoff) + parseFloat(surchnageslist);
@@ -284,8 +284,8 @@ export default class BookingMap extends React.Component {
 	        }
 	    });
     }
-	
-   
+
+
     async intialLoad() {
     	let { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== 'granted') {
@@ -304,10 +304,10 @@ export default class BookingMap extends React.Component {
         // console.log(longitudeDelta);
 
         const origin = {
-        	latitude: location.coords.latitude, 
+        	latitude: location.coords.latitude,
         	longitude: location.coords.longitude
-        } 
-      
+        }
+
         this.setState({
         	locationcur:location,
         	latitudecur:location.coords.latitude,
@@ -328,7 +328,7 @@ export default class BookingMap extends React.Component {
 
             let address = '';
             for (let item of response) {
-                //${item.street}, 
+                //${item.street},
                 let address = `${item.name}, ${item.postalCode}, ${item.city}`;
                 // console.log(address);
                 this.setState({
@@ -338,7 +338,7 @@ export default class BookingMap extends React.Component {
             }
         }
         */
-        AsyncStorage.getItem('accesstoken').then((value) => {           
+        AsyncStorage.getItem('accesstoken').then((value) => {
             if(value != '' && value !== null){
                 this.setState({
                     accessTokan:value
@@ -346,8 +346,8 @@ export default class BookingMap extends React.Component {
             }
         })
         //alert(this.state.isOnline)
-    } 
-    
+    }
+
     async componentDidMount() {
     	 this.setState({
             MapboxStyleURL:changeMode()
@@ -364,15 +364,15 @@ export default class BookingMap extends React.Component {
         setTimeout(() => {
 			 this.setState({
 			 	snapIndex:2,
-			 },() => {   
+			 },() => {
 		 		 if(this.bottomSheetRef){
 		 		 	this.bottomSheetRef.current.snapTo(this.state.snapIndex)
-		 		 }                                     
-                     
+		 		 }
+
            });
 			}, 60000);
     	const {navigation,state} = this.props;
-    	
+
     	let listcord = [];
    	let locationcordsapi = [];
    	console.log("BEFORE DESINARION",this.props.route.params.origin);
@@ -385,24 +385,24 @@ export default class BookingMap extends React.Component {
        	 //listcord = Object.assign(listcord, element);
        	 listcord.push(element);
        	 console.log("ORIGN coordinate List",Object.values(listcord));
-		} 
-		
+		}
+
 		if(Object.keys(this.props.route.params.waypointslnglat).length > 0){
 	      	 this.props.route.params.waypointslnglat.map((item, index) => {
 		   	 //console.log("DRIVER MAP");
 		   		console.log("waypoint item ",item);
-		   		let origincord = [item.longitude,item.latitude]; 
+		   		let origincord = [item.longitude,item.latitude];
        	     let element = { coordinates: origincord };
        	      locationcordsapi.push(origincord);
        	    //listcord = [...listcord, element];
 
 
 		     });
-	      	
-	      } 
-		
+
+	      }
+
 	   if(Object.keys(this.props.route.params.destination).length > 0){
-	   	 let origincord = [this.props.route.params.destination.longitude,this.props.route.params.destination.latitude]; 
+	   	 let origincord = [this.props.route.params.destination.longitude,this.props.route.params.destination.latitude];
        	 let element = { coordinates: origincord };
        	 locationcordsapi.push(origincord);
        	 //listcord = [...listcord, element];
@@ -415,7 +415,7 @@ export default class BookingMap extends React.Component {
     	  this.getRewards();
     	   BackHandler.addEventListener('hardwareBackPress', this.onGoBackCallback);
         navigation.addListener('gestureEnd', this.onGoBackCallback);
-        
+
 		// this.getrewards();
 		this.unsubscribe =  navigation.addListener("focus",() => {
 			BackHandler.addEventListener('hardwareBackPress', this.onGoBackCallback);
@@ -426,17 +426,17 @@ export default class BookingMap extends React.Component {
           //clearInterval(this.myintervalaccp);
       	BackHandler.removeEventListener('hardwareBackPress', this.onGoBackCallback);
       });
-      
+
       console.log("Booking driver",this.props.route.params.bookingdriver);
       if(this.props.route.params.selectedvehicle){
-      	
-      	this.setState({ 
+
+      	this.setState({
              selectedvehicle:this.props.route.params.selectedvehicle,
              origin:this.props.route.params.origin,
              destination:this.props.route.params.destination,
              latitudedest:this.props.route.params.latitudedest,
              longitudedest:this.props.route.params.longitudedest,
-             latitudecur:this.props.route.params.latitudecur, 
+             latitudecur:this.props.route.params.latitudecur,
              longitudecur:this.props.route.params.longitudecur,
              bookingresponse:this.props.route.params.bookingresponse,
              rideinfoinprocess:this.props.route.params.rideinfoinprocess,
@@ -459,9 +459,9 @@ export default class BookingMap extends React.Component {
                   locationcordsapistr:locationcordsapistr
               });
         });
-        
+
          this.loopfuntions();
-   
+
         //alert("here before load "+this.props.route.params.bookingresponse.id);
     }else if(this.props.route.params.bookingdriver.id > 0){
       	//alert(this.props.route.params.bookingdriver.id);
@@ -473,7 +473,7 @@ export default class BookingMap extends React.Component {
              destination:this.props.route.params.destination,
              latitudedest:this.props.route.params.latitudedest,
              longitudedest:this.props.route.params.longitudedest,
-             latitudecur:this.props.route.params.latitudecur, 
+             latitudecur:this.props.route.params.latitudecur,
              longitudecur:this.props.route.params.longitudecur,
              bookingdriver:this.props.route.params.bookingdriver,
              bookingresponse:this.props.route.params.bookingresponse,
@@ -483,26 +483,26 @@ export default class BookingMap extends React.Component {
 	                longitude: this.props.route.params.origin.longitude,
 	            },
       	},()=>{
-      	
-      		
+
+
       		//this.getrideStart();
       	});
-      
+
       }
-     
-     AsyncStorage.getItem('messagecount').then((value) => {           
+
+     AsyncStorage.getItem('messagecount').then((value) => {
             if(value != '' && value !== null){
                 this.setState({messagecount:value})
                 //alert(value)
             }
-        });	 
-       
+        });
+
    }
-    
-	
-	 
-	 
-	 
+
+
+
+
+
    onGoBackCallback(){
       console.log('Android hardware back button pressed and iOS back gesture ended');
       /*this.setState({
@@ -512,20 +512,20 @@ export default class BookingMap extends React.Component {
       this.props.navigation.replace('BookMain',this.state);
      return true;
    }
-   
+
     async getRewards(){
 		 await AsyncStorage.getItem('rewardpoints').then((value) => {
 			this.setState({
 				rewardpoints:value,
 			});
-		});	    
+		});
   }
-  
+
     loopfuntions =() =>{
-         this.getrideEnd();   
+         this.getrideEnd();
     }
-    
-  
+
+
   getrideEndforPusher =()=>{
   	console.log('fares --- ',this.state.fares);
    	let bookId = this.props.route.params.bookingresponse.id;
@@ -537,64 +537,64 @@ export default class BookingMap extends React.Component {
  	  clearInterval(this.myinterval2);
  		this.setState({
     		endcomplete:true,
-    		
+
     	},()=>{
     	  this.setDriverPayment();
     		this.props.navigation.replace('RideArriveDest',this.state);
  	  });
   }
-  
+
   getrideEnd =()=>{
   	console.log('fares --- ',this.state.fares);
    	let bookId = this.props.route.params.bookingresponse.id;
    	if(this.state.bookingresponse && this.state.bookingresponse.id > 0){
    		bookId = this.state.bookingresponse.id;
    	}
-   	
+
    	firestore().collection('trip_path').where('bookingId','==',bookId).where('status','==','close')
 			  .get()
 			  .then(querySnapshot => {
 			    console.log('Total bOOKING STATUS: ', querySnapshot.size);
-			    
+
 			    if(querySnapshot.size > 0){
-			    	
+
 			    	  //alert(dist);
 			    	  clearInterval(this.myinterval);
 			    	  clearInterval(this.myinterval2);
 			    		this.setState({
 				    		endcomplete:true,
-				    		
+
 				    	},()=>{
 				    	  this.setDriverPayment();
 			       		this.props.navigation.replace('RideArriveDest',this.state);
 			    	  });
-			    	  
-			    }																																																																																																																																															
+
+			    }
 			  });
   }
- 
-   
+
+
    UNSAFE_componentWillUnmount() {
-    
+
     if(this.myinterval){
       clearInterval(this.myinterval);
     }
-   
+
     if(this.myinterval2){
     	clearInterval(this.myinterval2);
     }
   }
-  
-  
+
+
     openDialScreenCall (no){
-    	
+
 	    if (Platform.OS === 'ios') {
 	      number = 'telprompt:${'+no+'}';
 	    } else {
 	      number = 'tel:${'+no+'}';
 	    }
     	Linking.openURL(number);
-   
+
     }
     openDialScreen (){
     	 this.setState({
@@ -614,10 +614,10 @@ export default class BookingMap extends React.Component {
 	    	 	this.mapView.refresh();
 	    	 }
     	 });
-    	
-    	 
+
+
   }
-  
+
   closeAddastop = () =>{
    	this.closeModalAddastop();
   }
@@ -625,7 +625,7 @@ export default class BookingMap extends React.Component {
   openCancelModel = () => {
     this.setState({modalCancleVisible:true})
   }
-   
+
    renderContent = () => (
     <>
     <View
@@ -645,25 +645,25 @@ export default class BookingMap extends React.Component {
 			borderRadius:10,
       }}
     >
-  
 
-   		 <Grid  >   	
-   		 <TouchableOpacity onPress={ (e) => {  
-                                
+
+   		 <Grid  >
+   		 <TouchableOpacity onPress={ (e) => {
+
              this.setState({
                  snapIndex: this.state.snapIndex ? 0 : 2
-             },() => {                                        
-                 this.bottomSheetRef.current.snapTo(this.state.snapIndex)    
+             },() => {
+                 this.bottomSheetRef.current.snapTo(this.state.snapIndex)
              })
-             
+
          }} >
    			<Row style={{height:20,padding:6,paddingBottom:20,}}>
    				<Col size={2}>
-   				
+
    				</Col>
    				<Col size={8} style={{alignContent:'center',alignItems:'center'}}>
    				<Divider   />
-   				
+
    				<Text style={{color:'#51E84f',fontWeight:'bold'}}  >Enroute to Destination </Text>
    				</Col>
    				<Col size={2}>
@@ -698,7 +698,7 @@ export default class BookingMap extends React.Component {
    						Sos
    					</Text>
    					<Ionicons name="ios-call" size={34} color="black" />
-   					
+
    					</TouchableOpacity>
    					</View>
    				</Col>
@@ -712,7 +712,7 @@ export default class BookingMap extends React.Component {
    					</TouchableOpacity>
    					</View>
    				</Col>
-   				
+
    			</Row>
    		</Grid>
     </View>
@@ -727,23 +727,23 @@ export default class BookingMap extends React.Component {
 							//this.props.route.params
 							//alert(DOMAIN);
 							fetch(DOMAIN+'api/rider/driverrequestPayment/'+this.state.bookingresponse.id,{
-				     	  	method: 'POST', 
+				     	  	method: 'POST',
 						   headers: new Headers({
-						     'Authorization': 'Bearer '+value, 
+						     'Authorization': 'Bearer '+value,
 						     'Content-Type': 'application/json'
-						   }), 
+						   }),
 						   body:JSON.stringify({
 					 				'driver_id' : this.state.bookingdriver.id ,
 					 				'is_vend' : this.state.is_vend ,
 					 				'distance' : this.state.disttravlled
-					 			}) 
+					 			})
 						   })
 				      .then((response) => response.json())
-				      .then((json) =>{ 
+				      .then((json) =>{
 				      	console.log(json);
-				      
+
 				      	/*if(json.status == 1){
-				      		 this.setState({                                        
+				      		 this.setState({
 					         	isLoading:false,
 				    				vehborder:'red',
 				    				bookingresponse:json.data
@@ -756,8 +756,8 @@ export default class BookingMap extends React.Component {
 				      .catch((error) => console.error(error));
 				      })
  }
-  
-    render() {  	
+
+    render() {
     let rotateAngl = 0;
 	   rotateAngl = (this.state.heading/360);
 	  	/*const spin = this.state.rotateAngl.interpolate({
@@ -765,9 +765,9 @@ export default class BookingMap extends React.Component {
 	          outputRange: ['0deg', '360deg']
 	        });
 	        */
-        
+
         return (
-            <View style={styles.container} >	 
+            <View style={styles.container} >
                         <View style={{flex:1}}>
        {this.props.route.params.destination.longitude != '' && this.props.route.params.destination.latitude != '' && this.props.route.params.origin.longitude != '' && this.props.route.params.origin.latitude != '' ?
       (<MapboxNavigation
@@ -805,10 +805,10 @@ export default class BookingMap extends React.Component {
       :
       (<></>)
    }
-      </View>	
+      </View>
 
       <View style={{width:'100%',height:'100%',backgroundColor:'rgba(0,0,0,0)',position:'absolute'}}></View>
-		
+
    { this.state.display ? (
   <BottomSheet
         ref={this.bottomSheetRef}
@@ -825,7 +825,7 @@ export default class BookingMap extends React.Component {
       	<Text></Text>
       )
     }
-    
+
     <Modal
           animationType="slide"
           visible={this.state.modalvisible}
@@ -835,12 +835,12 @@ export default class BookingMap extends React.Component {
             alert('Modal has been closed.');
           }}>
           	<View style={{alignItems:'flex-end',zIndex:2000}} >
-          	 <TouchableOpacity onPress={ (e) => {  
-                                
+          	 <TouchableOpacity onPress={ (e) => {
+
              this.setState({
                  modalvisible: false
              });
-             
+
          }} ><AntDesign name="closecircle" size={30} color="white" /></TouchableOpacity></View>
           	<Grid style={{justifyContent:'center',alignContent:'center',alignItems:'center',height:160,borderWidth:1,borderColor:'#ccc',flex: 0,backgroundColor:'#fff',}}>
           	<Row size={1} style={{height:30,justifyContent:'center',alignContent:'center',borderBottomWidth:1,borderBottomColor:'#ccc'}}>
@@ -881,7 +881,7 @@ export default class BookingMap extends React.Component {
           		</Col>
           	</Row>
           	</Grid>
-     </Modal> 
+     </Modal>
       <Modal
           animationType="slide"
           visible={this.state.modalstopvisible}
@@ -890,7 +890,7 @@ export default class BookingMap extends React.Component {
             //alert('Modal has been closed.');
           }}>
      <AddaStop {...this.props} closeAddastop={this.closeAddastop} />
-     </Modal> 
+     </Modal>
 
      <Modal
           animationType="slide"
@@ -956,11 +956,11 @@ const styles = StyleSheet.create({
         color:'#FFF',
         elevation: 10,
     },
-    offlineBtn:{      
+    offlineBtn:{
         backgroundColor:"#ccc",
         justifyContent:'center',
         alignItems:'center',
-        flexDirection:'row',    
+        flexDirection:'row',
         borderRadius:45,
     },
   menubox:{
@@ -982,7 +982,7 @@ const styles = StyleSheet.create({
 			},
 			shadowOpacity: 0.27,
 			shadowRadius: 4.65,
-			
+
 			elevation: 6,
 	     },
 	serachbox:{

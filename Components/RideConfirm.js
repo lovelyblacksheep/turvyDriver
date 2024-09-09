@@ -5,7 +5,7 @@ import MapView , { Marker , Polyline ,Callout }from 'react-native-maps';
 import * as Location from 'expo-location';
 import MapViewDirections from 'react-native-maps-directions';
 import GooglePlacesInput from './GooglePlacesInput';
-import { EvilIcons,Ionicons,MaterialCommunityIcons,FontAwesome5,Feather,AntDesign,Entypo } from '@expo/vector-icons'; 
+import { EvilIcons,Ionicons,MaterialCommunityIcons,FontAwesome5,Feather,AntDesign,Entypo } from '@expo/vector-icons';
 const imagemarker = require('../assets/location-pin-2965.png');
 const driversummy = require('../assets/driversummy.png');
 
@@ -67,7 +67,7 @@ const stylesArray = [
 ]
 //const haversine = require('haversine')
 
-import * as firebase from "firebase";
+import firebase from 'firebase/compat/app';
 import "firebase/firestore";
 import apiKeys from '../config/keys';
 
@@ -116,19 +116,19 @@ export default class RideConfirm extends React.Component {
     this.mapView = null;
     this._onLongPressButton = this._onLongPressButton.bind(this);
    }
-   
+
    _onLongPressButton() {
     this.setState({
     	modalvisible:true,
     })
   }
-  
+
    _onPressDone(){
 		this.setState({
 			modalvisible:false
-		});   
+		});
    }
-   
+
    renderMessagesDriver = () =>{
     	return (<><View style={{flex:1,alignContent:'center',justifyContent:'center',flexDirection:'row'}}><Text style={{color:'#fff',fontSize:35,padding:3,fontFamily: "Metropolis-Regular",textAlign:'center'}}>Congrats</Text>
     	</View>
@@ -136,16 +136,16 @@ export default class RideConfirm extends React.Component {
     	<Text style={{color:'#fff',fontSize:20,padding:3,fontFamily: "Metropolis-Regular",textAlign:'center'}}>Your driver has arrive</Text></View>
     	</>);
   }
-  
+
   onPlaybackStatusUpdate(PlaybackStatus){
   	//console.log(PlaybackStatus);
 
   		if(PlaybackStatus.didJustFinish == true){
   			//console.log("Complete");
-  			
+
   		}
   }
-  
+
   async getrideStart(){
   	  console.log("BOOKING ID "+this.state.bookingresponse.id);
   	  //.where('status','==','open')
@@ -157,16 +157,16 @@ export default class RideConfirm extends React.Component {
 			    	clearInterval(this.interval);
 			      this.props.navigation.navigate('BookingMap',this.state);
 			    }
-			   
+
 			  });
   }
-  
+
   async runsound(){
-  		
+
   		this.refs.fmLocalIntstance.showMessage({
            message: '',
            type: "default",
-           backgroundColor: "#135AA8", 
+           backgroundColor: "#135AA8",
            autoHide:false,
            style:{
            		margin:20,
@@ -178,48 +178,48 @@ export default class RideConfirm extends React.Component {
            	return this.renderMessagesDriver();
            },
         	 });
-        	 
+
   		   const { sound } = await Audio.Sound.createAsync(
 		       require('../assets/rider_driver_arriving.mp3'),
 		       {},
 		       this.onPlaybackStatusUpdate,
 		    );
-		    //setSound(sound);		
+		    //setSound(sound);
 		    console.log('Playing Sound');
 		    await sound.playAsync();
 		     this.props.navigation.navigate('BookingMap',this.state);
-  }   
-   
+  }
+
     async updatecarLoc(){
 
     		//console.log(cords);
-    		//const await 
-    		this.settime =  setInterval(()=>{ 
+    		//const await
+    		this.settime =  setInterval(()=>{
     					db.collection('driver_locations').where('driverId','==',this.props.route.params.bookingdriver.id)
 			  .get()
 			  .then(querySnapshot => {
 			    console.log('Total DRIVER LOCA: ', querySnapshot.size);
-			
+
 			    querySnapshot.forEach(documentSnapshot => {
 			      console.log('DRIVER COORd: ', documentSnapshot.data().coordinates, documentSnapshot.data());
 			       //const distancedriv = haversine(documentSnapshot.data().location, this.props.route.params.destination);
 			       //console.log(this.props.route.params.destination);
 			       this.setState({driverLocation:documentSnapshot.data().coordinates},()=>{
-			       	console.log(" ORGIN SET "+this.state.driverLocation);      	
+			       	console.log(" ORGIN SET "+this.state.driverLocation);
 			       });
 			       //this.setState({driverLocation:documentSnapshot.data().location})
-			       //console.log("disatnce"+distancedriv);      	
+			       //console.log("disatnce"+distancedriv);
 			    });
-			  }); 
-			  }, 10000);						
+			  });
+			  }, 10000);
     }
-   	 
+
     componentDidMount(){
-    
+
 			this.refs.fmLocalIntstance.showMessage({
            message: '',
            type: "default",
-           backgroundColor: "transparent", 
+           backgroundColor: "transparent",
            autoHide:false,
            style:{
            		margin:20,
@@ -231,20 +231,20 @@ export default class RideConfirm extends React.Component {
            	return this.renderMessagesreward();
            },
         	 });
-        	 
-        	 
-       
+
+
+
         	console.log("compoente mount");
    	const {navigation,state} = this.props;
    	console.log(state);
       if(this.props.route.params.selectedvehicle){
-      	this.setState({ 
+      	this.setState({
              selectedvehicle:this.props.route.params.selectedvehicle,
              origin:this.props.route.params.origin,
              destination:this.props.route.params.destination,
              latitudedest:this.props.route.params.latitudedest,
              longitudedest:this.props.route.params.longitudedest,
-             latitudecur:this.props.route.params.latitudecur, 
+             latitudecur:this.props.route.params.latitudecur,
              longitudecur:this.props.route.params.longitudecur,
              bookingresponse:this.props.route.params.bookingresponse,
              rideinfoinprocess:this.props.route.params.rideinfoinprocess,
@@ -256,7 +256,7 @@ export default class RideConfirm extends React.Component {
         	 //console.log(this.props.route.params.bookingdriver);
 				console.log("STATE SET");
         	//alert(this.props.route.params.bookingdriver.id);
-        	
+
         });
       }
       alert("DRUVER ID "+this.props.route.params.bookingdriver.id);
@@ -264,35 +264,35 @@ export default class RideConfirm extends React.Component {
 			  .get()
 			  .then(querySnapshot => {
 			    alert('Total DRIVER LOCA: ', querySnapshot.size);
-			
+
 			    querySnapshot.forEach(documentSnapshot => {
 			      console.log('DRIVER COORd: ', documentSnapshot.data().coordinates, documentSnapshot.data());
 			       //const distancedriv = haversine(documentSnapshot.data().location, this.props.route.params.destination);
 			       //console.log(this.props.route.params.destination);
 			       this.setState({driverLocation:documentSnapshot.data().coordinates},()=>{
-			       	alert(" ORGIN SET "+this.state.driverLocation);      	
+			       	alert(" ORGIN SET "+this.state.driverLocation);
 			       });
 			       //this.setState({driverLocation:documentSnapshot.data().location})
-			       //console.log("disatnce"+distancedriv);      	
+			       //console.log("disatnce"+distancedriv);
 			    });
 			  });
 
-        
+
    	this.intialLoad();
    	//console.log(this.props.route.params.bookingdriver);
-   	/*setTimeout(()=>{ 
+   	/*setTimeout(()=>{
    		//hideMessage()
    		this.runsound() }, 2000)
-   		
-   		setTimeout(()=>{ 
+
+   		setTimeout(()=>{
    		//hideMessage()
    		this.props.navigation.navigate('RideArriveDest')  }, 7000)
    		 */
-   	
+
    	this.refs.fmLocalIntstance.showMessage({
            message: '',
            type: "default",
-           backgroundColor: "#135AA8", 
+           backgroundColor: "#135AA8",
            autoHide:false,
            style:{
            		margin:20,
@@ -300,24 +300,24 @@ export default class RideConfirm extends React.Component {
            		alignItems:'center',
            		justifyContent:'center'
            },
-          
+
            renderCustomContent: ()=>{
            	return this.renderMessages();
            },
         	 });
-        /*	 
+        /*
   		this.unsubscribe =  navigation.addListener("focus",() => {
-  			this.setState({ 
+  			this.setState({
              selectedvehicle:this.props.route.params.selectedvehicle,
              inprocessing:0,
          });
   			this.intialLoad();
   		});
   		*/
-  		
-  				
+
+
   } // end of function
-  
+
    renderMessagesreward = () =>{
     	return (<View style={{flex:1,alignContent:'center',justifyContent:'center',flexDirection:'column',shadowColor: '#000000',
     shadowOffset: {
@@ -334,8 +334,8 @@ export default class RideConfirm extends React.Component {
     	 </View>
     	</View>);
   }
-  
-   
+
+
    openDialScreen (){
     let number = '';
     if (Platform.OS === 'ios') {
@@ -345,23 +345,23 @@ export default class RideConfirm extends React.Component {
     }
     Linking.openURL(number);
   }
-  
+
   renderMessages = () =>{
     	return (<View style={{flex:1,alignContent:'center',justifyContent:'center',flexDirection:'row'}}><Text style={{color:'#fff',fontSize:20,padding:3,fontFamily: "Metropolis-Regular",textAlign:'center'}}>Your driver arrives in {this.state.duration} minutes</Text></View>);
   }
-    
+
    componentWillUnmount() {
     //this.unsubscribe();
 
       clearInterval(this.interval);
     clearInterval( this.settimeout);
   }
-    
- 
+
+
 	swipicon =() =>{
 		return(<Ionicons name="ios-close-outline" size={40} color="black" />)
-	} 
-	
+	}
+
     renderContent = () => (
     <>
     <View
@@ -381,18 +381,18 @@ export default class RideConfirm extends React.Component {
 			borderRadius:10,
       }}
     >
-  
-    {this.state.inprocessing == 0  ? 
+
+    {this.state.inprocessing == 0  ?
    	( <Grid >
    	<Row style={{height:30}}>
-   		
+
    	</Row>
-   			
+
    			<Row style={{height:100}}>
-   				
+
    				<Col size={3} style={{padding:10}}>
    				<View style={{borderWidth:1,borderColor:'silver',height:60,padding:10,borderRadius:8,backgroundColor:'#ccc'}}>
-						{this.state.bookingdriver.avatar ? 
+						{this.state.bookingdriver.avatar ?
 							(<Image
 				        source={{uri:"https://www.turvy.net/"+this.state.bookingdriver.avatar}}
 				        style={styles.servicebocimage}
@@ -405,7 +405,7 @@ export default class RideConfirm extends React.Component {
 				        Resizemode={'contain'}
 				         />)
 						}
-   					
+
    				</View>
    				</Col>
    				<Col size={7} style={{padding:10}}>
@@ -438,7 +438,7 @@ export default class RideConfirm extends React.Component {
    				</Col>
    				<Col size={4} style={{padding:6}}>
    				<View style={{flex:1,backgroundColor:'#ccc',alignItems:'center',justifyContent:'center'}}>
-   				
+
    				<TouchableOpacity onPress={() =>{this.props.navigation.navigate('BookCancel',this.state) }}>
    					<AntDesign name="closecircleo" size={24} color="white" />
    					<Text style={{color:'#fff'}}>
@@ -470,15 +470,15 @@ export default class RideConfirm extends React.Component {
        ):(
        	<Text></Text>
        )
-      } 
+      }
     </View>
    </>
-  );   
-  
-  
+  );
+
+
   async intialLoad() {
-  	
-    
+
+
      let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         setErrorMsg('Permission to access location was denied');
@@ -496,7 +496,7 @@ export default class RideConfirm extends React.Component {
       // console.log(this.props.route.params.destination);
       if(this.props.route.params.origin){
        	 origin = this.props.route.params.origin;
-		}      
+		}
 		let destination = {};
 		let longitudedest = '';
 		let latitudedest= '';
@@ -510,7 +510,7 @@ export default class RideConfirm extends React.Component {
       if(this.props.route.params.selectedvehicle){
       	selectedvehicle = this.props.route.params.selectedvehicle;
       }
-      
+
       this.setState({
       	selectedvehicle:selectedvehicle,
       });
@@ -536,12 +536,12 @@ export default class RideConfirm extends React.Component {
 		        longitude : longitudedest
 		    }
 		   /* let response = await Location.reverseGeocodeAsync(keys);
-		    
+
 		     //console.log(response);
-		    
+
 		   let address = '';
 		    for (let item of response) {
-		    	//${item.street}, 
+		    	//${item.street},
 		      let address = `${item.name}, ${item.postalCode}, ${item.city}`;
 		       //console.log(address);
 		       this.setState({
@@ -550,16 +550,16 @@ export default class RideConfirm extends React.Component {
 		    }
 		    */
 		 // }
-		  
+
       //.finally(() => setLoading(false));
     }
-    
+
   render() {
-  
+
   	 return (
 	    <View style={styles.container}>
 	    <StatusBar backgroundColor="#fff" barStyle="light-content"/>
-	      
+
 	    <TouchableOpacity
    style={{
        borderWidth:1,
@@ -587,13 +587,13 @@ export default class RideConfirm extends React.Component {
          latitudeDelta: this.state.latitudeDelta,
          longitudeDelta: this.state.longitudeDelta,
        }}
-       customMapStyle={stylesArray}  
+       customMapStyle={stylesArray}
                ref={c => this.mapView = c}
         onRegionChangeComplete ={ (e) => {
-  				
+
   }}
-    
-       >	
+
+       >
        { Object.keys(this.state.origin).length > 0 && Object.keys(this.state.driverLocation).length > 0 ?
     (
     <>
@@ -610,7 +610,7 @@ export default class RideConfirm extends React.Component {
        mode={"DRIVING"}
       onStart={(params) => {
               console.log(`Started routing between "${params.origin}" and "${params.destination}"`);
-             
+
             }}
       onReady={result => {
       			//console.log(result);
@@ -619,8 +619,8 @@ export default class RideConfirm extends React.Component {
               console.log(`Duration: ${result.duration} min.`)
               let duration = result.duration.toFixed();
               let distance = result.distance;
-              // find amount to display 
- 
+              // find amount to display
+
 				  if(duration == 0){
 				  		this.runsound();
 				  		//this.getrideStart();
@@ -659,12 +659,12 @@ export default class RideConfirm extends React.Component {
 	                   animated: true,
 	              });
               	if(this.state.notadjust == false){
-              	
+
              	 this.updatecarLoc();
               	}
-    				
+
     	     });
-              
+
             }}
   			/>
   		</>
@@ -674,20 +674,20 @@ export default class RideConfirm extends React.Component {
     	<>
     	</>
     	)
-    } 
-       
+    }
+
     <>
    <Marker
        	tracksViewChanges={false}
       key={'destinationkey'}
-      coordinate={{latitude:this.state.latitudecur, longitude:this.state.longitudecur}} 
-      
+      coordinate={{latitude:this.state.latitudecur, longitude:this.state.longitudecur}}
+
       style={{ alignItems: "center"}} >
      </Marker>
- 
+
     { Object.keys(this.state.driverLocation).length > 0 ?
        (<Marker.Animated
-      coordinate={this.state.driverLocation} 
+      coordinate={this.state.driverLocation}
       style={{ alignItems: "center"}} >
     	<Ionicons name="ios-car" size={30} color="black" />
     </Marker.Animated>
@@ -699,7 +699,7 @@ export default class RideConfirm extends React.Component {
     { Object.keys(this.state.origin).length > 0 && Object.keys(this.state.destination).length > 0 ?
     (
     <>
-    
+
   		</>
     )
     	:
@@ -731,7 +731,7 @@ export default class RideConfirm extends React.Component {
           onRequestClose={() => {
             alert('Modal has been closed.');
           }}>
-        
+
           <Grid style={{justifyContent:'center',alignContent:'center'}}>
           	<Row size={5}>
           		<Col>
@@ -768,7 +768,7 @@ export default class RideConfirm extends React.Component {
         <View>
         <CancelPop />
         </View>
-  </View>	
+  </View>
 	  );
    }
 }

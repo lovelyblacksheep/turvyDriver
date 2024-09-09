@@ -2,7 +2,7 @@ import React from "react";
 import { StyleSheet, Text, View,Dimensions,Image,ScrollView ,TouchableOpacity,ToastAndroid,ActivityIndicator,BackHandler,StatusBar,Platform,Linking,Modal,TouchableHighlight,Animated,Pressable} from 'react-native';
 //import * as Permissions from 'expo-permissions';
 import * as Location from 'expo-location';
-import { EvilIcons,Ionicons,MaterialCommunityIcons,FontAwesome5,Feather,AntDesign,Entypo } from '@expo/vector-icons'; 
+import { EvilIcons,Ionicons,MaterialCommunityIcons,FontAwesome5,Feather,AntDesign,Entypo } from '@expo/vector-icons';
 const imagemarker = require('../assets/location-pin-2965.png');
 const driversummy = require('../assets/driversummy.png');
 const imageveh = require('../assets/images/driver-veh-images_60.png');
@@ -23,29 +23,29 @@ import TopBar from "./TopBar";
 import SendMessage from './SendMessage';
 import InMessages from './InMessages';
 import messaging from '@react-native-firebase/messaging';
-import {debug} from './Constant'; 
+import {debug} from './Constant';
 
 const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0043;
 const SCREENHEIGHT = height*.60;
 const DEVICE_WIDTH = width;
-const DEVICE_HEIGHT = height;		
+const DEVICE_HEIGHT = height;
 //console.log("height");
 //console.log(SCREENHEIGHT);
 
 import Annotation from '@react-native-mapbox-gl/maps/javascript/components/annotations/Annotation'; // eslint-disable-line import/no-cycle
 //import MapboxGL from "@rnmapbox/maps";
-import  MapboxGL from "@react-native-mapbox-gl/maps"; 
+import  MapboxGL from "@react-native-mapbox-gl/maps";
 //MapboxGL.setAccessToken("pk.eyJ1IjoibWFsLXdvb2QiLCJhIjoiY2oyZ2t2em50MDAyMzJ3cnltMDFhb2NzdiJ9.X-D4Wvo5E5QxeP7K_I3O8w");
 import { lineString as makeLineString } from '@turf/helpers';
 import { point } from '@turf/helpers';
-import  { changeMode, 
+import  { changeMode,
     MapboxCustomURL} from  "../Riders/MapDayNight";
 
 
 //const haversine = require('haversine')
 
-import * as firebase from "firebase";
+import firebase from 'firebase/compat/app';
 import firestore from '@react-native-firebase/firestore';
 import * as geofirestore from 'geofirestore';
 import apiKeys from '../config/keys';
@@ -190,7 +190,7 @@ export default class RideConfirm1 extends React.Component {
               },
             ],
        },
-         
+
     };
     this.mapView = null;
     this._onLongPressButton = this._onLongPressButton.bind(this);
@@ -198,21 +198,21 @@ export default class RideConfirm1 extends React.Component {
      this.bottomSheetRef = React.createRef();
     this.settime = React.createRef();
     this.onGoBackCallback = this.onGoBackCallback.bind(this);
-    
-    this.pusher = new Pusher('389d667a3d4a50dc91a6', { cluster: 'ap2' }); 
-    this.listenForChanges(); 
+
+    this.pusher = new Pusher('389d667a3d4a50dc91a6', { cluster: 'ap2' });
+    this.listenForChanges();
      //ToastAndroid.show('New message arrive! Test from rider', ToastAndroid.LONG);
-     	
+
    }
-   
+
    listenForChanges = () => {
 
-		
-		const channel = this.pusher.subscribe('turvy-channel'); 
+
+		const channel = this.pusher.subscribe('turvy-channel');
 		 channel.bind('book_aftercancel_event', data => {
 		 	this.getrideCancel();
 		  //alert(JSON.stringify(data));
-		  }); 
+		  });
 		   	//
         	 	 	//
 		 channel.bind('tap_to_depart_event', data => {
@@ -223,27 +223,27 @@ export default class RideConfirm1 extends React.Component {
 		 channel.bind('notify_rider_remain_time', data => {
 		    console.log("notify_rider_remain_time",data);
 		    if(data.rider_id == this.state.bookingresponse.rider_id && data.durationRemaining == 0 && !this.state.alertCongrats){
-				
-		    	this.runsoundCongrats(); 
+
+		    	this.runsoundCongrats();
 		    }
-		    
+
 		 });
-		  
+
 	};
-   
+
    _onLongPressButton(imagezoom) {
     this.setState({
     	modalvisible:true,
     	imagezoom:imagezoom,
     })
   }
-  
+
    _onPressDone(){
 		this.setState({
 			modalvisible:false
-		});   
+		});
    }
-   
+
    renderMessagesDriver = () =>{
     	return (
 		<Pressable
@@ -262,11 +262,11 @@ export default class RideConfirm1 extends React.Component {
 		);
   }
 
-  
-    
+
+
    renderDriverLocation = () =>{
    if(this.state.driverLocation && Object.keys(this.state.driverLocation).length > 0 && this.state.driverLocation.latitude != null && this.state.driverLocation.longitude != null ){
-    	
+
     	let rotateAngl = 0;
    rotateAngl = (this.state.heading/360);
   	/*const spin = this.state.rotateValue.interpolate({
@@ -280,7 +280,7 @@ export default class RideConfirm1 extends React.Component {
     	   animated={true}
           id="mapboxUserLocation"
            coordinates={[this.state.driverLocation.longitude,this.state.driverLocation.latitude]}
-          style={{  
+          style={{
             iconRotate: this.state.heading,
           }}
     	>
@@ -299,8 +299,8 @@ export default class RideConfirm1 extends React.Component {
      	 	return null;
      	 }
   }
-  
-  
+
+
   onPlaybackStatusUpdate15 = (PlaybackStatus)=>{
   //	console.log("START FOR 15 MIN",PlaybackStatus);
       this.setState({
@@ -312,11 +312,11 @@ export default class RideConfirm1 extends React.Component {
 	      	 min15ack:false,
 	        });
   			}
-  			
+
   			//console.log("START FOR 15 MIN Sound Complete");
   		}
   }
-  
+
   onPlaybackStatusUpdate = (PlaybackStatus) => {
   	//console.log(PlaybackStatus);
      this.setState({
@@ -324,7 +324,7 @@ export default class RideConfirm1 extends React.Component {
       })
 
 	  //alert(PlaybackStatus.isPlaying)
-      
+
   		if(PlaybackStatus.didJustFinish == true){
   			//console.log("Sound Complete");
   			if(this.state.custack == false){
@@ -341,7 +341,7 @@ export default class RideConfirm1 extends React.Component {
 			}, 5000);
 		}
   }
-  
+
   onPlaybackStatusUpdate5 = (PlaybackStatus) => {
   	//console.log("START FOR 5 MIN",PlaybackStatus);
       this.setState({
@@ -356,7 +356,7 @@ export default class RideConfirm1 extends React.Component {
   			//console.log("START FOR 5 MIN Sound Complete");
   		}
   }
-  
+
   onPlaybackStatusUpdate1m = (PlaybackStatus) => {
   	//console.log("START FOR 5 MIN",PlaybackStatus);
       this.setState({
@@ -371,7 +371,7 @@ export default class RideConfirm1 extends React.Component {
   			//console.log("START FOR 5 MIN Sound Complete");
   		}
   }
-  
+
   onRegionChangeComplete = (region) => {
         //console.log('onRegionChangeComplete', region);
         //console.log("On region change", region);
@@ -379,23 +379,23 @@ export default class RideConfirm1 extends React.Component {
             latitudeDelta: region.latitudeDelta,
             longitudeDelta: region.longitudeDelta,
         })
-        
-        
-        
+
+
+
         /*this.setState({
 	         latitudeDelta: 0.008765219166956939,
 	         longitudeDelta: 0.005394257605075836,
 	     });
 	     */
-        
+
        /* this.setState({
             latitudeDelta: 0.007683038072176629,
             longitudeDelta: 0.004163794219493866,
         })
         */
-        
+
     };
-  
+
   async getrideStart(){
   	  //console.log("BOOKING ID "+this.state.bookingresponse.id);
   	  //.where('status','==','open')
@@ -405,9 +405,9 @@ export default class RideConfirm1 extends React.Component {
 		.get()
 		.then(querySnapshot => {
 			    //console.log('Total bOOKING STATUS: ', querySnapshot.size);
-			    
+
 			    if(querySnapshot.size > 0){
-			    
+
 			    	clearInterval(this.myinterval);
 			    	clearInterval(this.settime);
 			    	if(this.state.soundcont){
@@ -421,25 +421,25 @@ export default class RideConfirm1 extends React.Component {
 			    		setTimeout( () => {
 							this.props.navigation.replace('BookingMap1',this.state);
 						},3000);
-			    		
+
 			    	})
 			    //	alert("IN NCONFIRM");
-			    }																												
+			    }
 		});
   }
-  
+
    	async getrideCancel(){
 		await AsyncStorage.getItem('accesstoken').then((value) => {
   		 	//alert('https://turvy.net/api/rider/requestbookstatus/'+this.state.bookingresponse.id);
       		fetch('https://www.turvy.net/api/rider/requestbookstatus/'+this.state.bookingresponse.id,{
-				method: 'GET', 
+				method: 'GET',
 				headers: new Headers({
-					'Authorization': 'Bearer '+value, 
+					'Authorization': 'Bearer '+value,
 					'Content-Type': 'application/json'
 				}),
 		   	})
       		.then((response) => response.json())
-      		.then((json) =>{ 
+      		.then((json) =>{
 				//console.log("get status if driver accept");
 				//console.log("CANCEL RESPONSE ",json);
 				if(json.message == 'not assigned'){
@@ -453,8 +453,8 @@ export default class RideConfirm1 extends React.Component {
 					clearInterval(this.settime);
 					this.props.navigation.replace('BookProcess',this.state);
 				}
-      	
-      	
+
+
       			if(json.message == 'cancel'){
 					this.refs.fmcancelInst.showMessage({
 						message: 'Trip Request had been cancelled by Driver!',
@@ -485,17 +485,17 @@ export default class RideConfirm1 extends React.Component {
 						});
 					}.bind(this), 5000);
       			}
-			}); 
-     	}); 	  	
+			});
+     	});
    	}
-  
+
   	async runsoundCongrats(){
 
 		console.log('runsoundCongrats===============')
 		await this.stopRunSound()
 
-		
-	
+
+
 		if(!this.state.alertCongrats){
 			this.setState({
 				alertCongrats:true
@@ -519,8 +519,8 @@ export default class RideConfirm1 extends React.Component {
 			{},
 			this.onPlaybackStatusUpdate,
 		);
-		
-		//setSound(sound);		
+
+		//setSound(sound);
 		console.log('Playing Sound');
 		await sound.playAsync();
 		sound.setIsLoopingAsync(true);
@@ -528,12 +528,12 @@ export default class RideConfirm1 extends React.Component {
 			soundcont:sound,
 		}); */
 
-		
+
 		/*
 		this.refs.fmLocalIntstance.showMessage({
 			message: '',
 			type: "default",
-			backgroundColor: "#135AA8", 
+			backgroundColor: "#135AA8",
 			autoHide:false,
 			style:{
 				borderRadius:10,
@@ -545,7 +545,7 @@ export default class RideConfirm1 extends React.Component {
 			onPress: ()=>{
 				sound.setIsLoopingAsync(false)
 				sound.stopAsync();
-				
+
 				this.setState({
 					congdone:true,
 					custack:true,
@@ -559,11 +559,11 @@ export default class RideConfirm1 extends React.Component {
 		*/
 		// this.props.navigation.navigate('BookingMap',this.state);
   	}
-  
+
 	stopRunSound = async () => {
 
 		const {soundcont} = this.state;
-		
+
 		if(soundcont){
 			//alert('stop sound')
 			soundcont.setIsLoopingAsync(false)
@@ -572,10 +572,10 @@ export default class RideConfirm1 extends React.Component {
 		if(this.refs.fmLocalIntstance){
 			this.refs.fmLocalIntstance.hideMessage()
 		}
-		
+
 	}
 
-  
+
   async run15MinSound(){
 
 		this.stopRunSound()
@@ -609,10 +609,10 @@ export default class RideConfirm1 extends React.Component {
 		this.refs.fmLocalIntstance.showMessage({
 			message: '',
 			type: "default",
-			backgroundColor: "#135AA8", 
+			backgroundColor: "#135AA8",
 			autoHide:false,
 			style:{
-				
+
 				borderRadius:10,
 				alignItems:'center',
 				justifyContent:'center',
@@ -622,7 +622,7 @@ export default class RideConfirm1 extends React.Component {
 			onPress: ()=>{
 				sound.setIsLoopingAsync(false)
 				sound.stopAsync();
-				
+
 				this.setState({
 					min15ack:true,
 					cust15ack:true,
@@ -634,7 +634,7 @@ export default class RideConfirm1 extends React.Component {
 			},
 		});
 		*/
-		
+
 		//
 		// this.props.navigation.navigate('BookingMap',this.state);
 	}
@@ -652,7 +652,7 @@ export default class RideConfirm1 extends React.Component {
 
 		await soundcont.playAsync();
 		soundcont.setIsLoopingAsync(true)
-		
+
 		setTimeout(()=>{
 			soundcont.setIsLoopingAsync(false)
 			soundcont.stopAsync();
@@ -690,7 +690,7 @@ export default class RideConfirm1 extends React.Component {
 		this.refs.fmLocalIntstance.showMessage({
 			message: '',
 			type: "default",
-			backgroundColor: "#135AA8", 
+			backgroundColor: "#135AA8",
 			autoHide:false,
 			style:{
 				marginHorizontal:20,
@@ -712,11 +712,11 @@ export default class RideConfirm1 extends React.Component {
 				this.refs.fmLocalIntstance.hideMessage()
 			},
 		});
-		
+
 		// this.props.navigation.navigate('BookingMap',this.state);
 		*/
 	}
-	
+
 	render1minDriverMessage = (time) =>{
 		return (
 			<Pressable
@@ -739,7 +739,7 @@ export default class RideConfirm1 extends React.Component {
 			</Pressable>
 		);
 	}
-	
+
 	renderDriverMessage = (time) =>{
 		return (
 			<Pressable
@@ -762,7 +762,7 @@ export default class RideConfirm1 extends React.Component {
 
 	hideAlertMessegeTime = async (time) => {
 		this.stopRunSound()
-		if(time == '5'){			
+		if(time == '5'){
 			this.setState({
 				min5ack:true,
 				cust5ack:true,
@@ -807,7 +807,7 @@ export default class RideConfirm1 extends React.Component {
 		this.hide1minAlertMessage()
 		this.stopRunSound()
 	  }
-	
+
 	async run1MinSound(){
 		this.stopRunSound()
 		this.setState({
@@ -818,7 +818,7 @@ export default class RideConfirm1 extends React.Component {
 
 		await soundcont.playAsync();
 		soundcont.setIsLoopingAsync(true)
-		
+
 		setTimeout(()=>{
 			soundcont.setIsLoopingAsync(false)
 			soundcont.stopAsync();
@@ -843,7 +843,7 @@ export default class RideConfirm1 extends React.Component {
 		this.refs.fmLocalIntstance.showMessage({
 			message: '',
 			type: "default",
-			backgroundColor: "#135AA8", 
+			backgroundColor: "#135AA8",
 			autoHide:false,
 			style:{
 				marginHorizontal:20,
@@ -866,37 +866,37 @@ export default class RideConfirm1 extends React.Component {
 			},
 		});
 		*/
-		
+
 		// this.props.navigation.navigate('BookingMap',this.state);
 	}
-   
+
    async getVehcileDetails(driverId){
    	//alert('https://turvy.net/api/driver/getdriverVeh/'+driverId);
    	fetch('https://www.turvy.net/api/driver/getdriverVeh/'+driverId,{
-     	  	method: 'GET', 
+     	  	method: 'GET',
 		   headers: new Headers({
 		     'Content-Type': 'application/json'
 		   }),
 		   })
       .then((response) => response.json())
-      .then((json) =>{ 
+      .then((json) =>{
       	//console.log("vehcile Details");
       	//console.log(json);
-      	
+
       	if(json.status == 1){
       		this.setState({
       			vehinfo:json.data
       		});
-      		
+
       	}
      	 }
       )
       .catch((error) =>{
       	console.error(error);
       });
-      
+
    }
-   
+
     // Converts from degrees to radians.
     toRadians = (degrees) => {
       return (degrees * Math.PI) / 180;
@@ -906,8 +906,8 @@ export default class RideConfirm1 extends React.Component {
     toDegrees = (radians) => {
       return (radians * 180) / Math.PI;
     }
-	
-   
+
+
     getHeading = (origin, destination) => {
         const originLat = this.toRadians(origin.latitude);
         const originLng = this.toRadians(origin.longitude);
@@ -924,7 +924,7 @@ export default class RideConfirm1 extends React.Component {
 
     async getLnglatdriver2source(dLocation){
     	let loctstring = dLocation.longitude+','+dLocation.latitude+';'+this.state.origin.longitude+','+this.state.origin.latitude;
-    	
+
     	fetch('https://api.mapbox.com/directions/v5/mapbox/driving/'+loctstring+'?overview=full&geometries=geojson&access_token=pk.eyJ1IjoibWFsLXdvb2QiLCJhIjoiY2oyZ2t2em50MDAyMzJ3cnltMDFhb2NzdiJ9.X-D4Wvo5E5QxeP7K_I3O8w',{
 				method: 'GET',
 	 		}).then(function (response) {
@@ -938,7 +938,7 @@ export default class RideConfirm1 extends React.Component {
 	  			let duration = result.routes[0].duration;
 	  			duration = result.routes[0].duration/60;
 	  			//console.log("---- DURATION --- ",duration );
-	  			
+
 	  			//alert(duration);
 	  			if(duration < 1 && duration > 0){
 	  				duration= 1;
@@ -957,7 +957,7 @@ export default class RideConfirm1 extends React.Component {
 
 	  			//console.log("COORDINATES ARRAY", Object.values(result.routes[0].geometry.coordinates));
 	  			this.setState({
-	  			
+
 	  			routediver: {
             type: 'FeatureCollection',
             features: [{
@@ -983,21 +983,21 @@ export default class RideConfirm1 extends React.Component {
        	duration:duration,
 	  			},()=>{
 	  				/*if(this.camera) {
-	  				 this.camera.moveTo([this.state.driverLocation.longitude, this.state.driverLocation.latitude], 800); // eases camera to new location based on duration			
+	  				 this.camera.moveTo([this.state.driverLocation.longitude, this.state.driverLocation.latitude], 800); // eases camera to new location based on duration
 	  				}
 	  				*/
 	  				//this.camera.fitBounds([this.state.origin.longitude, this.state.origin.latitude], [this.state.longitudedest,this.state.latitudedest],[150,40,250,20],1000);
 	  				//this.updatecarLoc();
 	  			});
 			});
-  
-    }   
-     
+
+    }
+
     async updatecarLoc(){
 
     		//console.log(cords);
-    		//const await 
-    		this.settime =  setInterval(()=>{ 
+    		//const await
+    		this.settime =  setInterval(()=>{
     		       //alert(this.props.route.params.bookingdriver.id);
     		       //console.log("test abc",this.props.route.params.bookingdriver.id);
     				var docRef = firestore().collection("driver_locations").doc(JSON.stringify(this.props.route.params.bookingdriver.id));
@@ -1006,10 +1006,10 @@ export default class RideConfirm1 extends React.Component {
                         //console.log("Document data:", doc.data());
                         this.setState({ driverLocation:doc.data().coordinates,
            					 heading:doc.data().heading },()=>{
-           					 	 
-					       	//console.log(" ORGIN SET ",this.state.driverLocation);      	
-					       	//console.log(" ORGIN SET LONGITUDE",this.state.driverLocation.longitude);      
-					       	this.getLnglatdriver2source(this.state.driverLocation);	
+
+					       	//console.log(" ORGIN SET ",this.state.driverLocation);
+					       	//console.log(" ORGIN SET LONGITUDE",this.state.driverLocation.longitude);
+					       	this.getLnglatdriver2source(this.state.driverLocation);
 					       });
 					       /*
 					        driverCoordinate: new AnimatedRegion({
@@ -1023,21 +1023,21 @@ export default class RideConfirm1 extends React.Component {
                         // doc.data() will be undefined in this case
                         //console.log("No such document!");
                     }
-                    
+
                     let rotateAngl = 0;
                     rotateAngl = (doc.data().heading/360);
                      if(rotateAngl > 0.5){
 			                rotateAngl = rotateAngl - 1
 			            }
-			            
+
                    Animated.timing(this.state.rotateValue, {
 			                toValue: rotateAngl,
 			                duration: 2000,
 			                useNativeDriver: true,
 			            }).start();
-		            
-					
-                    
+
+
+
                     const newCoordinate = {
 					                latitude: doc.data().coordinates.latitude,
 					                longitude: doc.data().coordinates.longitude,
@@ -1045,7 +1045,7 @@ export default class RideConfirm1 extends React.Component {
 					                longitudeDelta: this.state.longitudeDelta,
 					            };
 
-					            
+
 					      if(this.camera) {
 					      	//console.log("Heading ",this.state.heading);
 					      	this.camera.setCamera({
@@ -1056,7 +1056,7 @@ export default class RideConfirm1 extends React.Component {
                             zoomLevel:16
                         })
 					      	//this.camera.moveTo([doc.data().coordinates.longitude, doc.data().coordinates.latitude], 200)
-					      	
+
 				           /* this.mapView.animateCamera({
 				                center:{
 				                    latitude: doc.data().coordinates.latitude,
@@ -1065,14 +1065,14 @@ export default class RideConfirm1 extends React.Component {
 				               heading : this.state.pathHeading
 				            });
 				            */
-				        }      
-					            
+				        }
+
                 }).catch((error) => {
                     //console.log("Error getting document:", error);
                 });
-			  }, 4000);						
+			  }, 4000);
     }
-	
+
 	createSoundObject = async () => {
 		const { sound: playbackObject} = await Audio.Sound.createAsync(
 			require('../assets/rider_driver_arriving.mp3'),
@@ -1090,7 +1090,7 @@ export default class RideConfirm1 extends React.Component {
 	onPlaybackSoundObject = (PlaybackStatus) => {
 		//console.log('PlaybackStatus==========', PlaybackStatus)
 	}
-   	 
+
     componentDidMount(){
     	this.createSoundObject()
     	this.setState({
@@ -1102,7 +1102,7 @@ export default class RideConfirm1 extends React.Component {
             })
         }, 10000);
     	const {navigation,state} = this.props;
-			
+
 			let listcord = [];
    	let locationcordsapi = [];
    	//console.log("BEFORE DESINARION",this.props.route.params.origin);
@@ -1114,42 +1114,42 @@ export default class RideConfirm1 extends React.Component {
        	 //listcord = Object.assign(listcord, element);
        	 listcord.push(element);
        	 //console.log("ORIGN coordinate List",Object.values(listcord));
-		} 
-		
+		}
+
 		if(Object.keys(this.props.route.params.waypointslnglat).length > 0){
 	      	 this.props.route.params.waypointslnglat.map((item, index) => {
 		   	 //console.log("DRIVER MAP");
 		   		//console.log("waypoint item ",item);
-		   		let origincord = [item.longitude,item.latitude]; 
+		   		let origincord = [item.longitude,item.latitude];
        	     let element = { coordinates: origincord };
        	      locationcordsapi.push(origincord);
        	    //listcord = [...listcord, element];
 
-		     }); 	
-	      } 
-	      
+		     });
+	      }
+
 	   if(Object.keys(this.props.route.params.destination).length > 0){
-	   	 let origincord = [this.props.route.params.destination.longitude,this.props.route.params.destination.latitude]; 
+	   	 let origincord = [this.props.route.params.destination.longitude,this.props.route.params.destination.latitude];
        	 let element = { coordinates: origincord };
        	 locationcordsapi.push(origincord);
        	 //listcord = [...listcord, element];
        	 listcord.push(element);
        	 //console.log("DESTINATION coordinate List",Object.values(listcord));
 	   }
-	   
+
 	   this.riderMessages();
 	   //console.log("coordinate List",Object.values(listcord));
 	   let locationcordsapistr = locationcordsapi.join(";");
-	   
+
        //console.log("DRIVER Details ",this.props.route.params.bookingdriver);
        //console.log("Booking Details ",this.props.route.params.bookingresponse);
         	// alert(Object.keys(this.state.driverLocation).length);
         	// alert(Object.values(this.state.driverLocation).length);
         	// alert(Object.entries(this.state.driverLocation).length);
-     
+
        BackHandler.addEventListener('hardwareBackPress', this.onGoBackCallback);
         navigation.addListener('gestureEnd', this.onGoBackCallback);
-        
+
 		// this.getrewards();
 		this.unsubscribe =  navigation.addListener("focus",() => {
 			BackHandler.addEventListener('hardwareBackPress', this.onGoBackCallback);
@@ -1160,22 +1160,22 @@ export default class RideConfirm1 extends React.Component {
          // clearInterval(this.myintervalaccp);
       	BackHandler.removeEventListener('hardwareBackPress', this.onGoBackCallback);
       });
-      
+
       //console.log("compoente mount");
-   	
+
    	//console.log(this.state);
-  
+
    	//console.log("CONS DATA",this.props.route.params.bookingdriver);
       if(this.props.route.params.selectedvehicle){
       	let driver_name = this.props.route.params.bookingdriver.first_name+' '+this.props.route.params.bookingdriver.last_name;
       	this.getVehcileDetails(this.props.route.params.bookingdriver.id);
-      	this.setState({ 
+      	this.setState({
              selectedvehicle:this.props.route.params.selectedvehicle,
              origin:this.props.route.params.origin,
              destination:this.props.route.params.destination,
              latitudedest:this.props.route.params.latitudedest,
              longitudedest:this.props.route.params.longitudedest,
-             latitudecur:this.props.route.params.latitudecur, 
+             latitudecur:this.props.route.params.latitudecur,
              longitudecur:this.props.route.params.longitudecur,
              bookingresponse:this.props.route.params.bookingresponse,
              rideinfoinprocess:this.props.route.params.rideinfoinprocess,
@@ -1188,7 +1188,7 @@ export default class RideConfirm1 extends React.Component {
 	         locationcordsapistr:locationcordsapistr,
         },
         ()=>{
-        	   
+
        // 	alert(this.state.latitudecur);
        // 	alert(this.state.longitudecur);
         	 //console.log(this.props.route.params.bookingdriver);
@@ -1206,32 +1206,32 @@ export default class RideConfirm1 extends React.Component {
              destination:this.props.route.params.destination,
              latitudedest:this.props.route.params.latitudedest,
              longitudedest:this.props.route.params.longitudedest,
-             latitudecur:this.props.route.params.latitudecur, 
+             latitudecur:this.props.route.params.latitudecur,
              longitudecur:this.props.route.params.longitudecur,
              bookingdriver:this.props.route.params.bookingdriver,
              bookingresponse:this.props.route.params.bookingresponse,
              waypointslnglat:this.props.route.params.waypointslnglat,
              drivername:driver_name,
              locationcordsapistr:locationcordsapistr,
-              
+
       	},()=>{
       		this.getrideStart();
         	   this.getrideCancel();
       		//
       	});
-      
+
       }
-      
+
       //this.getdriversnear();
-      
-      this.getRewards();	
-      	AsyncStorage.getItem('messagecount').then((value) => {           
+
+      this.getRewards();
+      	AsyncStorage.getItem('messagecount').then((value) => {
             if(value != '' && value !== null){
                 this.setState({messagecount:value})
                 //alert(value)
             }
-        });	 
-		 
+        });
+
      // alert("DRUVER ID "+this.props.route.params.bookingdriver.id);
      //console.log("test abc comp",this.props.route.params.bookingdriver.id);
       var docRef = firestore().collection("driver_locations").doc(JSON.stringify(this.props.route.params.bookingdriver.id));
@@ -1252,9 +1252,9 @@ export default class RideConfirm1 extends React.Component {
                                     pathHeading:destheading,
                                     pathCenter:center
                                 })
-					       	 //console.log(" ORGIN SET INITAL "+JSON.stringify(this.state.driverLocation));   
-					       	 //console.log(" ORGIN SET INITAL LONGITUDE "+this.state.driverLocation.longitude);   
-					       	  //console.log(" ORGIN SET INITAL Lati "+this.state.driverLocation.latitude);    	   	
+					       	 //console.log(" ORGIN SET INITAL "+JSON.stringify(this.state.driverLocation));
+					       	 //console.log(" ORGIN SET INITAL LONGITUDE "+this.state.driverLocation.longitude);
+					       	  //console.log(" ORGIN SET INITAL Lati "+this.state.driverLocation.latitude);
 					       });
                     } else {
                         // doc.data() will be undefined in this case
@@ -1263,12 +1263,12 @@ export default class RideConfirm1 extends React.Component {
                 }).catch((error) => {
                     //console.log("Error getting document:", error);
                 });
-     
-                
-    
-        
+
+
+
+
    	this.intialLoad();
-			
+
 			 /*this.sideBarInt = setInterval(() => {
 
 				 AsyncStorage.getItem('newmessgae').then((value) => {
@@ -1278,7 +1278,7 @@ export default class RideConfirm1 extends React.Component {
 						this.refs.fmMessageRecived.showMessage({
 			         	  message: '',
 				           type: "default",
-				           backgroundColor: "#000", 
+				           backgroundColor: "#000",
 				           autoHide:false,
 				           style:{
 				           		margin:20,
@@ -1287,25 +1287,25 @@ export default class RideConfirm1 extends React.Component {
 				           		justifyContent:'center',
 				           		fontSize:10,
 				           },
-				          
+
 				           renderCustomContent: ()=>{
 				           	return this.rendertextRecived();
 				           },
 			         });
 
-					
+
 				  }
 				});
-         
+
         }, 2000);
         */
-        
-         
-         
+
+
+
    	 this.refs.fmLocalIntstance.showMessage({
            message: '',
            type: "default",
-           backgroundColor: "#135AA8", 
+           backgroundColor: "#135AA8",
            autoHide:false,
            style:{
            		borderRadius:10,
@@ -1314,24 +1314,24 @@ export default class RideConfirm1 extends React.Component {
 				marginHorizontal:20,
 				marginTop:50
            },
-          
+
            renderCustomContent: ()=>{
            	return this.renderMessages();
            },
         	 });
-        	 
-			 
-        	 
+
+
+
         	 /*this.myinterval = setInterval(() => {
         	 	 if(this.state.tripstart == false){
-        	 	 	
-        	 	 }	  				
+
+        	 	 }
            }, 5000);
            */
-            	  			
-     	
+
+
   } // end of function
- 
+
    onGoBackCallback(){
       //console.log('Android hardware back button pressed and iOS back gesture ended');
       if(this.state.soundcont){
@@ -1339,20 +1339,20 @@ export default class RideConfirm1 extends React.Component {
       	this.state.soundcont.setIsLoopingAsync(false)
 			this.state.soundcont.stopAsync();
       }
-      
+
       this.setState({
       	modalvisible:true,
       });
       this.props.navigation.replace('BookMain',this.state);
      return true;
    }
-   
+
   async getRewards(){
 		 await AsyncStorage.getItem('rewardpoints').then((value) => {
 			this.setState({
 				rewardpoints:value,
 			});
-		});	    
+		});
   }
   async getdriversnear(){
    let search_radius = await AsyncStorage.getItem('search_radius');
@@ -1379,7 +1379,7 @@ export default class RideConfirm1 extends React.Component {
 		   	}
 		   });
 		 });
-		 
+
   }
    renderMessagesreward = () =>{
     	return (<View style={{flex:1,alignContent:'center',justifyContent:'center',flexDirection:'column',shadowColor: '#000000',
@@ -1397,17 +1397,17 @@ export default class RideConfirm1 extends React.Component {
     	 </View>
     	</View>);
   }
-  
-   
+
+
    openDialScreen (){
     let number = '';
    // alert("CALL click	");
     //console.log("Click Call Data",this.state);
     fetch('https://www.turvy.net/api/rider/twiliomakecallrider',{
-				     	  	method: 'POST', 
+				     	  	method: 'POST',
 						   headers: new Headers({
 						     'Content-Type': 'application/json'
-						   }), 
+						   }),
 						   body:JSON.stringify({
 					 				'driver_id' : this.state.bookingdriver.id,
 					 				'booking_id' : this.state.bookingresponse.id,
@@ -1417,10 +1417,10 @@ export default class RideConfirm1 extends React.Component {
 					 				'rider_phone' : this.state.bookingresponse.rider_mobile,
 					 				'rider_name' : this.state.bookingresponse.rider_name,
 					 				'rider_id': this.state.bookingresponse.rider_id,
-					 			}) 
+					 			})
 						   })
 				      .then((response) => response.json())
-				      .then((json) =>{ 
+				      .then((json) =>{
 				      	//console.log("RESPONSE CALL 1",json);
 				      	if(json.status == 1){
 				      		//alert("IN SUCCESS"+json.senderphn);
@@ -1431,7 +1431,7 @@ export default class RideConfirm1 extends React.Component {
 								    }
 	                       Linking.openURL(number);
 				      	}else{
-				      		
+
 				      		this.refs.fmcallerror.showMessage({
 					           message: json.message,
 					           type: "warning",
@@ -1442,16 +1442,16 @@ export default class RideConfirm1 extends React.Component {
 					           		justifyContent:'center'
 					           },
 					        	 });
-					        	 
+
 					        	  setTimeout( () => {
 								    this.refs.fmcallerror.hideMessage();
 								  },2000);
-					        	 
-		        	 
+
+
 				      	}
-				      	
+
 				      	/*if(json.status == 1){
-				      		 this.setState({                                        
+				      		 this.setState({
 					         	isLoading:false,
 				    				vehborder:'red',
 				    				bookingresponse:json.data
@@ -1463,17 +1463,17 @@ export default class RideConfirm1 extends React.Component {
 				      )
 				      .catch((error) => { console.error(" CALL ERROR BLOCK" ,error) });
   }
-  
+
   renderMessages = () =>{
     	return (<View style={{flex:1,alignContent:'center',justifyContent:'center',flexDirection:'row'}}><Text style={{color:'#fff',fontSize:20,padding:3,fontFamily: "Metropolis-Regular",textAlign:'center'}}>Your driver arrives in {this.state.duration} minutes</Text></View>);
   }
-  
+
    rendertextRecived = () =>{
     	return (<View style={{flex:1,alignContent:'center',justifyContent:'center',flexDirection:'row'}}><Text style={{color:'#fff',fontSize:20,padding:3,fontFamily: "Metropolis-Regular",textAlign:'center'}}>Text Message Recived</Text><Button  mode="contained" color={'#135AA8'} onPress={() => this.setState({inmessagevisible:true}) }>
 						   Open
 				    </Button></View>);
   }
-    
+
   componentWillUnmount() {
     //this.unsubscribe();
 	this.stopRunSound()
@@ -1484,14 +1484,14 @@ export default class RideConfirm1 extends React.Component {
     if(this.myinterval){
       clearInterval(this.myinterval);
     }
-   
+
   }
 
- 
+
 	swipicon =() =>{
 		return(<Ionicons name="ios-close-outline" size={40} color="black" />)
-	} 
-	
+	}
+
     renderContent = () => (
     <>
     <View
@@ -1511,15 +1511,15 @@ export default class RideConfirm1 extends React.Component {
 			borderRadius:10,
       }}
     >
-  
-    {this.state.inprocessing == 0  ? 
+
+    {this.state.inprocessing == 0  ?
    	( <Grid >
    			<Row style={{height:90}}>
-   				
+
    				<Col size={3.5} style={{padding:3}}>
    				<TouchableHighlight onLongPress={()=>{ this._onLongPressButton(this.state.bookingdriver.avatar) }} underlayColor="white">
-   				<View style={{height:100,borderRadius:8}}>																				
-						{this.state.bookingdriver.avatar ? 
+   				<View style={{height:100,borderRadius:8}}>
+						{this.state.bookingdriver.avatar ?
 							(<Image
 				        source={{uri:"https://www.turvy.net/"+this.state.bookingdriver.avatar}}
 				        style={styles.servicebocimage}
@@ -1532,7 +1532,7 @@ export default class RideConfirm1 extends React.Component {
 				        Resizemode={'contain'}
 				         />)
 						}
-   					
+
    				</View>
    				</TouchableHighlight>
    				</Col>
@@ -1576,8 +1576,8 @@ export default class RideConfirm1 extends React.Component {
    				   <TouchableOpacity onPress={() =>{this.props.navigation.navigate('BookCancel',this.state) }}>
    					<AntDesign name="closecircleo" size={18} color="white"  style={{textAlign:'center'}} />
    					<Text style={{color:'#fff'}}>
-   						Cancel		
-   					</Text>	
+   						Cancel
+   					</Text>
    					</TouchableOpacity>
    					</View>
    				</Col>
@@ -1608,15 +1608,15 @@ export default class RideConfirm1 extends React.Component {
        ):(
        	<Text></Text>
        )
-      } 
+      }
     </View>
    </>
-  );   
-  
-  
+  );
+
+
   async intialLoad() {
-  	
-    
+
+
      let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
        // setErrorMsg('Permission to access location was denied');
@@ -1634,7 +1634,7 @@ export default class RideConfirm1 extends React.Component {
       // console.log(this.props.route.params.destination);
       if(this.props.route.params.origin){
        	 origin = this.props.route.params.origin;
-		}      
+		}
 		let destination = {};
 		let longitudedest = '';
 		let latitudedest= '';
@@ -1648,7 +1648,7 @@ export default class RideConfirm1 extends React.Component {
       if(this.props.route.params.selectedvehicle){
       	selectedvehicle = this.props.route.params.selectedvehicle;
       }
-      
+
       this.setState({
       	selectedvehicle:selectedvehicle,
       });
@@ -1674,12 +1674,12 @@ export default class RideConfirm1 extends React.Component {
 		        longitude : longitudedest
 		    }
 		   /* let response = await Location.reverseGeocodeAsync(keys);
-		    
+
 		     //console.log(response);
-		    
+
 		   let address = '';
 		    for (let item of response) {
-		    	//${item.street}, 
+		    	//${item.street},
 		      let address = `${item.name}, ${item.postalCode}, ${item.city}`;
 		       //console.log(address);
 		       this.setState({
@@ -1688,17 +1688,17 @@ export default class RideConfirm1 extends React.Component {
 		    }
 		    */
 		 // }
-		  
+
       //.finally(() => setLoading(false));
     }
-    
+
     handlerCallMessage = async () => {
         //console.log('call from child componant')
         this.setState({
             sendMessage: false
         })
     }
-    
+
     closeInmessage = () =>{
       this.setState({
       	inmessagevisible:false,
@@ -1722,7 +1722,7 @@ export default class RideConfirm1 extends React.Component {
     	//console.log("Message Added",text);
     	this.appendChat(text);
     }
-    
+
     strAsynappendChat = (chatMessage) =>{
     	let textLus = [];
     	//textLus.push(text);
@@ -1737,7 +1737,7 @@ export default class RideConfirm1 extends React.Component {
     	//console.log("Message Added",chatMessage);
     	this.strAsynappendChat(chatMessage);
     }
-    
+
      riderMessages = async() => {
         messaging().onMessage(async remoteMessage => {
             //Alert.alert('New message arrived!', remoteMessage.data.body);
@@ -1745,17 +1745,17 @@ export default class RideConfirm1 extends React.Component {
                 chatMessage:remoteMessage.data,
                 sendMessage:true
             }) */
-             
+
             //console.log('New message length=============>',Object.keys(this.state.chatMessage).length)
-            
+
             if(Object.keys(this.state.chatMessage).length <= 0){
             	let dataasynfrm = [];
-            		await AsyncStorage.getItem('chatMessage').then((value) => {    
-				          //alert(value);  
-				          if(value != '' && value !== null){  
-				          //console.log("Chat Message asyn NEw assign",value); 
+            		await AsyncStorage.getItem('chatMessage').then((value) => {
+				          //alert(value);
+				          if(value != '' && value !== null){
+				          //console.log("Chat Message asyn NEw assign",value);
 				           dataasynfrm = JSON.parse(value);
-				         }   
+				         }
 				      });
                 let opt = [];
                 opt[0] = remoteMessage.data;
@@ -1778,20 +1778,20 @@ export default class RideConfirm1 extends React.Component {
                 },()=>{
                 	AsyncStorage.setItem('chatMessage', JSON.stringify(this.state.chatMessage));
                     //console.log('New message arrived!=============>',this.state.chatMessage);
-                    
+
                 })
             }
             //console.log('New message arrived!=============>',debug(remoteMessage.data))
         })
     }
-    
-    
+
+
   render() {
-  	
-    
+
+
   	 return (
-	    <View style={styles.container}>  
-	   	 <TopBar {...this.props} />  	  
+	    <View style={styles.container}>
+	   	 <TopBar {...this.props} />
        <FlashMessage ref="fmLocalIntstance" position={{top:80, left:10,right:10}} style={{borderRadius:2}}  />
        <FlashMessage ref="fmcancelInst" position={{top:130}} style={{borderRadius:2}}  />
        <FlashMessage ref="fmcallerror" position={{top:50}} style={{borderRadius:2}}  />
@@ -1823,7 +1823,7 @@ export default class RideConfirm1 extends React.Component {
 	  			let duration = result.routes[0].duration;
 	  			duration = result.routes[0].duration/60;
 	  			duration = duration.toFixed();
-	  			
+
 	  			   if(duration == 15 && this.state.min15ack == false){
 						this.run15MinSound()
 					}
@@ -1859,7 +1859,7 @@ export default class RideConfirm1 extends React.Component {
               },
             ],
        },
-       	display:true,	
+       	display:true,
 	  			},()=>{
 	  				if(this.camera && this.state.longitudedest != '' && this.state.latitudedest != '' ){
 	  				 this.camera.fitBounds([this.state.origin.longitude, this.state.origin.latitude], [this.state.longitudedest,this.state.latitudedest],[150,40,250,20],1000);
@@ -1885,9 +1885,9 @@ export default class RideConfirm1 extends React.Component {
             maxZoomLevel={20}
             animationMode="easeTo"
             centerCoordinate={[Number(this.state.driverLocation.longitude),Number(this.state.driverLocation.latitude)]}
-            Level={10} 
+            Level={10}
             heading={this.state.pathHeading}
-           
+
           />)
           :
           (<></>)
@@ -1895,18 +1895,18 @@ export default class RideConfirm1 extends React.Component {
          {Object.keys(this.state.waypointslnglat).length > 0 ?
     this.state.waypointslnglat.map((item, key) => {
     	return(
-    	 <MapboxGL.PointAnnotation 
+    	 <MapboxGL.PointAnnotation
 			 id={'waypoint'+key}
 			 anchor={{ y: 1, x: 0.5 }}
 	           coordinate={[item.longitude,item.latitude]}>
 	           <View style={{height: 30, width: 30, backgroundColor: 'transparent'}}>
 	           <Entypo name="location-pin" size={30} color="green" />
 	           </View>
-	    </MapboxGL.PointAnnotation>   
+	    </MapboxGL.PointAnnotation>
     	)
-	 }) 
+	 })
 	 :null
-   } 
+   }
            <MapboxGL.ShapeSource  id="mapbox-directions-source" shape={this.state.routedirect}>
 			      <MapboxGL.LineLayer
 			        id="mapbox-directions-line"
@@ -1918,13 +1918,13 @@ export default class RideConfirm1 extends React.Component {
 			        id="mapbox-directions-line-1"
 			        style={{lineColor:'#468DDf',lineWidth:10,lineJoin:'round',lineCap: MapboxGL.LineJoin.Round,}}
 			        />
-			 </MapboxGL.ShapeSource>  
+			 </MapboxGL.ShapeSource>
 			   <MapboxGL.ShapeSource  id="mapbox-directions-driver" shape={this.state.routediver}>
 			      <MapboxGL.LineLayer
 			        id="mapbox-directions-driver-line"
 			        style={{lineColor:'#000',lineWidth:14,lineJoin:'round',lineCap: MapboxGL.LineJoin.Round,}}
 			        />
-    	     </MapboxGL.ShapeSource>  
+    	     </MapboxGL.ShapeSource>
 			 <MapboxGL.ShapeSource  id="mapbox-directions-driver-2" shape={this.state.routediver}>
 			      <MapboxGL.LineLayer
 			        id="mapbox-directions-driver-line-2"
@@ -1932,37 +1932,37 @@ export default class RideConfirm1 extends React.Component {
 			        />
     	     </MapboxGL.ShapeSource>
     	      {this.state.origin.latitude != '' && this.state.origin.longitude != '' ?
-		       (<MapboxGL.PointAnnotation 
+		       (<MapboxGL.PointAnnotation
 			           id={'markerorigin'}
 			            anchor={{ y: 1, x: 0.5 }}
 			           coordinate={[this.state.origin.longitude,this.state.origin.latitude]}>
 			            <View style={{height: 30, width: 30, backgroundColor: 'transparent'}}>
 			              <FontAwesome5 name="map-marker-alt" size={30} color={"#910101"} />
 			           </View>
-	         </MapboxGL.PointAnnotation>   
+	         </MapboxGL.PointAnnotation>
           ):
          (
        <></>
        )
-     }  
-      
+     }
+
       { this.state.latitudedest != '' && this.state.longitudedest != '' ?
-		       (<MapboxGL.PointAnnotation 
+		       (<MapboxGL.PointAnnotation
 			           id={'markerdest'}
 			            anchor={{ y: 1, x: 0.5 }}
 			           coordinate={[this.state.longitudedest,this.state.latitudedest]}>
 			            <View style={{height: 30, width: 30, backgroundColor: 'transparent'}}>
 			              <FontAwesome5 name="map-marker-alt" size={30} color={"#910101"} />
 			           </View>
-	         </MapboxGL.PointAnnotation>   
+	         </MapboxGL.PointAnnotation>
           ):
          (
        <></>
        )
-     }   
+     }
     	  {this.renderDriverLocation()}
            </MapboxGL.MapView>
-          
+
   { this.state.display ? (
   <BottomSheet
         ref={this.bottomSheetRef}
@@ -1986,7 +1986,7 @@ export default class RideConfirm1 extends React.Component {
           onRequestClose={() => {
             alert('Modal has been closed.');
           }}>
-        
+
           <Grid style={{justifyContent:'center',alignContent:'center'}}>
           	<Row size={5}>
           		<Col>
@@ -2019,12 +2019,12 @@ export default class RideConfirm1 extends React.Component {
           		</Col>
           	</Row>
           </Grid>
-        </Modal> 
-        
-     
+        </Modal>
+
+
         {this.state.sendMessage?
-                    <SendMessage 
-                        sender={this.state.bookingresponse.rider_id} 
+                    <SendMessage
+                        sender={this.state.bookingresponse.rider_id}
                         receiver={{
                             driver_name:this.state.bookingdriver.last_name,
                             driver_id:this.state.bookingdriver.id,
@@ -2038,7 +2038,7 @@ export default class RideConfirm1 extends React.Component {
                     null
                 }
         <View>
-        
+
         <CancelPop  {...this.props}  />
         </View>
         <Modal
@@ -2048,9 +2048,9 @@ export default class RideConfirm1 extends React.Component {
           onRequestClose={() => {
             alert('Modal has been closed.');
           }}>
-          
+
      <InMessages {...this.props} chatMessage={{chatMessage:this.state.chatMessage}} strAsynChatMessage={this.strAsynChatMessage} addChatMessage={this.addChatMessage} closeAddastop={this.closeAddastop} />
-     </Modal> 
+     </Modal>
 
 	 {
 		this.state.alert5min &&
@@ -2070,8 +2070,8 @@ export default class RideConfirm1 extends React.Component {
 		this.state.alert1min &&
 		this.render1minDriverMessage('1')
 	}
-	 	
-  </View>	
+
+  </View>
 	  );
    }
 }
@@ -2082,7 +2082,7 @@ icon: {
     iconSize:0.5,
   },
 };
-  
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -2157,7 +2157,7 @@ btnSmall:{
 			},
 			shadowOpacity: 0.27,
 			shadowRadius: 4.65,
-			
+
 			elevation: 6,
 	     },
 	serachbox:{
@@ -2183,5 +2183,5 @@ btnSmall:{
     height:35,
 	 alignSelf:'center'
 	},
-	
+
 });

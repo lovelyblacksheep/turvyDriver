@@ -2,7 +2,7 @@ import React from "react";
 import { AppRegistry, Image, StatusBar,StyleSheet,View ,  FlatList,TouchableWithoutFeedback,TouchableOpacity,ImageBackground} from "react-native";
 import { Text, List , Divider,Button ,Badge } from "react-native-paper";
 
-import { MaterialCommunityIcons , EvilIcons,Ionicons,Entypo} from '@expo/vector-icons'; 
+import { MaterialCommunityIcons , EvilIcons,Ionicons,Entypo} from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Col, Row, Grid } from "react-native-easy-grid";
@@ -10,13 +10,13 @@ import { Avatar } from "react-native-elements";
 import {styles,theme, DOMAIN} from '../Riders/Constant';
 import UploadImage from '../Components/UploadImage';
 import * as Font from 'expo-font';
-import * as firebase from "firebase";
+import firebase from 'firebase/compat/app';
 
 const imagenot= require('../assets/New-Message-bell_P1-new.png');
 
 if (!firebase.apps.length) {
     console.log('Connected with Firebase');
-    firebase.initializeApp(apiKeys.firebaseConfig);
+    // firebase.initializeApp(apiKeys.firebaseConfig);
 }
 
 console.log('statusBarHeight: ', StatusBar.currentHeight);
@@ -37,7 +37,7 @@ const routes = [
  ];
 
 export default class TopBar extends React.Component {
-	
+
 	 constructor(props) {
     super(props);
     this.state = {
@@ -50,18 +50,18 @@ export default class TopBar extends React.Component {
   		 await Font.loadAsync({
 	     'Uber-Move-Text': require('../assets/fonts/ubermovetext-medium.ttf'),
 	    });
-      
-      
+
+
 		await AsyncStorage.getItem('messagecount').then((value) => {
 			this.setState({
 				messagecount:value ,
 			})
 		});
 		this.getrewards();
-		
-	  
+
+
 	     this.MessageCountInt = setInterval(() => {
-             
+
 				 AsyncStorage.getItem('messagecount').then((value) => {
 					if(value != '' && value !== null){
 					this.setState({
@@ -69,51 +69,51 @@ export default class TopBar extends React.Component {
 					});
 				  }
 				});
-           
+
         }, 2000);
-	 
+
   }
-  
+
   async getMessageCount(){
-  
+
   	 await AsyncStorage.getItem('accesstoken').then((value) => {
   			//console.log("SYANC TOEN");
 			//console.log(value);
 			if(value != '' && value != null){
-		
+
             fetch('https://www.turvy.net/api/rider/getunreadmessages',{
-		     	  	method: 'GET', 
+		     	  	method: 'GET',
 				   headers: new Headers({
-				     'Authorization': 'Bearer '+value, 
+				     'Authorization': 'Bearer '+value,
 				     'Content-Type': 'application/json'
-				   }), 
+				   }),
 				   })
 		      .then((response) => response.json())
-		      .then((json) =>{ 
+		      .then((json) =>{
 		        console.log("MESSAGE COUNT ",json);
 		      //alert(json.data.count);
 		         AsyncStorage.setItem('messagecount', JSON.stringify(json.data.count));
-		         
+
 		   	}).catch((error) => console.error(error));
-		     } 	
+		     }
 			})
-  
+
   }
    async getrewards(){
   		await AsyncStorage.getItem('accesstoken').then((value) => {
   			//alert(value);
 			//console.log(value);
   		fetch('https://www.turvy.net/api/rider/riderrewardpoints',{
-     	  	method: 'GET', 
+     	  	method: 'GET',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+value, 
+		     'Authorization': 'Bearer '+value,
 		     'Content-Type': 'application/json'
 		   })
 		   })
       .then((response) =>{
       	return response.json();
       })
-      .then((json) =>{ 
+      .then((json) =>{
       	//console.log("REWARDS INFO ",json.data);
       	let result = json.data;
       	if(json.status == 1){
@@ -135,22 +135,22 @@ export default class TopBar extends React.Component {
        });
 		});
   }
-  
+
   async setReward(point){
   		AsyncStorage.setItem('rewardpoints', JSON.stringify(point)).then(() => {
 			//alert("SET item ");
 		});
   }
-  
-  
 
-  
+
+
+
   render() {
     return (
      <View style={{position:'absolute',width:'100%',
   				height:60,top:'7%',left:'0%',zIndex:100,backgroundColor:'transparent',flex:1,flexDirection:'row'}}>
-  			 <Grid>		
-  			   <Row style={{height:60,justifyContent:'center',alignContent:'center'}}>																																									
+  			 <Grid>
+  			   <Row style={{height:60,justifyContent:'center',alignContent:'center'}}>
 				<Col size={4}>
 					<TouchableOpacity
 				   style={styles1.menubox}
@@ -179,15 +179,15 @@ export default class TopBar extends React.Component {
 				</Col>
 			</Row>
 			</Grid>
-		</View>	
+		</View>
     );
   }
 }
 const styles1 = StyleSheet.create({
-  text: {    
+  text: {
         color: "black",
-        fontSize: 25,    
-        textAlign: "center", 
+        fontSize: 25,
+        textAlign: "center",
     }, menubox:{
 	       borderWidth:1,
 	       borderColor:'rgba(0,0,0,0.2)',
@@ -207,7 +207,7 @@ const styles1 = StyleSheet.create({
 			},
 			shadowOpacity: 0.27,
 			shadowRadius: 4.65,
-			
+
 			elevation: 6,
 	     },
 	serachbox:{

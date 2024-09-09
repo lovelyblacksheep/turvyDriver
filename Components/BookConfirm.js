@@ -2,7 +2,7 @@ import { StatusBar } from 'expo-status-bar';
 import React from "react";
 import { StyleSheet, Text, View,Dimensions,Image,ScrollView ,TouchableOpacity,ActivityIndicator,BackHandler,Modal,Alert} from 'react-native';
 import * as Location from 'expo-location';
-import { EvilIcons ,MaterialCommunityIcons,Entypo,Ionicons,FontAwesome5,FontAwesome,Feather,MaterialIcons ,AntDesign} from '@expo/vector-icons'; 
+import { EvilIcons ,MaterialCommunityIcons,Entypo,Ionicons,FontAwesome5,FontAwesome,Feather,MaterialIcons ,AntDesign} from '@expo/vector-icons';
 const imageveh = require('../assets/images/driver-veh-images_60.png');
 import BottomSheet from 'reanimated-bottom-sheet';
 import { Button , Divider,TextInput,Badge} from 'react-native-paper';
@@ -11,12 +11,12 @@ import Spinner from 'react-native-loading-spinner-overlay';
 import FlashMessage , { showMessage, hideMessage }  from "react-native-flash-message";
 import {fares} from "./fares";
 import { Col, Row, Grid } from "react-native-easy-grid";
-import PickUpTIme from './PickUpTIme'; 
+import PickUpTIme from './PickUpTIme';
 import Pusher from 'pusher-js/react-native';
-import  { changeMode, 
+import  { changeMode,
     MapboxCustomURL} from  "../Riders/MapDayNight";
-    
-import * as firebase from "firebase";
+
+import firebase from 'firebase/compat/app';
 import firestore from '@react-native-firebase/firestore';
 //import "firebase/firestore";
 import * as geofirestore from 'geofirestore';
@@ -43,20 +43,20 @@ const ASPECT_RATIO = width / height;
 const LATITUDE_DELTA = 0.0043;
 const SCREENHEIGHT = height*.66;
 const faresmap = [];
-const basechnagre = []; 
-const perunitcharge = []; 
-const cancelcharge = []; 
+const basechnagre = [];
+const perunitcharge = [];
+const cancelcharge = [];
 const surchnageslist =[];
 const DEVICE_WIDTH = width;
-const DEVICE_HEIGHT = height;		
+const DEVICE_HEIGHT = height;
 const fareItems = [];
-	 
+
 //alert(DEVICE_WIDTH*0.5);
 /*geocollection
 .doc('125')
 .	set({
   driverId: '370',
-  isBusy: 'no',	
+  isBusy: 'no',
   // The coordinates field must be a GeoPoint!
   coordinates: new firebase.firestore.GeoPoint(21.0912474, 79.0769057)
 })
@@ -64,7 +64,7 @@ const fareItems = [];
 //console.log(SCREENHEIGHT);
 
 //import MapboxGL from "@rnmapbox/maps";
-import  MapboxGL from "@react-native-mapbox-gl/maps"; 
+import  MapboxGL from "@react-native-mapbox-gl/maps";
 //MapboxGL.setAccessToken("pk.eyJ1IjoibWFsLXdvb2QiLCJhIjoiY2oyZ2t2em50MDAyMzJ3cnltMDFhb2NzdiJ9.X-D4Wvo5E5QxeP7K_I3O8w");
 import { lineString as makeLineString } from '@turf/helpers';
 import { point } from '@turf/helpers';
@@ -75,7 +75,7 @@ import PulseCircleLayer from '../common/PulseCircleLayer';
 export default class BookConfirm extends React.PureComponent {
   constructor(props) {
     super(props);
-     
+
     this.startPoint = [151.2195, -33.8688];
     this.finishedPoint = [151.2195, -33.8688];
     this.state = {
@@ -115,7 +115,7 @@ export default class BookConfirm extends React.PureComponent {
          scheduletime:'',
          scheduledate:'',
          is_schedule:0,
-         selectedcancelchr:0, 
+         selectedcancelchr:0,
          selectsurcharge:0,
          gstcalcultated:0,
          rewardpoints:0,
@@ -164,17 +164,17 @@ export default class BookConfirm extends React.PureComponent {
             ],
        },
     };
-   
-    
+
+
      // Two point state
-        this.mapView = null;    
+        this.mapView = null;
         this.camera = null;
-        this.pusher = new Pusher('389d667a3d4a50dc91a6', { cluster: 'ap2' }); 
-     	  this.listenForChanges(); 
+        this.pusher = new Pusher('389d667a3d4a50dc91a6', { cluster: 'ap2' });
+     	  this.listenForChanges();
      	 // this.onStart = this.onStart.bind(this);
-     	  
+
    }
-   
+
    /*onStart() {
     const routeSimulator = new RouteSimulator(this.state.routemap);
     routeSimulator.addListener((currentPoint) =>
@@ -185,26 +185,26 @@ export default class BookConfirm extends React.PureComponent {
     console.log("ROUTE ",this.state.route);
   }
   */
-   
+
    listenForChanges = () => {
-		const channel = this.pusher.subscribe('turvy-channel'); 
+		const channel = this.pusher.subscribe('turvy-channel');
 		 channel.bind('driver_online_event', data => {
 		 	this.getNearBydriver();
-		  }); 
-		 
+		  });
+
 		  channel.bind('driver_offline_event', data => {
 		 	this.getNearBydriver();
-		  }); 
+		  });
 	};
 
 
 	async componentDidMount(){
 
 
-		await this.intialLoad(); 
+		await this.intialLoad();
 
 		await this.getfares();
-	
+
 		/* await fetch('https://www.turvy.net/api/farecardall/2',{
 			method: 'GET',
 		}).then(function (response) {
@@ -218,9 +218,9 @@ export default class BookConfirm extends React.PureComponent {
 				});
 			}
 		}); */
-	
-		
-		   
+
+
+
 		this.setState({
 			MapboxStyleURL:changeMode()
 		})
@@ -229,14 +229,14 @@ export default class BookConfirm extends React.PureComponent {
 				MapboxStyleURL:changeMode()
 			})
 		}, 10000);
-			
+
 		const {navigation,state} = this.props;
 		//console.log(this.props.route.params);
 		/*
 		this.startPoint = [79.075274, 21.089974];
 		this.finishedPoint = [79.1069, 21.0962];
 		*/
-		   
+
 		let listcord = [];
 		let locationcordsapi = [];
 		//console.log("BEFORE DESINARION",this.props.route.params.origin);
@@ -248,10 +248,10 @@ export default class BookConfirm extends React.PureComponent {
 			//listcord = Object.assign(listcord, element);
 			listcord.push(element);
 			//console.log("ORIGN coordinate List",Object.values(listcord));
-		} 
-			
+		}
+
 		if(Object.keys(this.props.route.params.destination).length > 0){
-			let origincord = [this.props.route.params.destination.longitude,this.props.route.params.destination.latitude]; 
+			let origincord = [this.props.route.params.destination.longitude,this.props.route.params.destination.latitude];
 			let element = { coordinates: origincord };
 			locationcordsapi.push(origincord);
 			//listcord = [...listcord, element];
@@ -260,16 +260,16 @@ export default class BookConfirm extends React.PureComponent {
 		}
 		//console.log("coordinate List",Object.values(listcord));
 		let locationcordsapistr = locationcordsapi.join(";");
-		   
+
 		//this.getaddresses();
 		//this.onStart();
-		AsyncStorage.getItem('messagecount').then((value) => {           
+		AsyncStorage.getItem('messagecount').then((value) => {
 			if(value != '' && value !== null){
 				this.setState({messagecount:value})
 				//alert(value)
 			}
 		});
-		this.setState({ 
+		this.setState({
 			state:this.props.route.params,
 			isLoading:true,
 			vehborder:'#e5e5e5',
@@ -279,11 +279,11 @@ export default class BookConfirm extends React.PureComponent {
 			this.setState({
 				rewardpoints:value,
 			});
-		});		
-			
+		});
+
 		//AsyncStorage.setItem('chatMessage', null);
 		AsyncStorage.removeItem('chatMessage')
-			
+
 		const subscription = Dimensions.addEventListener(
 			"change",
 			({ window, screen }) => {
@@ -293,9 +293,9 @@ export default class BookConfirm extends React.PureComponent {
 			//setDimensions({ window, screen });
 			}
 		);
-		
+
 		this.unsubscribe =  navigation.addListener("focus",() => {
-			this.setState({ 
+			this.setState({
 			state:this.props.route.params,
 			isLoading:false,
 			vehborder:'#e5e5e5',
@@ -304,12 +304,12 @@ export default class BookConfirm extends React.PureComponent {
 			this.intialLoad();
 		});
 	} // end of function
-   
-  
+
+
 	UNSAFE_componentWillUnmount() {
 		this.unsubscribe();
 	}
-    
+
     optionPress = (active) => {
 		this.setState({
 			active:active
@@ -331,7 +331,7 @@ export default class BookConfirm extends React.PureComponent {
     		//this.props.navigation.navigate('BookDetails',this.state)
     	});
     }
-    
+
 	   async _onPressAddressSave() {
 	   	await AsyncStorage.getItem('accesstoken').then((value) => {
 	   		let optionchose =  '';
@@ -342,21 +342,21 @@ export default class BookConfirm extends React.PureComponent {
 	   			optionchose = 'Office';
 	   		}
 	   		fetch('https://www.turvy.net/api/rider/addRiderAddress',{
-				     	  	method: 'POST', 
+				     	  	method: 'POST',
 						   headers: new Headers({
-						     'Authorization': 'Bearer '+value, 
+						     'Authorization': 'Bearer '+value,
 						     'Content-Type': 'application/json'
-						   }), 
+						   }),
 						   body:JSON.stringify({
 					 				'address' : this.props.route.params.destinationto,
 					 				 'coordinates' : this.props.route.params.destination,
 					 				 'addresastype':optionchose,
-					 				 
-					 			}) 
+
+					 			})
 						   })
 				      .then((response) =>{
 				      	return response.json();
-				      }).then((json) =>{ 
+				      }).then((json) =>{
 				      	//console.log(json);
 				      	if(json.status == 1){
 				      		 this.setState({
@@ -368,24 +368,24 @@ export default class BookConfirm extends React.PureComponent {
 				      .catch((error) => console.error(error));
 	   	});
 	   }
-    
+
      async _onPressBookNow() {
-    
+
          this.setState({
          	isLoading:true,
          });
     		if(Object.keys(this.state.selectedvehicle).length > 0){
-    			
+
     		await AsyncStorage.getItem('accesstoken').then((value) => {
 			//console.log(value);
 			//console.log(this.state.scheduledate);
 			//this.props.route.params
 			fetch('https://www.turvy.net/api/rider/book',{
-     	  	method: 'POST', 
+     	  	method: 'POST',
 		   headers: new Headers({
-		     'Authorization': 'Bearer '+value, 
+		     'Authorization': 'Bearer '+value,
 		     'Content-Type': 'application/json'
-		   }), 
+		   }),
 		   body:JSON.stringify({
 	 				'pickup_address' : `${this.props.route.params.curlocatdesc}`,
 	 				 'drop_address' : `${this.state.destlocatdesc}`,
@@ -397,14 +397,14 @@ export default class BookConfirm extends React.PureComponent {
 	 				 'scheduledate':this.state.scheduledate,
 	 				 'waypointslnglat':this.state.waypointslnglat,
 	 				 'distance':this.state.distance,
-	 			}) 
+	 			})
 		   })
       .then((response) =>{
       	return response.json();
-      }).then((json) =>{ 
+      }).then((json) =>{
       	//console.log(json);
       	if(json.status == 1){
-      		 this.setState({                                        
+      		 this.setState({
 	         	isLoading:false,
     				vehborder:'red',
     				bookingresponse:json.data
@@ -414,7 +414,7 @@ export default class BookConfirm extends React.PureComponent {
      	 }
       )
       .catch((error) => console.error(error));
-      	
+
 		})
     			 //this.props.navigation.navigate('BookDetails',this.state);
     		}else{
@@ -437,10 +437,10 @@ export default class BookConfirm extends React.PureComponent {
     			//alert("Please Choose Vehicle before book !");
     		}
     }
-    
+
    _onLongPressButton(item) {
    //console.log(item);
-    
+
     fetch('https://www.turvy.net/api/farecard/2/'+item.id,{
        method: 'GET',
       }).then(function (response) {
@@ -487,12 +487,12 @@ export default class BookConfirm extends React.PureComponent {
         }
     });
   }
-  
+
    _onPressDone(){
 		this.setState({
 			modalvisible:false,
 			longpressdata:{},
-		});   
+		});
    }
 
     renderContent = () => {
@@ -518,8 +518,8 @@ export default class BookConfirm extends React.PureComponent {
     <Grid>
     	<Row size={45}>
     		<Col>
-			
-    			
+
+
 
 
 	  			{
@@ -527,7 +527,7 @@ export default class BookConfirm extends React.PureComponent {
 					?
 
 					<ScrollView horizontal={true} >
-					
+
 						{
 							servicetypes.map((item,index) =>{
 								return(
@@ -539,7 +539,7 @@ export default class BookConfirm extends React.PureComponent {
 											style={styles.servicebocimageblock}
 											Resizemode={'contain'}
 											/>
-											<Text style={[this.state.selectedvehicle.id == item.id ? {'color':'#ffffff',textAlign:'center',fontSize:16,fontWeight:'bold'} : {color:'#000000',textAlign:'center',fontSize:16,fontWeight:'bold'}]}>{item.name}  
+											<Text style={[this.state.selectedvehicle.id == item.id ? {'color':'#ffffff',textAlign:'center',fontSize:16,fontWeight:'bold'} : {color:'#000000',textAlign:'center',fontSize:16,fontWeight:'bold'}]}>{item.name}
 												<Text style={{fontWeight:'bold',fontSize:14}}> <FontAwesome name="user-o" size={15} color="black" /> {item.number_seat}</Text>
 											</Text>
 											<View style={{flex:1,height:40,justifyContent:'center',alignContent:'center'}}>
@@ -547,12 +547,12 @@ export default class BookConfirm extends React.PureComponent {
 											</View>
 											<Text numberOfLines={2} style={[this.state.selectedvehicle.id == item.id ? {'color':'#ffffff',textAlign:'center',fontSize:12} : {color:'#000000',textAlign:'center',fontSize:12}]}>{item.description}</Text>
 										</TouchableOpacity>
-									</View> 
+									</View>
 								)
 							})
 						}
 						</ScrollView>
-					
+
 					:
 					<View style={{justifyContent:'center',alignItems:'center',flex:1}}>
 						<ActivityIndicator
@@ -561,12 +561,12 @@ export default class BookConfirm extends React.PureComponent {
 							color='#135AA8'
 						/>
 					</View>
-					
+
 				}
 
 
 
-			     {/* Object.keys(servicetypes).length > 0 && faresmap.length > 0 && servicetypes.map((item,index) =>{ 
+			     {/* Object.keys(servicetypes).length > 0 && faresmap.length > 0 && servicetypes.map((item,index) =>{
 			     if(faresmap.length > 0 && faresmap[item.id]){
 			     	return(
 			    	<View style={[styles.servicesbox,
@@ -581,21 +581,21 @@ export default class BookConfirm extends React.PureComponent {
 			         <View style={{flex:1,height:40,justifyContent:'center',alignContent:'center'}}><Text style={[this.state.selectedvehicle.id == item.id ? {'color':'#ffffff',textAlign:'center',fontWeight:'bold'} : {color:'#000000',textAlign:'center',fontWeight:'bold'}]}> A$ { faresmap.length > 0 ? faresmap[item.id]  : '' } </Text></View>
 			         <Text numberOfLines={2} style={[this.state.selectedvehicle.id == item.id ? {'color':'#ffffff',textAlign:'center',fontSize:12} : {color:'#000000',textAlign:'center',fontSize:12}]}>{item.description}</Text>
 			        </TouchableOpacity>
-			    	</View> 
+			    	</View>
 			      )
 			      }
 
 			      })*/}
-			    
-			    {this.state.fareavilable ? 
+
+			    {this.state.fareavilable ?
 			    	(<Text style={{color:'#7c7a7a',fontWeight:'bold',fontSize:14,marginLeft:10}}>Choose a ride or scroll for more ...</Text>)
-			    : 
+			    :
 			      (<View><Text style={{fontWeight:'bold',color:'red'}}>Pickup and destination should not same or Fare info is not available!</Text></View>)
 			    }
-			    	
+
     		</Col>
     	</Row>
-    	
+
     	 <Row size={10}  style={{justifyContent:'center',alignContent:'center',paddingTop:20}}>
 		<Col size={1}>
 			<View style={styles.inforound}>
@@ -607,11 +607,11 @@ export default class BookConfirm extends React.PureComponent {
 		</Col>
 	</Row>
     	<Row size={15} style={{justifyContent:'center',alignItems:'center'}}>
-			
+
     		<Col size={9}>
-    		  	<Button  
-					mode="contained" 
-					color={'#135AA8'} 
+    		  	<Button
+					mode="contained"
+					color={'#135AA8'}
 					onPress={() => this._onPressBookNow()}
 				>
 			    Book Now
@@ -624,7 +624,7 @@ export default class BookConfirm extends React.PureComponent {
 				</TouchableOpacity>
     		</Col>
     	</Row>
-    	
+
 	<Row size={40} >
 		<Col>
 		</Col>
@@ -632,9 +632,9 @@ export default class BookConfirm extends React.PureComponent {
     </Grid>
     </View>
    </>);
- }   
-  
-  
+ }
+
+
   // Converts from degrees to radians.
     toRadians = (degrees) => {
       return (degrees * Math.PI) / 180;
@@ -644,8 +644,8 @@ export default class BookConfirm extends React.PureComponent {
     toDegrees = (radians) => {
       return (radians * 180) / Math.PI;
     }
-	
-   
+
+
     getHeading = (origin, destination) => {
         const originLat = this.toRadians(origin.latitude);
         const originLng = this.toRadians(origin.longitude);
@@ -659,22 +659,22 @@ export default class BookConfirm extends React.PureComponent {
         const heading = this.toDegrees(Math.atan2(y, x));
         return (heading + 360) % 360;
     }
-    
+
   async intialLoad (){
-  	
+
    	let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         //setErrorMsg('Permission to access location was denied');
         //console.log('Permission to access location was denied')
          //alert("here");
         //return;
-       
+
       }
-     
+
        //console.log("SERVICES TYPE");
 		 await fetch('https://www.turvy.net/api/servicetypes')
       .then((response) => response.json())
-      .then((json) =>{ 
+      .then((json) =>{
       //console.log("SERVICES TYPE 1");
       //console.log(json.data)
       	this.setState({
@@ -688,7 +688,7 @@ export default class BookConfirm extends React.PureComponent {
       	this.errorforservices();
       	console.error(error)
       } );
-      
+
        let origin ={};
        let curlocatdesc='';
        //console.log("ORIGIN DATA");
@@ -697,13 +697,13 @@ export default class BookConfirm extends React.PureComponent {
       	//console.log("origin from");
        	 origin = this.props.route.params.origin;
        	 curlocatdesc=this.props.route.params.curlocatdesc;
-		}     
-		 
+		}
+
 		let destination = {};
 		let longitudedest = '';
 		let latitudedest= '';
 		let destinationto ='';
-		
+
 		if(this.props.route.params.destination){
 			destination = this.props.route.params.destination;
 			longitudedest = destination.longitude;
@@ -713,7 +713,7 @@ export default class BookConfirm extends React.PureComponent {
 		let waypoints = [];
 		 //console.log("WAY POINT");
      //console.log(this.props.route.params.stopmainlnglat);
-     
+
 		if(this.props.route.params.stopmainlnglat){
 			waypoints.push(this.props.route.params.stopmainlnglat);
 		}
@@ -728,14 +728,14 @@ export default class BookConfirm extends React.PureComponent {
 						item.coordinates['stopname'] = item.text;
 						waypoints.push(item.coordinates);
 					}
-						//console.log("KEY "+key);	
-						//console.log("WAY POINT INFO 2 NEW 1",waypoints);				
-				});	
+						//console.log("KEY "+key);
+						//console.log("WAY POINT INFO 2 NEW 1",waypoints);
+				});
 			}
-			
+
 			//console.log(this.props.route.params.inputData);
 		}
-		
+
 		let listcord = [];
    	let locationcordsapi = [];
    	//console.log("BEFORE DESINARION",this.props.route.params.origin);
@@ -752,25 +752,25 @@ export default class BookConfirm extends React.PureComponent {
 	      	 waypoints.map((item, index) => {
 		   	 //console.log("DRIVER MAP");
 		   		//console.log("waypoint item ",item);
-		   		let origincord = [item.longitude,item.latitude]; 
+		   		let origincord = [item.longitude,item.latitude];
        	     let element = { coordinates: origincord };
        	    locationcordsapi.push(origincord);
        	    //listcord = [...listcord, element];
 
 
 		     });
-	      	
-	      } 
-		
+
+	      }
+
 	   if(Object.keys(this.props.route.params.destination).length > 0){
-	   	 let origincord = [this.props.route.params.destination.longitude,this.props.route.params.destination.latitude]; 
+	   	 let origincord = [this.props.route.params.destination.longitude,this.props.route.params.destination.latitude];
        	 let element = { coordinates: origincord };
        	 locationcordsapi.push(origincord);
        	 //listcord = [...listcord, element];
        	 listcord.push(element);
        	 //console.log("DESTINATION coordinate List",Object.values(listcord));
 	   }
-	      
+
 	   //console.log("coordinate List",Object.values(listcord));
 	   let locationcordsapistr = locationcordsapi.join(";");
 
@@ -779,7 +779,7 @@ export default class BookConfirm extends React.PureComponent {
 		}).then(function (response) {
 			return response.json();
 		}).then( (result)=> {
-			
+
 			let distance = result.routes[0].distance;
 			distance = distance/1000;
 
@@ -793,7 +793,7 @@ export default class BookConfirm extends React.PureComponent {
 
 
    	const reqOptions = {
-	      waypoints: 
+	      waypoints:
 	        listcord
 	     ,
 	      profile: 'driving',
@@ -820,13 +820,13 @@ export default class BookConfirm extends React.PureComponent {
       	waypointslnglat:waypoints,
       	locationcordsapistr:locationcordsapistr,
       	modalvisibleaddress:true,
-      	
+
       },()=>{
       	 //alert("AFTER STATE SET "+locationcordsapistr);
       	 this.getLnglatdriver2source();
       });
       //console.log(location);
-      
+
       	const center = {
           latitude: (this.props.route.params.origin.latitude + this.props.route.params.destination.latitude) / 2,
           longitude: (this.props.route.params.origin.longitude + this.props.route.params.destination.longitude) / 2,
@@ -840,47 +840,47 @@ export default class BookConfirm extends React.PureComponent {
         })
 
        if (latitudedest != '' && longitudedest != '') {
-		    
+
 		      let keys = {
 		        latitude : latitudedest,
 		        longitude : longitudedest
 		    }
 		    let response = await Location.reverseGeocodeAsync(keys);
-		    
+
 		     //console.log(response);
-		    
+
 		   let address = '';
 		    for (let item of response) {
-		    	//${item.street}, 
+		    	//${item.street},
 		    	if(item.street !== null){
 		    		address = `${item.street}, ${item.city}, ${item.postalCode}`;
 		    	}else{
 		    		address = `${item.name}, ${item.city}, ${item.postalCode}`;
 		    	}
-		      
+
 		       //console.log(address);
 		       this.setState({
 		      	destlocatdesc:address,
 		      });
 		    }
 		  }
-		  
+
 		this.getNearBydriver();
 
-    
+
    }
-  
+
   async errorforservices(){
   		await AsyncStorage.getItem('servicetypes').then((value) => {
   			if(value != '' && value != null){
   				this.setState({
 	      		servicetypes:JSON.parse(value),
 	      	});
-  			}	
+  			}
       });
   }
   	async getNearBydriver(){
-  	
+
   		const search_radius = await AsyncStorage.getItem('search_radius');
        const query = geocollection.near({ center: new firestore.GeoPoint(this.state.latitudecur,this.state.longitudecur ), radius:Number(search_radius)});
 		 //.where('isBusy','==','no')
@@ -895,23 +895,23 @@ export default class BookConfirm extends React.PureComponent {
 		   	 //console.log("DRIVER MAP");
 		   		// //console.log(item.data().coordinates);
 		   	if(item.exists == true){
-		   		
-		   			drivernear.push({['coordinates']:item.data().coordinates,	
+
+		   			drivernear.push({['coordinates']:item.data().coordinates,
 				      	['driverId']:item.id,	});
 				      this.setState({
 	      			drivernear:drivernear,
 	      		},()=>{
 	      			//console.log(this.state.drivernear);
 	      		});
-	      		
+
 		   	}
 		   });
 		 });
   	}
-  
-  
-   
-    
+
+
+
+
     getfares(){
     	fetch('https://www.turvy.net/api/farecardall/2',{
 	       method: 'GET',
@@ -920,7 +920,7 @@ export default class BookConfirm extends React.PureComponent {
 	    }).then( (result)=> {
 	      	//console.log("FARE DATA===========", debug(result));
 	        //console.log(result);
-			
+
 	        if(result.status == 1){
 		        this.setState({
 		        	fares:result.data,
@@ -942,29 +942,29 @@ export default class BookConfirm extends React.PureComponent {
 								//fareoff = parseFloat(distance*item.price_per_unit);
 								fareoff = parseFloat(item.base_ride_distance);
 							}
-						
+
 							fareItems[item.servicetype_id] = item;
-							
-						
+
+
 							if(fareoff){
-								faresmap[item.servicetype_id] = fareoff.toFixed(2); 
+								faresmap[item.servicetype_id] = fareoff.toFixed(2);
 							}else{
-								faresmap[item.servicetype_id] = 0; 
+								faresmap[item.servicetype_id] = 0;
 							}
 
-							
-						
-							basechnagre[item.servicetype_id] = item.base_ride_distance_charge; 
-							perunitcharge[item.servicetype_id] = item.price_per_unit; 
+
+
+							basechnagre[item.servicetype_id] = item.base_ride_distance_charge;
+							perunitcharge[item.servicetype_id] = item.price_per_unit;
 							//cancelcharge[item.servicetype_id]	= item.cancel_charge;
 							cancelcharge[item.servicetype_id]	= 15;
-						
+
 							let minimumfaren = parseFloat(item.price_per_unit)*parseFloat(distance);
 							let  gstper =  item.gst_charge;
 							gstper = gstper.replace("%", "");
 							let nsw_ctp = parseFloat(item.nsw_ctp_charge)*parseFloat(distance);
 							let fuel_surc = parseFloat(item.fuel_surge_charge)*parseFloat(distance);
-							
+
 							//alert(fuel_surc);
 							if(item.servicetype_id == 1){
 								surchnageslist[item.servicetype_id] = (parseFloat(fuel_surc))+parseFloat(item.nsw_gtl_charge)+parseFloat(nsw_ctp)+parseFloat(item.baby_seat_charge)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
@@ -972,8 +972,8 @@ export default class BookConfirm extends React.PureComponent {
 								surchnageslist[item.servicetype_id] = (parseFloat(fuel_surc))+parseFloat(item.nsw_gtl_charge)+parseFloat(nsw_ctp)+parseFloat(item.pet_charge)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
 							}else{
 								surchnageslist[item.servicetype_id] = (parseFloat(fuel_surc))+parseFloat(item.nsw_gtl_charge)+parseFloat(nsw_ctp)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
-							}	
-						});	
+							}
+						});
 						this.setState({
 							faresmapValue:faresmap,
 							fareavilable:true
@@ -985,26 +985,26 @@ export default class BookConfirm extends React.PureComponent {
 
 	        }
 	    })
-		.catch((error) => { 
+		.catch((error) => {
             console.error('get fare error==========',error)
         });;
     }
-    
-    
+
+
 
     handleSheetChanges = ((index) => {
     //console.log('handleSheetChanges', index);
-  });   
-  
+  });
+
    rightIconP = () =>(
  	 <TextInput.Icon name="close" color={'#3f78ba'} onPress={()=>this.setState({pickup:'',stateText:''})} />
   );
-  
+
   rightIconD = () =>(
   	<TextInput.Icon name="close" color={'#3f78ba'} onPress={()=>this.setState({destinationto:'',stateText:''})} />
   )
-  
-  
+
+
 
   getRandomFloat(min, max) {
     return (Math.random() * (max - min)) + min;
@@ -1015,7 +1015,7 @@ export default class BookConfirm extends React.PureComponent {
  		scheduleboxvisible:false,
  	});
  }
- 
+
  setSChedule = (date) =>{
  	//console.log(date);
  	this.setState({
@@ -1024,7 +1024,7 @@ export default class BookConfirm extends React.PureComponent {
  		is_schedule:1,
  	});
  }
- 
+
  renderCurrentPoint() {
     if (!this.state.currentPoint) {
       return;
@@ -1041,12 +1041,12 @@ export default class BookConfirm extends React.PureComponent {
     if (!this.state.currentPoint) {
       return null;
     }
-    
+
     const { nearestIndex } = this.state.currentPoint.properties;
     const coords = this.state.routemap.geometry.coordinates.filter(
       (c, i) => i <= nearestIndex,
     );
-    
+
     //console.log("1st element ",this.state.currentPoint.geometry.coordinates);
     coords.push(this.state.currentPoint.geometry.coordinates);
 
@@ -1061,12 +1061,12 @@ export default class BookConfirm extends React.PureComponent {
 			        id="mapbox-directions-line"
 			        style={{lineColor:'#135AA8',lineWidth:2}}
 			        />
-    	     </MapboxGL.ShapeSource>  
+    	     </MapboxGL.ShapeSource>
     );
   }
-  
+
   async getLnglatdriver2source(){
-    	
+
     	fetch('https://api.mapbox.com/directions/v5/mapbox/driving/'+this.state.locationcordsapistr+'?geometries=geojson&access_token=pk.eyJ1IjoibWFsLXdvb2QiLCJhIjoiY2oyZ2t2em50MDAyMzJ3cnltMDFhb2NzdiJ9.X-D4Wvo5E5QxeP7K_I3O8w',{
 				method: 'GET',
 	 		}).then(function (response) {
@@ -1078,9 +1078,9 @@ export default class BookConfirm extends React.PureComponent {
 	  			let duration = result.routes[0].duration;
 	  			duration = result.routes[0].duration/3600;
 	  			duration = duration.toFixed();
-	  			
-	  			 
-					
+
+
+
 	  			//console.log("COORDINATES ARRAY", Object.values(result.routes[0].geometry.coordinates));
 	  			this.setState({
 	  			routedirect: {
@@ -1112,10 +1112,10 @@ export default class BookConfirm extends React.PureComponent {
 	  				//this.updatecarLoc();
 	  			});
 			});
-  
-    }    
+
+    }
    getseatcost = () =>{
-   	
+
 	  if(this.state.longpressdata.baby_seat_charge > 0){
 	  		return (<Row size={6} >
       				<Col size={75}><Text style={styles.label}>Baby Seat Charge </Text></Col>
@@ -1129,9 +1129,9 @@ export default class BookConfirm extends React.PureComponent {
 	  }else{
 	  		return null;
 	  }
-	 
+
 	}
- 
+
   render() {
 	//this.getfares();
 
@@ -1139,7 +1139,7 @@ export default class BookConfirm extends React.PureComponent {
   	 return (
 	    <View style={styles.container}>
 	    <StatusBar backgroundColor="transparent" barStyle="light-content"/>
-	    <FlashMessage position={{top:'40%'}} style={{marginTop:70}}/>                    
+	    <FlashMessage position={{top:'40%'}} style={{marginTop:70}}/>
 	    <Spinner
           visible={false}
           color='#FFF'
@@ -1173,8 +1173,8 @@ export default class BookConfirm extends React.PureComponent {
 							if(key <= totrec ){
 								item.coordinates['stopname'] = item.text;
 								waypoints.push(item.coordinates);
-							}				
-						});	
+							}
+						});
 					}
 				}
 
@@ -1187,18 +1187,18 @@ export default class BookConfirm extends React.PureComponent {
 					locationcordsapi.push(origincord);
 					listcord.push(element);
 				}
-					
+
 				if(Object.keys(waypoints).length > 0){
 					waypoints.map((item, index) => {
-						let origincord = [item.longitude,item.latitude]; 
+						let origincord = [item.longitude,item.latitude];
 						let element = { coordinates: origincord };
 						locationcordsapi.push(origincord);
 					});
-					
-				} 	
-					
+
+				}
+
 				if(Object.keys(this.props.route.params.destination).length > 0){
-					let origincord = [this.props.route.params.destination.longitude,this.props.route.params.destination.latitude]; 
+					let origincord = [this.props.route.params.destination.longitude,this.props.route.params.destination.latitude];
 					let element = { coordinates: origincord };
 					locationcordsapi.push(origincord);
 					listcord.push(element);
@@ -1241,29 +1241,29 @@ export default class BookConfirm extends React.PureComponent {
 								//fareoff = parseFloat(distance*item.price_per_unit);
 								fareoff = parseFloat(item.base_ride_distance);
 							}
-						
+
 							fareItems[item.servicetype_id] = item;
-							
-						
+
+
 							if(fareoff){
-								faresmap[item.servicetype_id] = fareoff.toFixed(2); 
+								faresmap[item.servicetype_id] = fareoff.toFixed(2);
 							}else{
-								faresmap[item.servicetype_id] = 0; 
+								faresmap[item.servicetype_id] = 0;
 							}
 
 							console.log("faresmap==========",faresmap);
-						
-							basechnagre[item.servicetype_id] = item.base_ride_distance_charge; 
-							perunitcharge[item.servicetype_id] = item.price_per_unit; 
+
+							basechnagre[item.servicetype_id] = item.base_ride_distance_charge;
+							perunitcharge[item.servicetype_id] = item.price_per_unit;
 							//cancelcharge[item.servicetype_id]	= item.cancel_charge;
 							cancelcharge[item.servicetype_id]	= 15;
-						
+
 							let minimumfaren = parseFloat(item.price_per_unit)*parseFloat(distance);
 							let  gstper =  item.gst_charge;
 							gstper = gstper.replace("%", "");
 							let nsw_ctp = parseFloat(item.nsw_ctp_charge)*parseFloat(distance);
 							let fuel_surc = parseFloat(item.fuel_surge_charge)*parseFloat(distance);
-							
+
 							//alert(fuel_surc);
 							if(item.servicetype_id == 1){
 								surchnageslist[item.servicetype_id] = (parseFloat(fuel_surc))+parseFloat(item.nsw_gtl_charge)+parseFloat(nsw_ctp)+parseFloat(item.baby_seat_charge)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
@@ -1271,10 +1271,10 @@ export default class BookConfirm extends React.PureComponent {
 								surchnageslist[item.servicetype_id] = (parseFloat(fuel_surc))+parseFloat(item.nsw_gtl_charge)+parseFloat(nsw_ctp)+parseFloat(item.pet_charge)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
 							}else{
 								surchnageslist[item.servicetype_id] = (parseFloat(fuel_surc))+parseFloat(item.nsw_gtl_charge)+parseFloat(nsw_ctp)+parseFloat(minimumfaren*(parseFloat(gstper)/100));
-							}	
-						});				
-					}*/ 
-					
+							}
+						});
+					}*/
+
 					console.log("COORDINATES ARRAY=========", Object.values(result.routes[0].geometry.coordinates));
 					this.setState({
 						routecorrdinates: Object.values(result),
@@ -1323,8 +1323,8 @@ export default class BookConfirm extends React.PureComponent {
             maxZoomLevel={20}
             animationMode="flyTo"
             centerCoordinate={[this.state.longitudecur,this.state.latitudecur]}
-            Level={10} 
-            
+            Level={10}
+
             heading={this.state.pathHeading}
           />)
            :
@@ -1335,13 +1335,13 @@ export default class BookConfirm extends React.PureComponent {
 			        id="mapbox-directions-line"
 			        style={{lineColor:'#135AA8',lineWidth:4}}
 			        />
-    	     </MapboxGL.ShapeSource>  
-           <MapboxGL.PointAnnotation 
+    	     </MapboxGL.ShapeSource>
+           <MapboxGL.PointAnnotation
 	           id={'markerorigin'}
-	           coordinate={[this.state.longitudecur,this.state.latitudecur]}>  
-	          </MapboxGL.PointAnnotation> 
+	           coordinate={[this.state.longitudecur,this.state.latitudecur]}>
+	          </MapboxGL.PointAnnotation>
 	         { this.state.latitudedest != '' && this.state.longitudedest != '' ?
-		       (<MapboxGL.PointAnnotation 
+		       (<MapboxGL.PointAnnotation
 		        ref={ref => (this.userAnnotationRef = ref)}
 		       			key={'markerdest'}
 			           id={'markerdest'}
@@ -1354,22 +1354,22 @@ export default class BookConfirm extends React.PureComponent {
 					     title={this.state.destlocatdesc}
 					     containterStyle={{ flex: 1, background: '#fff' }}
 					    />
-	         </MapboxGL.PointAnnotation>   
+	         </MapboxGL.PointAnnotation>
           ):
          (
        <></>
        )
-     }   
+     }
      {Object.keys(this.state.drivernear).length > 0 ?
      this.state.drivernear.map((marker, index) => {
      	return (
-			    <MapboxGL.PointAnnotation 
+			    <MapboxGL.PointAnnotation
 			           id={'driver'+marker.id}
 			           coordinate={[marker.coordinates.longitude,marker.coordinates.latitude]}>
 			    <Image
 			        style={styles.vehmarkerimage}
 			        source={imageveh} />
-			    </MapboxGL.PointAnnotation>   
+			    </MapboxGL.PointAnnotation>
   		    );
      })
      : null
@@ -1377,16 +1377,16 @@ export default class BookConfirm extends React.PureComponent {
     {Object.keys(this.state.waypointslnglat).length > 0 ?
     this.state.waypointslnglat.map((item, key) => {
     	return(
-    	 <MapboxGL.PointAnnotation 
+    	 <MapboxGL.PointAnnotation
 			 id={'waypoint'+key}
 			 anchor={{ y: 1, x: 0.5 }}
 	           coordinate={[item.longitude,item.latitude]}>
 	           <View style={{height: 30, width: 30, backgroundColor: 'transparent'}}>
 	           <Entypo name="location-pin" size={30} color="green" />
 	           </View>
-	    </MapboxGL.PointAnnotation>   
+	    </MapboxGL.PointAnnotation>
     	)
-	 }) 
+	 })
 	 :null
    }
       </MapboxGL.MapView>
@@ -1421,11 +1421,11 @@ export default class BookConfirm extends React.PureComponent {
 	    :
 	   (<></>)
     }
-    
-       { this.state.modalvisible ? 
+
+       { this.state.modalvisible ?
       	(<View style={styles.modalbox}>
           <Grid style={{justifyContent:'center',alignContent:'center',marginTop:40}}>
-          
+
           <Row size={100} style={{justifyContent:'center',alignContent:'center'}}>
           		<Col style={{justifyContent:'center',alignContent:'center',alignItems:'center'}}>
           		  <View style={{backgroundColor:'#fefefe',height:'100%',width:'90%',justifyContent:'center',alignContent:'center',padding:10,borderRadius:5,borderWidth:1,borderColor:'#3f78ba',shadowColor: "#3f78ba",
@@ -1440,11 +1440,11 @@ export default class BookConfirm extends React.PureComponent {
 		          <Col size={90}>
 		          	</Col>
 		          	<Col size={10}>
-		          		<Ionicons 
-			   				name="close" 
-			   				size={24} 
+		          		<Ionicons
+			   				name="close"
+			   				size={24}
 			   				color="#135aa8"
-			   				onPress={() => this._onPressDone()} 
+			   				onPress={() => this._onPressDone()}
 			   			/>
 		          	</Col>
 		          </Row>
@@ -1467,21 +1467,21 @@ export default class BookConfirm extends React.PureComponent {
 						  		<Col size={25}><Text style={styles.label}>A${this.state.longpressdata.base_ride_distance_charge} </Text>
 						  		</Col>
 						  </Row>
-						 
+
 						  <Row size={6}>
 						  		<Col size={75}><Text style={styles.label}>Minimum Fare</Text>
 						  		</Col>
 						  		<Col size={25}><Text style={styles.label}>A${this.state.minimumfare}</Text>
 						  		</Col>
 						  </Row>
-						  
+
 						    <Row size={6}>
 						  		<Col size={75}><Text style={styles.label}> <FontAwesome name="plus" size={14} color="black" /> Per minute</Text>
 						  		</Col>
 						  		<Col size={25}><Text style={styles.label}>A${this.state.longpressdata.price_per_minute}</Text>
 						  		</Col>
 						  </Row>
-						 
+
 						  <Row size={6}>
 						  		<Col size={75}><Text style={styles.label}> <FontAwesome name="plus" size={14} color="black" /> Per Kilometer</Text>
 						  		</Col>
@@ -1511,10 +1511,10 @@ export default class BookConfirm extends React.PureComponent {
 						  		<Col size={12}><Text style={{textAlign:'left',color:'#3f78ba',fontSize:13,fontWeight:'bold'}}>Your fare will be price presented before the trip base on the rate above and other applicable surcharges and adjustments.
 						  		Additional waiting charges may apply to your trip if the driver has waited { this.state.longpressdata.fee_waiting_time == 0 ? '' : this.state.longpressdata.fee_waiting_time } A${this.state.longpressdata.waiting_price_per_minute} per minutes.</Text>
 						  		</Col>
-						  		
+
 						  </Row>
            			 </View>
-            			
+
           	</Col>
           	</Row>
           	<Row size={40}>
@@ -1525,18 +1525,18 @@ export default class BookConfirm extends React.PureComponent {
           </View>)
           :(<></>)
          }
-         { this.state.modalvisibleaddress ? 
+         { this.state.modalvisibleaddress ?
        (<View style={styles.modalboxAddress}>
-       
+
           <Grid style={{justifyContent:'center',alignContent:'center',marginTop:10}}>
           	<Row size={50} style={{justifyContent:'center',alignContent:'center'}}>
           		<Col style={{justifyContent:'center',alignContent:'center',alignItems:'center'}}>
           		<View style={{alignItems:'flex-end',zIndex:2000,width:'90%'}} >
-          	 <TouchableOpacity onPress={ (e) => {           
+          	 <TouchableOpacity onPress={ (e) => {
              this.setState({
                  modalvisibleaddress: false
              });
-             
+
          }} ><AntDesign name="closecircle" size={30} color="#135AA8" /></TouchableOpacity></View>
           		  <View style={{backgroundColor:'#fefefe',height:'100%',width:'90%',justifyContent:'center',alignContent:'center',padding:10,borderRadius:5,borderWidth:1,borderColor:'#3f78ba',shadowColor: "#3f78ba",
 						shadowOffset: {
@@ -1566,8 +1566,8 @@ export default class BookConfirm extends React.PureComponent {
         :
         (<></>)
       }
-        
-  </View>	
+
+  </View>
 	  );
    }
 }
@@ -1619,9 +1619,9 @@ const styles = StyleSheet.create({
 		 flex:1,
 		 width:'100%',
        position: 'absolute',
-  		bottom: '20%', 
-  		bottom: 0, 
-  		left: 0, 
+  		bottom: '20%',
+  		bottom: 0,
+  		left: 0,
   		right: 0,
    	backgroundColor: "transparent",
    	zIndex:200,
@@ -1638,9 +1638,9 @@ const styles = StyleSheet.create({
 		 flex:1,
 		 width:'100%',
        position: 'absolute',
-  		top: '20%', 
-  		bottom: 0, 
-  		left: 0, 
+  		top: '20%',
+  		bottom: 0,
+  		left: 0,
   		right: 0,
    	backgroundColor: "transparent",
    	zIndex:200,
@@ -1657,9 +1657,9 @@ const styles = StyleSheet.create({
 		 flex:2,
 		 width:'100%',
        position: 'absolute',
-  		top: '20%', 
-  		bottom: '50%', 
-  		left: 0, 
+  		top: '20%',
+  		bottom: '50%',
+  		left: 0,
   		right: 0,
    	backgroundColor: "transparent",
    	zIndex:200,
@@ -1691,7 +1691,7 @@ const styles = StyleSheet.create({
 			},
 			shadowOpacity: 0.27,
 			shadowRadius: 4.65,
-			
+
 			elevation: 6,
 	     },
 	serachbox:{
@@ -1740,10 +1740,10 @@ btnSmall:{
 		color:'#000',
 		fontSize:13,
 		fontWeight:'bold',
-		fontFamily: "Uber-Move-Text"  
+		fontFamily: "Uber-Move-Text"
 	},
 	ubarFont:{
-    fontFamily: "Uber-Move-Text"  
+    fontFamily: "Uber-Move-Text"
   },
   circle:{
   	 alignItems:'center',justifyContent:'center',
@@ -1804,5 +1804,5 @@ const layerStyles = {
     lineColor: '#FF0000',
     lineWidth: 6,
   },
-  
+
 };

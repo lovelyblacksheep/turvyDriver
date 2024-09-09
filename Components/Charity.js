@@ -12,7 +12,7 @@ const imagemarker = require('../assets/map-pin.png');
 import { WebView } from 'react-native-webview';
 import Image from 'react-native-image-progress';
 import * as Progress from 'react-native-progress';
-import * as firebase from "firebase";
+import firebase from 'firebase/compat/app';
 import "firebase/firestore";
 import * as geofirestore from 'geofirestore';
 import apiKeys from '../config/keys';
@@ -38,26 +38,26 @@ export default class Charity extends React.Component {
         	partner_income:0,
     };
    }
-   
+
   componentDidMount(){
     this.getPartners();
   }
-  
+
   async getPartners(){
   	await AsyncStorage.getItem('accesstoken').then((value) => {
-  		console.log("ACCESS TOKEN ",value);	
+  		console.log("ACCESS TOKEN ",value);
   		console.log("charity ULR ",DOMAIN+'api/rider/ridercharity');
 		 fetch(DOMAIN+'api/rider/ridercharity',{
 			method: 'GET',
 			headers : {
-			 'Authorization': 'Bearer '+value, 
+			 'Authorization': 'Bearer '+value,
 			 'Content-Type': 'application/json'
 			}
  		}).then(function (response) {
  			return response.json();
   		}).then((result)=> {
   			if(result.status == 1){
-  				//console.log("PARTNERS DATA",result);  			
+  				//console.log("PARTNERS DATA",result);
 	  			this.setState({
 					partnerinfo:result.data,
 					partner_income:result.partner_income,
@@ -65,8 +65,8 @@ export default class Charity extends React.Component {
 					console.log("rider Parnetr info 1",this.state.partnerinfo);
 				});
   			}
-  		
-			
+
+
   			/*this.setState({
   				partners:result.data
   			});
@@ -74,9 +74,9 @@ export default class Charity extends React.Component {
 		});
 	});
   }
-    
 
-  
+
+
   render() {
   	 return (
   	<PaperProvider theme={theme}>
@@ -90,7 +90,7 @@ export default class Charity extends React.Component {
           <Grid style={{flex:1, flexDirection:'column',width:'100%'}}>
           <Row size={50}>
           		<Col size={12}>
-          			{this.state.partnerinfo.cdnimage ? 
+          			{this.state.partnerinfo.cdnimage ?
 						(<Image
 			        source={{uri:this.state.partnerinfo.cdnimage}}
 			        indicator={Progress.Circle}
@@ -125,13 +125,13 @@ export default class Charity extends React.Component {
                       <Text style={{ paddingTop:8,fontSize:16,color:'#3f78ba',fontWeight:'bold'}}>AU$ {this.state.partner_income}</Text>
                   </Col>
               </Row>
-               
-          </Grid> 
+
+          </Grid>
          </Surface>
       </View>
 	    <View style={{flex:1,  marginTop:10 }} >
 	    </View>
-	  
+
 	    </PaperProvider>
 	  );
    }
@@ -142,8 +142,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  labelstyle:{    
-    fontSize:16,    
+  labelstyle:{
+    fontSize:16,
     textAlign:'left',
     marginTop:10,
     fontFamily: 'WuerthBook'
@@ -161,12 +161,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         height:170,
     },
-    text: {    
+    text: {
         color: "white",
-        fontSize: 25,    
-        textAlign: "center",         
+        fontSize: 25,
+        textAlign: "center",
     },
-    overlay: {    
+    overlay: {
         justifyContent: "center",
         backgroundColor:'rgba(0,0,0,0.6)',
         height:170,
@@ -178,17 +178,17 @@ const styles = StyleSheet.create({
       marginBottom:10,
       marginLeft:5,
       marginRight:5,
-      backgroundColor:'#FFF',      
+      backgroundColor:'#FFF',
       height:35
     },
     scText:{color:'#000',fontSize:14},
-    active:{      
-      backgroundColor:'#7a49a5',            
+    active:{
+      backgroundColor:'#7a49a5',
     },
     actText:{color:'#FFF'},
     boxstyle:{
     	flex:1,
-    	backgroundColor:'#fff',  
+    	backgroundColor:'#fff',
     	borderRadius:10,borderWidth: 1,
     	borderColor: '#fff',
     	padding:10,margin:20,
